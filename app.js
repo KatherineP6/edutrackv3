@@ -67,20 +67,19 @@ app.post('/login', loginController.processLogin);
 
 // Rutas del administrador (protegidas por middleware de autenticación)
 app.use('/admin', userLogin, require('./routers/administrador/adminRouters'));
-app.use('/admin/carreras', userLogin, require('./routers/administrador/carreraRouters'));
 app.use('/admin/cursos', userLogin, require('./routers/administrador/cursoRouters'));
 
 // Montar router comun/userRouters para rutas de usuario, incluyendo /logout
 app.use('/', require('./routers/comun/userRouters'));
 
-const administradorCursoRouters = require('./routers/administrador/cursoRouters');
+
 
 // API Routes
 app.use('/api/docentes', userLogin, require('./routers/administrador/docenteRouters'));
 app.use('/api/estudiantes', userLogin, require('./routers/administrador/estudianteRouters'));
 app.use('/api/salones', userLogin, require('./routers/administrador/salonRouters'));
-app.use('/api/cursos', userLogin, administradorCursoRouters);
-app.use('/api/carreras', userLogin, require('./routers/administrador/adminRouters'));
+app.use('/api/cursos', userLogin, require('./routers/administrador/cursoRouters'));
+app.use('/api/carreras', userLogin, require('./routers/administrador/carreraRouters'));
 
 // Route for student dashboard
 app.use('/estudiante', require('./routers/administrador/estudianteRouters'));

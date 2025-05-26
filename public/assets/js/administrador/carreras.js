@@ -76,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = await fetch('/api/carreras', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(data)
       });
       if (!response.ok) {
@@ -94,6 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = await fetch(`/api/carreras/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(data)
       });
       if (!response.ok) {
@@ -110,7 +112,8 @@ document.addEventListener('DOMContentLoaded', () => {
   async function eliminarCarrera(id) {
     try {
       const response = await fetch(`/api/carreras/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include'
       });
       if (!response.ok) {
         const errorData = await response.json();
@@ -213,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load initial data
   async function cargarCarreras() {
     try {
-      const response = await fetch('/api/carreras');
+      const response = await fetch('/api/carreras', { credentials: 'include' });
       if (!response.ok) throw new Error('Error al cargar carreras');
       const data = await response.json();
       data.forEach(carrera => agregarFila(carrera));

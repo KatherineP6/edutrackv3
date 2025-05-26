@@ -1,15 +1,15 @@
 const Carrera = require('../../models/administrador/carreraModel');
 
 const carreraService = {
-  getAllCursos: async () => {
+  getAllCarrera: async () => {
     return await Carrera.find().lean();
   },
 
-  getCursoById: async (id) => {
+  getCarreraById: async (id) => {
     return await Carrera.findById(id);
   },
 
-  createCurso: async (data) => {
+  createCarrera: async (data) => {
     const { nombre, descripcion, duracionSem, precio } = data;
 
     if (!nombre || !descripcion || !duracionSem || precio === undefined) {
@@ -28,7 +28,7 @@ const carreraService = {
     return await carrera.save();
   },
 
-  updateCurso: async (id, data) => {
+  updateCarrera: async (id, data) => {
     const { nombre, descripcion, duracionSem, precio} = data;
 
     if (!nombre || !descripcion || !duracionSem || precio === undefined) {
@@ -50,7 +50,7 @@ const carreraService = {
     return carrera;
   },
 
-  deleteCurso: async (id) => {
+  deleteCarrera: async (id) => {
     const carrera = await Carrera.findByIdAndDelete(id);
     if (!carrera) {
       throw new Error('Carrera no encontrado.');

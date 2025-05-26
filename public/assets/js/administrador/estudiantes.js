@@ -1,103 +1,231 @@
-let students = [];
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('modalContainer');
+  const btnNuevoEstudiante = document.getElementById('createEstudianteBtn');
+  const btnCerrarModal = document.getElementById('modalCloseBtn');
+  const btnCancelar = document.getElementById('CancelBtn');
+  const formEstudiante = document.getElementById('formEstudiante');
+  const tablaCuerpo = document.querySelector('#estudiantesSectionTable tbody');
 
-async function fetchStudents() {
-  try {
-    const response = await fetch('/api/public/estudiantes');
-    if (!response.ok) throw new Error('Error fetching students');
-    students = await response.json();
-    renderAllSectionTables();
-  } catch (error) {
-    console.error(error);
-    alert('Error al cargar los estudiantes');
-  }
-}
+  let editandoFila = null;
+  let editandoEstudianteId = null;
 
-// Student section handlers
-const studentsColumns = [
-  { header: 'Nombre', accessor: 'Nombre' },
-  { header: 'Apellidos', accessor: 'Apellidos' },
-  { header: 'correo', accessor: 'correo' },
-  { header: 'Salon', accessor: 'Salon' }
-];
-
-async function createStudent() {
-  openStudentDialog('create');
-}
-
-async function editStudent(id) {
-  const student = students.find(s => (s._id || s.id) === id);
-  if (student) {
-    openStudentDialog('edit', student);
-  }
-}
-
-async function deleteStudent(id) {
-  if (!confirm('¿Está seguro de que desea eliminar este estudiante?')) return;
-  try {
-    const response = await fetch(`/api/estudiantes/${id}`, { method: 'DELETE' });
-    if (!response.ok) throw new Error('Error eliminando estudiante');
-    students = students.filter(s => (s._id || s.id) !== id);
-    renderAllSectionTables();
-  } catch (error) {
-    console.error(error);
-    alert('Error al eliminar el estudiante');
-  }
-}
-
-// Render all section tables
-function renderAllSectionTables() {
-  renderSectionTable(students, '#studentsSectionTable tbody', studentsColumns, {
-    edit: editStudent,
-    delete: deleteStudent
-  });
-}
-
-// Utility to render tables for classrooms, students, teachers
-function renderSectionTable(data, tableBodySelector, columns, actionsHandlers) {
-  const tbody = document.querySelector(tableBodySelector);
-  tbody.innerHTML = '';
-
-  if (data.length === 0) {
-    const tr = document.createElement('tr');
-    const td = document.createElement('td');
-    td.colSpan = columns.length + 1; // +1 for actions column
-    td.textContent = 'No hay datos disponibles';
-    td.style.textAlign = 'center';
-    tr.appendChild(td);
-    tbody.appendChild(tr);
-    return;
+  function limpiarErrores() {
+    formEstudiante.querySelectorAll('.error-message').forEach(e => e.textContent = '');
+    formEstudiante.querySelectorAll('.input-error').forEach(i => i.classList.remove('input-error'));
   }
 
-  data.forEach(item => {
-    const tr = document.createElement('tr');
-    columns.forEach(col => {
-      const td = document.createElement('td');
-      let value = item[col.accessor];
-      if (col.accessor.includes('.')) {
-        const keys = col.accessor.split('.');
-        value = keys.reduce((obj, key) => (obj ? obj[key] : ''), item);
-      }
-      td.textContent = value || '';
-      tr.appendChild(td);
+  function abrirModal() {
+    modal.classList.remove('hidden');
+    formEstudiante.reset();
+    limpiarErrores();
+    editandoFila = null;
+    editandoEstudianteId = null;
+    document.getElementById('modalTitle').textContent = 'Nuevo Estudiante';
+  }
+
+  function cerrarModal() {
+    modal.classList.add('hidden');
+    formEstudiante.reset();
+    limpiarErrores();
+    editandoFila = null;
+    editandoEstudianteId = null;
+  }
+
+  function mostrarError(input, mensaje) {
+    let errorElem = input.parentElement.querySelector('.error-message');
+    if (!errorElem) {
+      errorElem = document.createElement('small');
+      errorElem.className = 'error-message';
+      errorElem.style.color = 'red';
+      input.parentElement.appendChild(errorElem);
+    }
+    errorElem.textContent = mensaje;
+    input.classList.add('input-error');
+  }
+
+  function limpiarError(input) {
+    const errorElem = input.parentElement.querySelector('.error-message');
+    if (errorElem) errorElem.textContent = '';
+    input.classList.remove('input-error');
+  }
+
+  function validarCampo(input) {
+    limpiarError(input);
+    if (!input.value.trim()) {
+      mostrarError(input, 'Este campo es obligatorio');
+      return false;
+    }
+    if (input.type === 'email' && !input.value.includes('@')) {
+      mostrarError(input, 'Correo inválido');
+      return false;
+    }
+    if (input.id === 'password' && editandoEstudianteId === null && input.value.length < 6) {
+      mostrarError(input, 'La contraseña debe tener al menos 6 caracteres');
+      return false;
+    }
+    return true;
+  }
+
+  function validarFormulario() {
+    limpiarErrores();
+    let valido = true;
+    formEstudiante.querySelectorAll('input').forEach(input => {
+      if (!validarCampo(input)) valido = false;
     });
+    return valido;
+  }
 
-    const actionsTd = document.createElement('td');
-    actionsTd.style.display = 'flex';
-    actionsTd.style.gap = '0.5rem';
+  async function crearEstudiante(data) {
+    try {
+      const response = await fetch('/api/estudiantes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al crear estudiante');
+      }
+      return await response.json();
+    } catch (error) {
+      alert(error.message);
+      throw error;
+    }
+  }
 
-    const editBtn = document.createElement('button');
-    editBtn.textContent = 'Editar';
-    editBtn.className = 'btn-edit';
-    editBtn.addEventListener('click', () => actionsHandlers.edit(item._id || item.id));
-    actionsTd.appendChild(editBtn);
+  async function actualizarEstudiante(id, data) {
+    try {
+      const response = await fetch(`/api/estudiantes/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al actualizar estudiante');
+      }
+      return await response.json();
+    } catch (error) {
+      alert(error.message);
+      throw error;
+    }
+  }
 
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'Eliminar';
-    deleteBtn.className = 'btn-delete';
-    deleteBtn.addEventListener('click', () => actionsHandlers.delete(item._id || item.id));
-    actionsTd.appendChild(deleteBtn);
+  async function eliminarEstudiante(id) {
+    try {
+      const response = await fetch(`/api/estudiantes/${id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al eliminar estudiante');
+      }
+      return await response.json();
+    } catch (error) {
+      alert(error.message);
+      throw error;
+    }
+  }
 
-    tr.appendChild(actionsTd);
-    tbody.appendChild(tr);
+  function agregarFila(estudiante) {
+    const fila = document.createElement('tr');
+    fila.dataset.id = estudiante._id;
+    fila.innerHTML = `
+      <td>${estudiante.nombre}</td>
+      <td>${estudiante.apellidos}</td>
+      <td>${estudiante.email}</td>
+      <td>
+        <button class="btn-editar">Editar</button>
+        <button class="btn-borrar">Borrar</button>
+      </td>
+    `;
+    tablaCuerpo.appendChild(fila);
+  }
+
+  formEstudiante.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!validarFormulario()) return;
+
+    const nombre = formEstudiante.nombre.value;
+    const apellidos = formEstudiante.apellidos.value;
+    const email = formEstudiante.email.value;
+    const password = formEstudiante.password.value;
+
+    const estudianteData = {
+      nombre,
+      apellidos,
+      email,
+      password: password || undefined
+    };
+
+    try {
+      if (editandoEstudianteId) {
+        const result = await actualizarEstudiante(editandoEstudianteId, estudianteData);
+        if (editandoFila) {
+          editandoFila.cells[0].textContent = nombre;
+          editandoFila.cells[1].textContent = apellidos;
+          editandoFila.cells[2].textContent = email;
+        }
+      } else {
+        const result = await crearEstudiante(estudianteData);
+        agregarFila(result.estudiante || result);
+      }
+      cerrarModal();
+    } catch (error) {
+      // Error already handled
+    }
   });
-}
+
+  tablaCuerpo.addEventListener('click', async e => {
+    if (e.target.classList.contains('btn-borrar')) {
+      const fila = e.target.closest('tr');
+      const estudianteId = fila.dataset.id;
+      if (estudianteId) {
+        try {
+          await eliminarEstudiante(estudianteId);
+          fila.remove();
+        } catch (error) {
+          // Error already handled
+        }
+      } else {
+        fila.remove();
+      }
+    } else if (e.target.classList.contains('btn-editar')) {
+      const fila = e.target.closest('tr');
+      formEstudiante.nombre.value = fila.cells[0].textContent;
+      formEstudiante.apellidos.value = fila.cells[1].textContent;
+      formEstudiante.email.value = fila.cells[2].textContent;
+      formEstudiante.password.value = '';
+      editandoFila = fila;
+      editandoEstudianteId = fila.dataset.id || null;
+      document.getElementById('modalTitle').textContent = 'Editar Estudiante';
+      modal.classList.remove('hidden');
+    }
+  });
+
+  formEstudiante.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', () => validarCampo(input));
+    input.addEventListener('blur', () => validarCampo(input));
+  });
+
+  btnNuevoEstudiante.addEventListener('click', abrirModal);
+  btnCerrarModal.addEventListener('click', cerrarModal);
+  btnCancelar.addEventListener('click', cerrarModal);
+
+  // Load initial data
+  async function cargarEstudiantes() {
+    try {
+      const response = await fetch('/api/estudiantes', { credentials: 'include' });
+      if (!response.ok) throw new Error('Error al cargar estudiantes');
+      const data = await response.json();
+      data.forEach(estudiante => agregarFila(estudiante));
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+
+  cargarEstudiantes();
+});

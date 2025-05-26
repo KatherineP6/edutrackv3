@@ -122,16 +122,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   tipoSelect.addEventListener('change', updateCarreraSelectVisibility);
 
-  async function crearCurso(data) {
+
+    async function crearCurso(data) {
     try {
       const response = await fetch('/api/cursos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(data)
       });
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al crear curso');
+        throw new Error(errorData.message );
       }
       return await response.json();
     } catch (error) {
@@ -141,37 +143,41 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function actualizarCurso(id, data) {
-    try {
+     try {
       const response = await fetch(`/api/cursos/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(data)
       });
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al actualizar curso');
+        throw new Error(errorData.message || 'Error al actualizar carrera');
       }
       return await response.json();
     } catch (error) {
       alert(error.message);
       throw error;
     }
+
   }
 
   async function eliminarCurso(id) {
     try {
       const response = await fetch(`/api/cursos/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include'
       });
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al eliminar curso');
+        throw new Error(errorData.message || 'Error al eliminar cursos');
       }
       return await response.json();
     } catch (error) {
       alert(error.message);
       throw error;
     }
+
   }
 
   function agregarFila(curso) {
@@ -208,8 +214,8 @@ document.addEventListener('DOMContentLoaded', () => {
       descripcion,
       tipo,
       precio,
+      carreraId,
       semestre,
-      carreraId
     };
 
     try {
@@ -220,8 +226,9 @@ document.addEventListener('DOMContentLoaded', () => {
           editandoFila.cells[1].textContent = descripcion;
           editandoFila.cells[2].textContent = tipo;
           editandoFila.cells[3].textContent = precio.toFixed(2);
-          editandoFila.cells[4].textContent = semestre || '';
-          editandoFila.cells[5].textContent = carreraId || '';
+          editandoFila.cells[4].textContent = carreraId || '';
+          editandoFila.cells[5].textContent = semestre || '';
+          
         }
       } else {
         const result = await crearCurso(cursoData);
@@ -272,16 +279,17 @@ document.addEventListener('DOMContentLoaded', () => {
   btnCancelar.addEventListener('click', cerrarModal);
 
   // Load initial data
-  async function cargarCursos() {
+    async function cargarCursos() {
     try {
-      const response = await fetch('/api/cursos');
-      if (!response.ok) throw new Error('Error al cargar cursos');
+      const response = await fetch('/api/cursos', { credentials: 'include' });
+      if (!response.ok) throw new Error('Error al cargar carreras');
       const data = await response.json();
-      data.forEach(curso => agregarFila(curso));
+      data.forEach(carrera => agregarFila(carrera));
     } catch (error) {
       alert(error.message);
     }
   }
+
 
   async function cargarCarreras() {
     try {

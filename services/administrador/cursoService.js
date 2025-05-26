@@ -1,6 +1,6 @@
 const Curso = require('../../models/administrador/cursoModel');
 
-const cursoService = {
+const CursoService = {
   getAllCursos: async () => {
     return await Curso.find().lean();
   },
@@ -16,16 +16,16 @@ const cursoService = {
       throw new Error('Campos requeridos faltantes.');
     }
 
-    const cursoData = {
+    const CursoData = {
       nombre,
       descripcion,
       tipo,
       precio,
       carreraId: tipo === 'carrera' ? carreraId : null,
-      semestre: tipo === 'carrera' ? semestre : null
+      semestre: tipo === 'carrera' ? semestre : null,
     };
 
-    const curso = new Curso(cursoData);
+    const curso = new Curso(CursoData);
     return await curso.save();
   },
 
@@ -45,20 +45,20 @@ const cursoService = {
       semestre: tipo === 'carrera' ? semestre : null
     };
 
-    const curso = await Curso.findByIdAndUpdate(id, updateData, { new: true });
-    if (!curso) {
+    const Curso = await Curso.findByIdAndUpdate(id, updateData, { new: true });
+    if (!Curso) {
       throw new Error('Curso no encontrado.');
     }
-    return curso;
+    return Curso;
   },
 
   deleteCurso: async (id) => {
-    const curso = await Curso.findByIdAndDelete(id);
-    if (!curso) {
+    const Curso = await Curso.findByIdAndDelete(id);
+    if (!Curso) {
       throw new Error('Curso no encontrado.');
     }
-    return curso;
+    return Curso;
   }
 };
 
-module.exports = cursoService;
+module.exports = CursoService;

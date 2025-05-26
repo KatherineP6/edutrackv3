@@ -1,103 +1,231 @@
-let teachers = [];
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('modalContainer');
+  const btnNuevoDocente = document.getElementById('createDocenteBtn');
+  const btnCerrarModal = document.getElementById('modalCloseBtn');
+  const btnCancelar = document.getElementById('CancelBtn');
+  const formDocente = document.getElementById('formDocente');
+  const tablaCuerpo = document.querySelector('#docentesSectionTable tbody');
 
-async function fetchTeachers() {
-  try {
-    const response = await fetch('/api/docentes');
-    if (!response.ok) throw new Error('Error fetching teachers');
-    teachers = await response.json();
-    renderAllSectionTables();
-  } catch (error) {
-    console.error(error);
-    alert('Error al cargar los docentes');
-  }
-}
+  let editandoFila = null;
+  let editandoDocenteId = null;
 
-// Teacher section handlers
-const teachersColumns = [
-  { header: 'Nombre', accessor: 'Nombre' },
-  { header: 'Apellido', accessor: 'Apellido' },
-  { header: 'correo', accessor: 'correo' },
-  { header: 'GradoAcademico', accessor: 'GradoAcademico' }
-];
-
-async function createTeacher() {
-  openTeacherDialog('create');
-}
-
-async function editTeacher(id) {
-  const teacher = teachers.find(t => (t._id || t.id) === id);
-  if (teacher) {
-    openTeacherDialog('edit', teacher);
-  }
-}
-
-async function deleteTeacher(id) {
-  if (!confirm('¿Está seguro de que desea eliminar este docente?')) return;
-  try {
-    const response = await fetch(`/api/docentes/${id}`, { method: 'DELETE' });
-    if (!response.ok) throw new Error('Error eliminando docente');
-    teachers = teachers.filter(t => (t._id || t.id) !== id);
-    renderAllSectionTables();
-  } catch (error) {
-    console.error(error);
-    alert('Error al eliminar el docente');
-  }
-}
-
-// Render all section tables
-function renderAllSectionTables() {
-  renderSectionTable(teachers, '#teachersSectionTable tbody', teachersColumns, {
-    edit: editTeacher,
-    delete: deleteTeacher
-  });
-}
-
-// Utility to render tables for classrooms, students, teachers
-function renderSectionTable(data, tableBodySelector, columns, actionsHandlers) {
-  const tbody = document.querySelector(tableBodySelector);
-  tbody.innerHTML = '';
-
-  if (data.length === 0) {
-    const tr = document.createElement('tr');
-    const td = document.createElement('td');
-    td.colSpan = columns.length + 1; // +1 for actions column
-    td.textContent = 'No hay datos disponibles';
-    td.style.textAlign = 'center';
-    tr.appendChild(td);
-    tbody.appendChild(tr);
-    return;
+  function limpiarErrores() {
+    formDocente.querySelectorAll('.error-message').forEach(e => e.textContent = '');
+    formDocente.querySelectorAll('.input-error').forEach(i => i.classList.remove('input-error'));
   }
 
-  data.forEach(item => {
-    const tr = document.createElement('tr');
-    columns.forEach(col => {
-      const td = document.createElement('td');
-      let value = item[col.accessor];
-      if (col.accessor.includes('.')) {
-        const keys = col.accessor.split('.');
-        value = keys.reduce((obj, key) => (obj ? obj[key] : ''), item);
-      }
-      td.textContent = value || '';
-      tr.appendChild(td);
+  function abrirModal() {
+    modal.classList.remove('hidden');
+    formDocente.reset();
+    limpiarErrores();
+    editandoFila = null;
+    editandoDocenteId = null;
+    document.getElementById('modalTitle').textContent = 'Nuevo Docente';
+  }
+
+  function cerrarModal() {
+    modal.classList.add('hidden');
+    formDocente.reset();
+    limpiarErrores();
+    editandoFila = null;
+    editandoDocenteId = null;
+  }
+
+  function mostrarError(input, mensaje) {
+    let errorElem = input.parentElement.querySelector('.error-message');
+    if (!errorElem) {
+      errorElem = document.createElement('small');
+      errorElem.className = 'error-message';
+      errorElem.style.color = 'red';
+      input.parentElement.appendChild(errorElem);
+    }
+    errorElem.textContent = mensaje;
+    input.classList.add('input-error');
+  }
+
+  function limpiarError(input) {
+    const errorElem = input.parentElement.querySelector('.error-message');
+    if (errorElem) errorElem.textContent = '';
+    input.classList.remove('input-error');
+  }
+
+  function validarCampo(input) {
+    limpiarError(input);
+    if (!input.value.trim()) {
+      mostrarError(input, 'Este campo es obligatorio');
+      return false;
+    }
+    if (input.type === 'email' && !input.value.includes('@')) {
+      mostrarError(input, 'Correo inválido');
+      return false;
+    }
+    if (input.id === 'password' && editandoDocenteId === null && input.value.length < 6) {
+      mostrarError(input, 'La contraseña debe tener al menos 6 caracteres');
+      return false;
+    }
+    return true;
+  }
+
+  function validarFormulario() {
+    limpiarErrores();
+    let valido = true;
+    formDocente.querySelectorAll('input').forEach(input => {
+      if (!validarCampo(input)) valido = false;
     });
+    return valido;
+  }
 
-    const actionsTd = document.createElement('td');
-    actionsTd.style.display = 'flex';
-    actionsTd.style.gap = '0.5rem';
+  async function crearDocente(data) {
+    try {
+      const response = await fetch('/api/docentes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al crear docente');
+      }
+      return await response.json();
+    } catch (error) {
+      alert(error.message);
+      throw error;
+    }
+  }
 
-    const editBtn = document.createElement('button');
-    editBtn.textContent = 'Editar';
-    editBtn.className = 'btn-edit';
-    editBtn.addEventListener('click', () => actionsHandlers.edit(item._id || item.id));
-    actionsTd.appendChild(editBtn);
+  async function actualizarDocente(id, data) {
+    try {
+      const response = await fetch(`/api/docentes/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al actualizar docente');
+      }
+      return await response.json();
+    } catch (error) {
+      alert(error.message);
+      throw error;
+    }
+  }
 
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'Eliminar';
-    deleteBtn.className = 'btn-delete';
-    deleteBtn.addEventListener('click', () => actionsHandlers.delete(item._id || item.id));
-    actionsTd.appendChild(deleteBtn);
+  async function eliminarDocente(id) {
+    try {
+      const response = await fetch(`/api/docentes/${id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al eliminar docente');
+      }
+      return await response.json();
+    } catch (error) {
+      alert(error.message);
+      throw error;
+    }
+  }
 
-    tr.appendChild(actionsTd);
-    tbody.appendChild(tr);
+  function agregarFila(docente) {
+    const fila = document.createElement('tr');
+    fila.dataset.id = docente._id;
+    fila.innerHTML = `
+      <td>${docente.nombre}</td>
+      <td>${docente.apellido}</td>
+      <td>${docente.email}</td>
+      <td>
+        <button class="btn-editar">Editar</button>
+        <button class="btn-borrar">Borrar</button>
+      </td>
+    `;
+    tablaCuerpo.appendChild(fila);
+  }
+
+  formDocente.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!validarFormulario()) return;
+
+    const nombre = formDocente.nombre.value;
+    const apellido = formDocente.apellido.value;
+    const email = formDocente.email.value;
+    const password = formDocente.password.value;
+
+    const docenteData = {
+      nombre,
+      apellido,
+      email,
+      password: password || undefined
+    };
+
+    try {
+      if (editandoDocenteId) {
+        const result = await actualizarDocente(editandoDocenteId, docenteData);
+        if (editandoFila) {
+          editandoFila.cells[0].textContent = nombre;
+          editandoFila.cells[1].textContent = apellido;
+          editandoFila.cells[2].textContent = email;
+        }
+      } else {
+        const result = await crearDocente(docenteData);
+        agregarFila(result.docente || result);
+      }
+      cerrarModal();
+    } catch (error) {
+      // Error already handled
+    }
   });
-}
+
+  tablaCuerpo.addEventListener('click', async e => {
+    if (e.target.classList.contains('btn-borrar')) {
+      const fila = e.target.closest('tr');
+      const docenteId = fila.dataset.id;
+      if (docenteId) {
+        try {
+          await eliminarDocente(docenteId);
+          fila.remove();
+        } catch (error) {
+          // Error already handled
+        }
+      } else {
+        fila.remove();
+      }
+    } else if (e.target.classList.contains('btn-editar')) {
+      const fila = e.target.closest('tr');
+      formDocente.nombre.value = fila.cells[0].textContent;
+      formDocente.apellido.value = fila.cells[1].textContent;
+      formDocente.email.value = fila.cells[2].textContent;
+      formDocente.password.value = '';
+      editandoFila = fila;
+      editandoDocenteId = fila.dataset.id || null;
+      document.getElementById('modalTitle').textContent = 'Editar Docente';
+      modal.classList.remove('hidden');
+    }
+  });
+
+  formDocente.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', () => validarCampo(input));
+    input.addEventListener('blur', () => validarCampo(input));
+  });
+
+  btnNuevoDocente.addEventListener('click', abrirModal);
+  btnCerrarModal.addEventListener('click', cerrarModal);
+  btnCancelar.addEventListener('click', cerrarModal);
+
+  // Load initial data
+  async function cargarDocentes() {
+    try {
+      const response = await fetch('/api/docentes', { credentials: 'include' });
+      if (!response.ok) throw new Error('Error al cargar docentes');
+      const data = await response.json();
+      data.forEach(docente => agregarFila(docente));
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+
+  cargarDocentes();
+});
