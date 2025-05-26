@@ -6,6 +6,14 @@ document.addEventListener('DOMContentLoaded', function() {
   const closeBtn = document.getElementById('modalCloseBtn');
   const tableBody = document.querySelector('#classroomsSectionTable tbody');
 
+  // Delete confirmation modal elements
+  const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+  const deleteModalCloseBtn = document.getElementById('deleteModalCloseBtn');
+  const deleteCancelBtn = document.getElementById('deleteCancelBtn');
+  const deleteConfirmBtn = document.getElementById('deleteConfirmBtn');
+
+  let salonIdToDelete = null;
+
   // Mostrar modal para crear nuevo salón
   createBtn.addEventListener('click', () => {
     form.reset();
@@ -98,20 +106,37 @@ document.addEventListener('DOMContentLoaded', function() {
       .catch(error => console.error('Error:', error));
   }
 
-  // Manejar eliminación
+  // Manejar eliminación con modal de confirmación
   function handleDelete(e) {
-    if (confirm('¿Estás seguro de eliminar este salón?')) {
-      const id = e.target.dataset.id;
-      
-      fetch(`/api/salones/${id}`, {
-        method: 'DELETE'
-      })
-        .then(() => {
-          loadClassrooms();
-        })
-        .catch(error => console.error('Error:', error));
-    }
+    salonIdToDelete = e.target.dataset.id;
+    deleteConfirmModal.classList.remove('hidden');
   }
+
+  // Cerrar modal de confirmación de eliminación
+  function closeDeleteModal() {
+    deleteConfirmModal.classList.add('hidden');
+    salonIdToDelete = null;
+  }
+
+  deleteModalCloseBtn.addEventListener('click', closeDeleteModal);
+  deleteCancelBtn.addEventListener('click', closeDeleteModal);
+
+  // Confirmar eliminación
+  deleteConfirmBtn.addEventListener('click', () => {
+    if (!salonIdToDelete) return;
+
+    fetch(`/api/salones/${salonIdToDelete}`, {
+      method: 'DELETE'
+    })
+      .then(() => {
+        closeDeleteModal();
+        loadClassrooms();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        closeDeleteModal();
+      });
+  });
 
   // Cargar datos iniciales
   loadClassrooms();

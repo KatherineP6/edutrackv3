@@ -122,8 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   tipoSelect.addEventListener('change', updateCarreraSelectVisibility);
 
-
-    async function crearCurso(data) {
+  async function crearCurso(data) {
     try {
       const response = await fetch('/api/cursos', {
         method: 'POST',
@@ -133,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message );
+        throw new Error(errorData.message);
       }
       return await response.json();
     } catch (error) {
@@ -143,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function actualizarCurso(id, data) {
-     try {
+    try {
       const response = await fetch(`/api/cursos/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -152,14 +151,13 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al actualizar carrera');
+        throw new Error(errorData.message || 'Error al actualizar curso');
       }
       return await response.json();
     } catch (error) {
       alert(error.message);
       throw error;
     }
-
   }
 
   async function eliminarCurso(id) {
@@ -170,14 +168,13 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al eliminar cursos');
+        throw new Error(errorData.message || 'Error al eliminar curso');
       }
       return await response.json();
     } catch (error) {
       alert(error.message);
       throw error;
     }
-
   }
 
   function agregarFila(curso) {
@@ -189,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <td>${curso.tipo}</td>
       <td>${curso.precio.toFixed(2)}</td>
       <td>${curso.semestre || ''}</td>
-      <td>${curso.carreraId ? curso.carreraId : ''}</td>
+      <td>${curso.carreraId || ''}</td>
       <td>
         <button class="btn-editar">Editar</button>
         <button class="btn-borrar">Borrar</button>
@@ -226,9 +223,8 @@ document.addEventListener('DOMContentLoaded', () => {
           editandoFila.cells[1].textContent = descripcion;
           editandoFila.cells[2].textContent = tipo;
           editandoFila.cells[3].textContent = precio.toFixed(2);
-          editandoFila.cells[4].textContent = carreraId || '';
-          editandoFila.cells[5].textContent = semestre || '';
-          
+          editandoFila.cells[4].textContent = semestre || '';
+          editandoFila.cells[5].textContent = carreraId || '';
         }
       } else {
         const result = await crearCurso(cursoData);
@@ -240,6 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Manejar eventos de edición y eliminación
   tablaCuerpo.addEventListener('click', async e => {
     if (e.target.classList.contains('btn-borrar')) {
       const fila = e.target.closest('tr');
@@ -266,51 +263,14 @@ document.addEventListener('DOMContentLoaded', () => {
       editandoCursoId = fila.dataset.id || null;
       document.getElementById('modalTitle').textContent = 'Editar Curso';
       modal.classList.remove('hidden');
+      updateCarreraSelectVisibility();
     }
   });
 
-  formCurso.querySelectorAll('input, select, textarea').forEach(input => {
-    input.addEventListener('input', () => validarCampo(input));
-    input.addEventListener('blur', () => validarCampo(input));
-  });
-
+  // Add event listeners for modal open/close buttons
   btnNuevoCurso.addEventListener('click', abrirModal);
   btnCerrarModal.addEventListener('click', cerrarModal);
   btnCancelar.addEventListener('click', cerrarModal);
-
-  // Load initial data
-    async function cargarCursos() {
-    try {
-      const response = await fetch('/api/cursos', { credentials: 'include' });
-      if (!response.ok) throw new Error('Error al cargar carreras');
-      const data = await response.json();
-      data.forEach(carrera => agregarFila(carrera));
-    } catch (error) {
-      alert(error.message);
-    }
-  }
-
-
-  async function cargarCarreras() {
-    try {
-      const response = await fetch('/api/carreras');
-      if (!response.ok) throw new Error('Error al cargar carreras');
-      const data = await response.json();
-      populateCarreraSelect(data);
-    } catch (error) {
-      alert(error.message);
-    }
-  }
-
-  function populateCarreraSelect(carreras) {
-    carreraSelect.innerHTML = '<option value="">Seleccione una carrera</option>';
-    carreras.forEach(carrera => {
-      const option = document.createElement('option');
-      option.value = carrera._id;
-      option.textContent = carrera.nombre;
-      carreraSelect.appendChild(option);
-    });
-  }
 
   function updateCarreraSelectVisibility() {
     if (tipoSelect.value === 'carrera') {
@@ -323,6 +283,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   tipoSelect.addEventListener('change', updateCarreraSelectVisibility);
 
-  cargarCarreras();
+  fetchCarreras();
   cargarCursos();
+
+  async function cargarCursos() {
+    try {
+      const response = await fetch('/api/cursos');
+      if (!response.ok) throw new Error('Error al cargar cursos');
+      const data = await response.json();
+      data.forEach(curso => agregarFila(curso));
+    } catch (error) {
+      alert(error.message);
+    }
+  }
 });

@@ -1,31 +1,13 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>EduTrack360 - Dashboard Estudiante</title>
-  <link rel="stylesheet" href="/assets/css/estudiantes/estudiantes.css" />
-  <link rel="stylesheet" href="/assets/css/estudiantes/chatbot.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-</head>
-<body>
+
   <button id="sidebarToggle" aria-label="Toggle menu" class="sidebar-toggle">&#9776;</button>
 
-  <%- include('estudiantes') %>
+  <%- include('menuestudiante') %>
 
   <div id="overlay" class="overlay hidden"></div>
 
-  <div class="main-content">
-    <header class="header">
-      <button id="logoutButton" class="logout-button" aria-label="Cerrar sesión">🔓 Cerrar sesión</button>
-    </header>
+  
+   
 
-    <main class="estudiante-content">
-      <h2>Dashboard Estudiante</h2>
-      <p>Contenido del dashboard aquí.</p>
-    </main>
-
-    <%- include('../comun/chatbot', { user: user }) %>
   </div>
 
   <script src="/assets/js/estudiantes/estudiantes.js"></script>

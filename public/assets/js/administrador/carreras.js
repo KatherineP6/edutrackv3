@@ -6,8 +6,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const formCarrera = document.getElementById('formCarrera');
   const tablaCuerpo = document.querySelector('#classroomsSectionTable tbody');
 
+  // Delete confirmation modal elements
+  const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+  const deleteModalCloseBtn = document.getElementById('deleteModalCloseBtn');
+  const deleteCancelBtn = document.getElementById('deleteCancelBtn');
+  const deleteConfirmBtn = document.getElementById('deleteConfirmBtn');
+
   let editandoFila = null;
   let editandoCarreraId = null;
+  let carreraIdToDelete = null;
 
   function limpiarErrores() {
     formCarrera.querySelectorAll('.error-message').forEach(e => e.textContent = '');
@@ -177,20 +184,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  tablaCuerpo.addEventListener('click', async e => {
+  // Manejar eventos de edición y eliminación con modal de confirmación
+  tablaCuerpo.addEventListener('click', e => {
     if (e.target.classList.contains('btn-borrar')) {
-      const fila = e.target.closest('tr');
-      const carreraId = fila.dataset.id;
-      if (carreraId) {
-        try {
-          await eliminarCarrera(carreraId);
-          fila.remove();
-        } catch (error) {
-          // Error already handled
-        }
-      } else {
-        fila.remove();
-      }
+      carreraIdToDelete = e.target.closest('tr').dataset.id;
+      deleteConfirmModal.classList.remove('hidden');
     } else if (e.target.classList.contains('btn-editar')) {
       const fila = e.target.closest('tr');
       formCarrera.nombre.value = fila.cells[0].textContent;
@@ -201,6 +199,29 @@ document.addEventListener('DOMContentLoaded', () => {
       editandoCarreraId = fila.dataset.id || null;
       document.getElementById('modalTitle').textContent = 'Editar Carrera';
       modal.classList.remove('hidden');
+    }
+  });
+
+  // Cerrar modal de confirmación de eliminación
+  function closeDeleteModal() {
+    deleteConfirmModal.classList.add('hidden');
+    carreraIdToDelete = null;
+  }
+
+  deleteModalCloseBtn.addEventListener('click', closeDeleteModal);
+  deleteCancelBtn.addEventListener('click', closeDeleteModal);
+
+  // Confirmar eliminación
+  deleteConfirmBtn.addEventListener('click', async () => {
+    if (!carreraIdToDelete) return;
+
+    try {
+      await eliminarCarrera(carreraIdToDelete);
+      const fila = tablaCuerpo.querySelector(`tr[data-id="${carreraIdToDelete}"]`);
+      if (fila) fila.remove();
+      closeDeleteModal();
+    } catch (error) {
+      closeDeleteModal();
     }
   });
 

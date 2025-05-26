@@ -27,16 +27,6 @@ exports.getCursoById = async (req, res) => {
 };
 
 exports.createCurso = async (req, res) => {
-   try {
-      const { nombre, descripcion, tipo, precio,carreraId,semestre } = req.body;
-      const nuevaCurso = new Curso({ nombre, descripcion, tipo, precio,carreraId,semestre });
-      const savedCurso = await nuevaCurso.save();
-      res.status(201).json(savedCurso);
-    } catch (error) {
-      console.error('Error creating curso:', error);
-      res.status(500).json({ message: 'Error al crear la curso' });
-    }
-
   try {
     const curso = await cursoService.createCurso(req.body);
     res.status(201).json({ message: 'Curso creado exitosamente.', curso });

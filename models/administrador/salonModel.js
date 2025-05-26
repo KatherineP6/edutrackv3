@@ -19,6 +19,10 @@ const salonSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   }
+}, {
+  timestamps: true 
 });
 
-module.exports = mongoose.model('Salon', salonSchema);
+const Salon = mongoose.model('Salones', salonSchema, 'Salones');
+
+module.exports = Salon;

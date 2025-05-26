@@ -8,7 +8,7 @@ router.get('/dashboard', userLogin, (req, res) => {
     if (req.session.userRole !== 'Estudiante') {
         return res.status(403).send('Acceso denegado');
     }
-    res.render('estudiantes/estudiantes', {
+    res.render('estudiantes/dashboard', {
         user: {
             id: req.session.userId,
             role: req.session.userRole,

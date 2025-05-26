@@ -45,19 +45,19 @@ const CursoService = {
       semestre: tipo === 'carrera' ? semestre : null
     };
 
-    const Curso = await Curso.findByIdAndUpdate(id, updateData, { new: true });
-    if (!Curso) {
+    const curso = await Curso.findByIdAndUpdate(id, updateData, { new: true });
+    if (!curso) {
       throw new Error('Curso no encontrado.');
     }
-    return Curso;
+    return curso;
   },
 
   deleteCurso: async (id) => {
-    const Curso = await Curso.findByIdAndDelete(id);
-    if (!Curso) {
+    const curso = await Curso.findByIdAndDelete(id);
+    if (!curso) {
       throw new Error('Curso no encontrado.');
     }
-    return Curso;
+    return curso;
   }
 };
 

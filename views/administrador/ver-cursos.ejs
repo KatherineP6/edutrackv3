@@ -83,6 +83,23 @@
       </form>
     </div>
   </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteConfirmModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h3 id="deleteModalTitle">Confirmar Eliminación</h3>
+        <button id="deleteModalCloseBtn" aria-label="Cerrar diálogo">&times;</button>
+      </header>
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas eliminar este curso?</p>
+        <div class="form-group mb-3">
+          <button type="button" id="deleteCancelBtn" class="btn-secondary">Cancelar</button>
+          <button type="button" id="deleteConfirmBtn" class="btn-primary">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <script src="/assets/js/administrador/cursos.js"></script>
