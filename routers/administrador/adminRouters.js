@@ -28,7 +28,7 @@ router.post('/api/salones', userLogin, salonController.createSalon);
 //router.get('/api/salones/:id', userLogin, salonController.getSalonById);
 router.put('/api/salones/:id', userLogin, salonController.updateSalon);
 router.delete('/api/salones/:id', userLogin, salonController.deleteSalon);
-router.get('/api/salones/rendimiento', userLogin, salonController.getSalonesRendimiento);
+//router.get('/api/salones/rendimiento', userLogin, salonController.getSalonesRendimiento);
 
 // Rutas para la asignación de docentes y estudiantes a salones
 //router.post('/api/salones/:id/docente', userLogin, salonController.assignOrUnassignDocente);
@@ -37,13 +37,13 @@ router.get('/api/salones/rendimiento', userLogin, salonController.getSalonesRend
 
 // Rutas para estudiantes
 router.get('/api/estudiantes', userLogin, estudiantesController.getAllEstudiantes);
-router.get('/api/estudiantes/disponibles', userLogin, salonController.getAvailableEstudiantes);
+//router.get('/api/estudiantes/disponibles', userLogin, salonController.getAvailableEstudiantes);
 router.post('/api/estudiantes', userLogin, estudiantesController.createEstudiante);
 router.get('/api/estudiantes/:id', userLogin, estudiantesController.getEstudianteById);
 router.put('/api/estudiantes/:id', userLogin, estudiantesController.updateEstudiante);
 
 // Rutas para carreras
-router.get('/', userLogin, carreraController.getAllCarreras);
+router.get('/', userLogin, carreraController.getAllCarrera);
 router.post('/', userLogin, carreraController.createCarrera);
 router.put('/:id', userLogin, carreraController.updateCarrera);
 router.delete('/:id', userLogin, carreraController.deleteCarrera);

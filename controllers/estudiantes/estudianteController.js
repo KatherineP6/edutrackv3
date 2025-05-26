@@ -2,12 +2,12 @@ const Estudiante = require('../../models/administrador/estudianteModel');
 const estudianteService = require('../../services/administrador/estudianteService');
 
 exports.getAllEstudiantes = async (req, res) => {
-    try {
+/*    try {
         const estudiantes = await estudianteService.getAllEstudiantes();
         res.json(estudiantes);
     } catch (error) {
         res.status(500).json({ error: error.message });
-    }
+    }*/
 };
 
 exports.getEstudianteById = async (req, res) => {

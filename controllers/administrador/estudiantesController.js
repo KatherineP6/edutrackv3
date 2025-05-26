@@ -4,13 +4,13 @@ const SALT_ROUNDS = 10;
 
 // --- API Estudiantes ---
 exports.getAllEstudiantes = async (req, res) => {
-    try {
+  /*  try {
         const estudiantes = await Estudiante.find().lean();
         res.json(estudiantes);
     } catch (error) {
         console.error('Error obteniendo estudiantes:', error);
         res.status(500).json({ message: 'Error interno al obtener estudiantes.' });
-    }
+    }*/
 };
 
 exports.getEstudianteById = async (req, res) => {

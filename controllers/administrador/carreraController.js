@@ -1,5 +1,7 @@
 const Carrera = require('../../models/administrador/carreraModel');
 
+const carreraService = require('../../services/administrador/carreraService');
+
 exports.renderCarrerasPage = (req, res) => {
   res.render('administrador/menuadministrador', {
     activeSection: 'carreras',
@@ -8,14 +10,22 @@ exports.renderCarrerasPage = (req, res) => {
   });
 };
 
-exports.getAllCarreras = async (req, res) => {
-  try {
+exports.getAllCarrera = async (req, res) => {
+   try {
+      const carreras = await carreraService.getAll();
+      //console.log(docentes); // **No necesitamos esto para la respuesta**
+      res.status(200).json(carreras); // **Enviamos la respuesta como JSON**
+    } catch (error) {
+      console.error('Error al obtener docentes:', error);
+      res.status(500).json({ "error": error.message }); // **Enviamos el error como JSON**
+    }
+ /* try {
     const carreras = await Carrera.find().lean();
     res.json(carreras);
   } catch (error) {
     console.error('Error fetching carreras:', error);
     res.status(500).json({ message: 'Error al obtener las carreras' });
-  }
+  }*/
 };
 
 exports.createCarrera = async (req, res) => {
