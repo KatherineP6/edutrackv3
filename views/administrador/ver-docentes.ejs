@@ -1,27 +1,93 @@
 <section id="docentes" class="tab-section active">
   <div class="dashboard-home">
     <div class="charts-stats">
-      <div class="section-header">
-        <h2>Gestión de Docentes</h2>
+      <div class="section-header d-flex justify-content-between align-items-center mb-3">
+        <h2>Gestión de Docentes</h2>    
       </div>
-      <div class="card">
-        <div class="card-body">
-          <table id="teachersSectionTable" class="data-table">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Correo</th>
-                 <th>Edad</th>
-                <th>Grado Académico</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-            </tbody>
-          </table>
+      <div>
+        <button id="createDocenteBtn" class="btn-primary">➕ Nuevo Docente</button>
+      </div>
+      <div class="button-table-container">
+        <div class="card full-width">
+          <div class="card-body">
+            <table id="teachersSectionTable" class="data-table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Apellido</th>
+                  <th>Correo</th>
+                  <th>Edad</th>
+                  <th>Grado Académico</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Aquí se llenarán los datos de los docentes -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modalDocenteContainer" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalDocenteTitle">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h3 id="modalDocenteTitle">Nuevo Docente</h3>
+        <button id="modalDocenteCloseBtn" aria-label="Cerrar diálogo">&times;</button>
+      </header>
+      <form id="formDocente" class="modal-body" novalidate>
+        <div class="form-group mb-3">
+          <label for="nombreDoc">Nombre</label>
+          <input type="text" id="nombreDoc" name="nombreDoc" class="form-control" required />
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="apellidoDoc">Apellido</label>
+          <input type="text" id="apellidoDoc" name="apellidoDoc" class="form-control" required />
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="correoDoc">Correo</label>
+          <input type="email" id="correoDoc" name="correoDoc" class="form-control" required />
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="edadDoc">Edad</label>
+          <input type="number" id="edadDoc" name="edadDoc" class="form-control" min="18" required />
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="gradoAcademico">Grado Académico</label>
+          <input type="text" id="gradoAcademico" name="gradoAcademico" class="form-control" required />
+        </div>
+
+        <div class="form-group mb-3">
+          <button type="button" id="cancelDocenteBtn" class="btn-secondary">Cancelar</button>
+          <button type="submit" id="saveDocenteBtn" class="btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteDocenteModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="deleteDocenteTitle">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h3 id="deleteDocenteTitle">Confirmar Eliminación</h3>
+        <button id="deleteDocenteCloseBtn" aria-label="Cerrar diálogo">&times;</button>
+      </header>
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas eliminar este docente?</p>
+        <div class="form-group mb-3">
+          <button type="button" id="cancelDeleteDocenteBtn" class="btn-secondary">Cancelar</button>
+          <button type="button" id="confirmDeleteDocenteBtn" class="btn-primary">Eliminar</button>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<script src="/assets/js/administrador/docentes.js"></script>

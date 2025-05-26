@@ -1,14 +1,16 @@
 const mongoose = require('mongoose');
 const Salon = require('../../models/administrador/salonModel');
 const Estudiante = require('../../models/administrador/estudianteModel');
+const Docente = require('../../models/administrador/docenteModel');
+const Carrera = require('../../models/administrador/carreraModel');
 
 // --- Renderizado Vistas ---
 exports.renderAdminDashboard = async (req, res) => {
     try {
         const path = req.path;
 
-        // Determine which view to render based on path
-        let bodyView = 'dashboard'; // default view filename only
+        // Determinar la vista a renderizar
+        let bodyView = 'dashboard'; // vista por defecto
         let activeSection = 'dashboard';
 
         if (path.includes('/dashboard')) {
@@ -33,45 +35,56 @@ exports.renderAdminDashboard = async (req, res) => {
             bodyView = 'ver-carreras';
             activeSection = 'carreras';
         } else {
-            // Default to dashboard if no match
+            // Redirigir por defecto al dashboard
             return res.redirect('/admin/dashboard');
         }
 
-        // Fetch counts for dashboard stats
-        const totalSalones = await Salon.countDocuments();
-        const totalEstudiantes = await Estudiante.countDocuments();
+        // Obtener totales
+        const [totalSalones, totalEstudiantes, totalDocentes, totalCarreras] = await Promise.all([
+            Salon.countDocuments(),
+            Estudiante.countDocuments(),
+            Docente.countDocuments(),
+            Carrera.countDocuments(),
+        ]);
 
-        // Calculate average rendimiento
-        const rendimientoResult = await Salon.aggregate([
+        // Obtener las carreras con más estudiantes (Top 5)
+        const topCarreras = await Estudiante.aggregate([
+            { $group: { _id: "$carrera", count: { $sum: 1 } } },
+            { $sort: { count: -1 } },
+            { $limit: 5 },
             {
-                $group: {
-                    _id: null,
-                    averageRendimiento: { $avg: "$rendimiento" }
+                $lookup: {
+                    from: "carreras",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "carrera"
+                }
+            },
+            { $unwind: "$carrera" },
+            {
+                $project: {
+                    nombreCarrera: "$carrera.nombre",
+                    numeroEstudiantes: "$count"
                 }
             }
         ]);
 
-        const averageRendimiento = rendimientoResult.length > 0 ? rendimientoResult[0].averageRendimiento : 0;
-
-        // Calcular ocupación
-        const salones = await Salon.find().select('capacidad alumnos').lean();
-        const totalCapacidad = salones.reduce((sum, salon) => sum + (salon.capacidad || 0), 0);
-        const totalAsignados = salones.reduce((sum, salon) => sum + (salon.alumnos ? salon.alumnos.length : 0), 0);
-        const occupancy = totalCapacidad > 0 ? (totalAsignados / totalCapacidad) * 100 : 0;
-
+        // Renderizar vista con datos
         return res.render('administrador/menuadministrador', {
             body: bodyView,
             activeSection,
             totalSalones,
             totalEstudiantes,
-            averageRendimiento,
-            occupancy,
+            totalDocentes,
+            totalCarreras,
+            topCarreras,
             user: {
                 role: req.session.userRole,
                 email: req.session.email,
                 name: req.session.userName || 'Usuario'
             }
         });
+
     } catch (error) {
         console.error("Error al renderizar la vista administrativa:", error);
         res.status(500).send("Error interno del servidor.");

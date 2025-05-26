@@ -1,26 +1,87 @@
 <section id="estudiantes" class="tab-section active">
   <div class="dashboard-home">
     <div class="charts-stats">
-      <div class="section-header">
-        <h2>Gestión de Estudiantes</h2>
+        <div class="section-header d-flex justify-content-between align-items-center mb-3">
+        <h2>Gestión de Estudiantes</h2>    
       </div>
-      <div class="card">
-        <div class="card-body">
-          <table id="teachersSectionTable" class="data-table">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Correo</th>
-                 <th>Edad</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-            </tbody>
-          </table>
+    <div>
+    <button id="createEstudianteBtn" class="btn-primary">➕ Nuevo Estudiante</button>
+    </div>
+      <div class="button-table-container">
+         <div class="card full-width">
+          <div class="card-body">
+            <table id="studentsSectionTable" class="data-table" style="min-width: 900px;">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Apellido</th>
+                  <th>Correo</th>
+                  <th>Edad</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Aquí se llenarán los datos de los estudiantes -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modalEstudianteContainer" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalEstudianteTitle">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h3 id="modalEstudianteTitle">Nuevo Estudiante</h3>
+        <button id="modalEstudianteCloseBtn" aria-label="Cerrar diálogo">&times;</button>
+      </header>
+      <form id="formEstudiante" class="modal-body" novalidate>
+        <div class="form-group mb-3">
+          <label for="nombreEst">Nombre</label>
+          <input type="text" id="nombreEst" name="nombreEst" class="form-control" required />
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="apellidoEst">Apellido</label>
+          <input type="text" id="apellidoEst" name="apellidoEst" class="form-control" required />
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="correoEst">Correo</label>
+          <input type="email" id="correoEst" name="correoEst" class="form-control" required />
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="edadEst">Edad</label>
+          <input type="number" id="edadEst" name="edadEst" class="form-control" min="1" required />
+        </div>
+
+        <div class="form-group mb-3">
+          <button type="button" id="cancelEstudianteBtn" class="btn-secondary">Cancelar</button>
+          <button type="submit" id="saveEstudianteBtn" class="btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteEstudianteModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="deleteEstudianteTitle">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h3 id="deleteEstudianteTitle">Confirmar Eliminación</h3>
+        <button id="deleteEstudianteCloseBtn" aria-label="Cerrar diálogo">&times;</button>
+      </header>
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas eliminar este estudiante?</p>
+        <div class="form-group mb-3">
+          <button type="button" id="cancelDeleteEstudianteBtn" class="btn-secondary">Cancelar</button>
+          <button type="button" id="confirmDeleteEstudianteBtn" class="btn-primary">Eliminar</button>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<script src="/assets/js/administrador/estudiantes.js"></script>

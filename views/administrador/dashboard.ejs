@@ -3,42 +3,45 @@
     <div class="charts-stats">
       <div class="card">
         <div class="card-header">
-          <span>📈</span>
-          <h3>Rendimiento General de Salones</h3>
+         
+          <h3> Carreras con Más Estudiantes (Top 5) 📈</h3>
         </div>
         <div class="card-body">
           <canvas id="performanceChart" height="200"></canvas>
         </div>
       </div>
+
       <div class="card stats-cards">
         <div class="card-header">
-          <span>📊</span>
-          <h3>Estadísticas Generales</h3>
+        
+          <h3> Estadísticas Generales 📊</h3>
         </div>
+
         <div class="card-body stats-grid">
           <div class="stat-card blue">
             <h4>Total Salones</h4>
-            <p id="totalClassrooms"><%= totalSalones %></p>
+            <p id="totalSalones"><%= totalSalones %></p>
           </div>
           <div class="stat-card indigo">
             <h4>Total Estudiantes</h4>
-            <p id="totalStudents"><%= totalEstudiantes %></p>
+            <p id="totalEstudiantes"><%= totalEstudiantes %></p>
           </div>
           <div class="stat-card teal">
-            <h4>Promedio Rendimiento</h4>
-            <p id="averagePerformance"><%= Math.round(averageRendimiento) %>%</p>
+            <h4>Total Carreras</h4>
+            <p id="totalCarreras"><%= totalCarreras %></p>
           </div>
           <div class="stat-card amber">
-            <h4>Ocupación</h4>
-            <p id="occupancy"><%= Math.round(occupancy) %>%</p>
+            <h4>Total Docentes</h4>
+            <p id="totalDocentes"><%= totalDocentes %></p>
           </div>
         </div>
       </div>
     </div>
+
     <div class="card full-width">
       <div class="card-header">
-        <span>📋</span>
-        <h3>Resumen de Salones</h3>
+ 
+        <h3>Resumen de Salones 📋</h3>
       </div>
       <div class="card-body">
         <table id="classroomsTable" class="data-table">
@@ -52,10 +55,12 @@
             </tr>
           </thead>
           <tbody>
-            <!-- Rows inserted by JS -->
+            <!-- Rows insertados por JS -->
           </tbody>
         </table>
       </div>
     </div>
+
+    
   </div>
 </section>

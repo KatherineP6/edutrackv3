@@ -10,50 +10,6 @@ exports.getAllEstudiantes = async (req, res) => {
     }*/
 };
 
-exports.getEstudianteById = async (req, res) => {
-    try {
-        const estudiante = await estudianteService.getEstudianteById(req.params.id);
-        if (!estudiante) {
-            return res.status(404).json({ error: 'Estudiante no encontrado' });
-        }
-        res.json(estudiante);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-exports.createEstudiante = async (req, res) => {
-    try {
-        const estudiante = await estudianteService.createEstudiante(req.body);
-        res.status(201).json(estudiante);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-exports.updateEstudiante = async (req, res) => {
-    try {
-        const estudiante = await estudianteService.updateEstudiante(req.params.id, req.body);
-        if (!estudiante) {
-            return res.status(404).json({ error: 'Estudiante no encontrado' });
-        }
-        res.json(estudiante);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-exports.deleteEstudiante = async (req, res) => {
-    try {
-        const result = await estudianteService.deleteEstudiante(req.params.id);
-        if (!result) {
-            return res.status(404).json({ error: 'Estudiante no encontrado' });
-        }
-        res.json({ message: 'Estudiante eliminado correctamente' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
 
 exports.getSeguimientoData = async (req, res) => {
     try {
