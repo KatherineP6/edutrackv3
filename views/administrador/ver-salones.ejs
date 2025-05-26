@@ -1,0 +1,82 @@
+<section id="salones" class="tab-section active">
+  <div class="dashboard-home">
+    <div class="charts-stats">
+      <div class="section-header d-flex justify-content-between align-items-center mb-3">
+        <h2>Gestión de Salones</h2>
+      </div>
+      <div>
+        <button id="createClassroomBtn" class="btn-primary">➕ Nuevo Salón</button>
+      </div>
+      <div class="button-table-container">
+        <div class="card">
+          <div class="card-body">
+            <table id="classroomsSectionTable" class="data-table">
+              <thead>
+                <tr>
+                 
+                  <th>Bloque</th>
+                  <th>Ubicación</th>
+                  <th>Capacidad</th>                
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Aquí se llenarán los datos de los salones -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modalContainer" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h3 id="modalTitle">Nuevo Salón</h3>
+        <button id="modalCloseBtn" aria-label="Cerrar diálogo">&times;</button>
+      </header>
+      <form id="formSalon" class="modal-body" novalidate>
+        <div class="form-group mb-3">
+          <label for="bloque">Bloque</label>
+          <select id="bloque" name="bloque" class="form-control" required>
+            <option value="">Seleccione un bloque</option>
+            <option value="A1">A1</option>
+            <option value="A2">A2</option>
+            <option value="A3">A3</option>
+            <option value="B1">B1</option>
+            <option value="B2">B2</option>
+            <option value="B3">B3</option>
+            <option value="C1">C1</option>
+            <option value="C2">C2</option>
+            <option value="C3">C3</option>
+            <option value="D1">D1</option>
+            <option value="D2">D2</option>
+            <option value="D3">D3</option>
+          </select>
+         
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="ubicacion">Ubicación</label>
+          <input type="text" id="ubicacion" name="ubicacion" class="form-control" required />
+         
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="capacidad">Capacidad</label>
+          <input type="number" id="capacidad" name="capacidad" class="form-control" min="1" required />        
+        </div>
+
+      
+        <div class="form-group mb-3">
+          <button type="button" id="CancelBtn" class="btn-secondary">Cancelar</button>
+          <button type="submit" id="SaveBtn" class="btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script src="/assets/js/administrador/salones.js"></script>

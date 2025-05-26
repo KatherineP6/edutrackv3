@@ -1,0 +1,61 @@
+<section id="dashboard" class="tab-section active">
+  <div class="dashboard-home">
+    <div class="charts-stats">
+      <div class="card">
+        <div class="card-header">
+          <span>📈</span>
+          <h3>Rendimiento General de Salones</h3>
+        </div>
+        <div class="card-body">
+          <canvas id="performanceChart" height="200"></canvas>
+        </div>
+      </div>
+      <div class="card stats-cards">
+        <div class="card-header">
+          <span>📊</span>
+          <h3>Estadísticas Generales</h3>
+        </div>
+        <div class="card-body stats-grid">
+          <div class="stat-card blue">
+            <h4>Total Salones</h4>
+            <p id="totalClassrooms"><%= totalSalones %></p>
+          </div>
+          <div class="stat-card indigo">
+            <h4>Total Estudiantes</h4>
+            <p id="totalStudents"><%= totalEstudiantes %></p>
+          </div>
+          <div class="stat-card teal">
+            <h4>Promedio Rendimiento</h4>
+            <p id="averagePerformance"><%= Math.round(averageRendimiento) %>%</p>
+          </div>
+          <div class="stat-card amber">
+            <h4>Ocupación</h4>
+            <p id="occupancy"><%= Math.round(occupancy) %>%</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card full-width">
+      <div class="card-header">
+        <span>📋</span>
+        <h3>Resumen de Salones</h3>
+      </div>
+      <div class="card-body">
+        <table id="classroomsTable" class="data-table">
+          <thead>
+            <tr>
+              <th>Nombre Salón</th>
+              <th>Capacidad</th>
+              <th>Alumnos Inscritos</th>
+              <th>Docente Asignado</th>
+              <th>Rendimiento Prom. (%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Rows inserted by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

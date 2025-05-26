@@ -1,0 +1,37 @@
+{
+    "name": "5to",
+    "version": "1.0.0",
+    "description": "iniciando npm",
+    "main": "app.js",
+    "scripts": {
+        "start": "nodemon app.js",
+        "ejercicio": "nodemon app.js",
+        "ejerciciosS1": "nodemon ejerciciosS1.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/KatherineP6/5tolunes.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/KatherineP6/5tolunes/issues"
+    },
+    "homepage": "https://github.com/KatherineP6/5tolunes#readme",
+    "devDependencies": {
+        "nodemon": "^3.1.9"
+    },
+    "dependencies": {
+        "bcrypt": "^5.1.1",
+        "connect-flash": "^0.1.1",
+        "ejs": "^3.1.10",
+        "express": "^5.1.0",
+        "express-session": "^1.18.1",
+        "mongoose": "^8.13.2",
+        "morgan": "^1.10.0",
+        "multer": "^1.4.5-lts.2",
+        "pdf-parse": "^1.1.1",
+        "readline-sync": "^1.4.10",
+        "socket.io": "^4.8.1"
+    }
+}

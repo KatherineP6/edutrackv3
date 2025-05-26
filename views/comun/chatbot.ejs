@@ -1,0 +1,25 @@
+<div id="chatbot" class="chatbot" data-username="<%= user && user.name ? user.name : 'Usuario' %>">
+  <div class="chatbot-header">
+      <span>Chatbot EduTrack360</span>
+      <button id="minimizeChatbot" class="minimize-chatbot" aria-label="Minimizar chat">−</button>
+      <button id="closeChatbot" class="close-chatbot" aria-label="Cerrar chat">×</button>
+  </div>
+  <div id="chatbotMessages" class="chatbot-messages">
+      <!-- Los mensajes aparecerán aquí -->
+  </div>
+
+  <textarea id="chatbotInput" placeholder="Escribe tu mensaje"></textarea>
+  <button id="chatbotSend" class="chatbot-send">>></button>
+  <div id="writing"></div>
+
+  <!-- Added input and button for changing username -->
+
+</div>
+
+<div id="chatbotMinimized" class="chatbot-minimized" style="display:none;" aria-label="Chatbot minimizado" tabindex="0">
+  <span>Chatbot EduTrack360</span>
+</div>
+
+<div id="chatbotBubble" class="chatbot-bubble" style="display:none;" aria-label="Chatbot burbuja minimizada" tabindex="0" title="Abrir chat">
+  <img src="/assets/img/chatbot_icon.png" alt="Chatbot" />
+</div>

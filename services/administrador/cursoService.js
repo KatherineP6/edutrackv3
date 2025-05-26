@@ -1,0 +1,64 @@
+const Curso = require('../../models/administrador/cursoModel');
+
+const cursoService = {
+  getAllCursos: async () => {
+    return await Curso.find().lean();
+  },
+
+  getCursoById: async (id) => {
+    return await Curso.findById(id);
+  },
+
+  createCurso: async (data) => {
+    const { nombre, descripcion, tipo, precio, carreraId, semestre } = data;
+
+    if (!nombre || !descripcion || !tipo || precio === undefined) {
+      throw new Error('Campos requeridos faltantes.');
+    }
+
+    const cursoData = {
+      nombre,
+      descripcion,
+      tipo,
+      precio,
+      carreraId: tipo === 'carrera' ? carreraId : null,
+      semestre: tipo === 'carrera' ? semestre : null
+    };
+
+    const curso = new Curso(cursoData);
+    return await curso.save();
+  },
+
+  updateCurso: async (id, data) => {
+    const { nombre, descripcion, tipo, precio, carreraId, semestre } = data;
+
+    if (!nombre || !descripcion || !tipo || precio === undefined) {
+      throw new Error('Campos requeridos faltantes.');
+    }
+
+    const updateData = {
+      nombre,
+      descripcion,
+      tipo,
+      precio,
+      carreraId: tipo === 'carrera' ? carreraId : null,
+      semestre: tipo === 'carrera' ? semestre : null
+    };
+
+    const curso = await Curso.findByIdAndUpdate(id, updateData, { new: true });
+    if (!curso) {
+      throw new Error('Curso no encontrado.');
+    }
+    return curso;
+  },
+
+  deleteCurso: async (id) => {
+    const curso = await Curso.findByIdAndDelete(id);
+    if (!curso) {
+      throw new Error('Curso no encontrado.');
+    }
+    return curso;
+  }
+};
+
+module.exports = cursoService;
