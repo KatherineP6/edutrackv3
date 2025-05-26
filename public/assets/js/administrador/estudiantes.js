@@ -4,10 +4,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnCerrarModal = document.getElementById('modalCloseBtn');
   const btnCancelar = document.getElementById('CancelBtn');
   const formEstudiante = document.getElementById('formEstudiante');
-  const tablaCuerpo = document.querySelector('#estudiantesSectionTable tbody');
+  const tablaCuerpo = document.querySelector('#studentsSectionTable tbody');
+
+  
+  const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+  const deleteModalCloseBtn = document.getElementById('deleteModalCloseBtn');
+  const deleteCancelBtn = document.getElementById('deleteCancelBtn');
+  const deleteConfirmBtn = document.getElementById('deleteConfirmBtn');
 
   let editandoFila = null;
   let editandoEstudianteId = null;
+  let estudianteIdToDelete = null;
 
   function limpiarErrores() {
     formEstudiante.querySelectorAll('.error-message').forEach(e => e.textContent = '');
@@ -109,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return await response.json();
     } catch (error) {
       alert(error.message);
-      throw error;
+      throw error;estudianteIdToDelete
     }
   }
 
@@ -134,9 +141,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const fila = document.createElement('tr');
     fila.dataset.id = estudiante._id;
     fila.innerHTML = `
-      <td>${estudiante.nombre}</td>
-      <td>${estudiante.apellidos}</td>
-      <td>${estudiante.email}</td>
+      <td>${estudiante.Nombre}</td>
+      <td>${estudiante.Apellidos}</td>
+      <td>${estudiante.correo}</td>
+      <td>${estudiante.Edad}</td>
       <td>
         <button class="btn-editar">Editar</button>
         <button class="btn-borrar">Borrar</button>
@@ -149,16 +157,18 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     if (!validarFormulario()) return;
 
-    const nombre = formEstudiante.nombre.value;
-    const apellidos = formEstudiante.apellidos.value;
-    const email = formEstudiante.email.value;
-    const password = formEstudiante.password.value;
+    const nombre = formEstudiante.nombreEst.value;
+    const apellidos = formEstudiante.apellidoEst.value;
+    const correo = formEstudiante.correoEst.value;
+    const edad = formEstudiante.edadEst.value;
+    //const password = formEstudiante.password.value;
 
     const estudianteData = {
       nombre,
       apellidos,
-      email,
-      password: password || undefined
+      correo,
+      edad,
+      //password: password || undefined
     };
 
     try {
@@ -167,7 +177,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (editandoFila) {
           editandoFila.cells[0].textContent = nombre;
           editandoFila.cells[1].textContent = apellidos;
-          editandoFila.cells[2].textContent = email;
+          editandoFila.cells[2].textContent = correo;
+          editandoFila.cells[3].textContent = edad;
         }
       } else {
         const result = await crearEstudiante(estudianteData);
@@ -179,7 +190,48 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  tablaCuerpo.addEventListener('click', async e => {
+    tablaCuerpo.addEventListener('click', e => {
+    if (e.target.classList.contains('btn-borrar')) {
+      carreraIdToDelete = e.target.closest('tr').dataset.id;
+      deleteConfirmModal.classList.remove('hidden');
+    } else if (e.target.classList.contains('btn-editar')) {
+      const fila = e.target.closest('tr');
+      formEstudiante.nombreEst.value = fila.cells[0].textContent;
+      formEstudiante.apellidoEst.value = fila.cells[1].textContent;
+      formEstudiante.correoEst.value = fila.cells[2].textContent;
+      formEstudiante.edadEst.value = fila.cells[3].textContent;
+      //formEstudiante.password.value = '';
+      editandoFila = fila;
+      editandoEstudianteId = fila.dataset.id || null;
+      document.getElementById('modalTitle').textContent = 'Editar Estudiante';
+      modal.classList.remove('hidden');
+    }
+  });
+
+ // Cerrar modal de confirmación de eliminación
+  function closeDeleteModal() {
+    deleteConfirmModal.classList.add('hidden');
+    estudianteIdToDelete = null;
+  }
+
+  deleteModalCloseBtn.addEventListener('click', closeDeleteModal);
+  deleteCancelBtn.addEventListener('click', closeDeleteModal);
+
+  // Confirmar eliminación
+  deleteConfirmBtn.addEventListener('click', async () => {
+    if (!estudianteIdToDelete) return;
+
+    try {
+      await eliminarEstudiante(estudianteIdToDelete);
+      const fila = tablaCuerpo.querySelector(`tr[data-id="${estudianteIdToDelete}"]`);
+      if (fila) fila.remove();
+      closeDeleteModal();
+    } catch (error) {
+      closeDeleteModal();
+    }
+  });
+
+  /*tablaCuerpo.addEventListener('click', async e => {
     if (e.target.classList.contains('btn-borrar')) {
       const fila = e.target.closest('tr');
       const estudianteId = fila.dataset.id;
@@ -204,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('modalTitle').textContent = 'Editar Estudiante';
       modal.classList.remove('hidden');
     }
-  });
+  });*/
 
   formEstudiante.querySelectorAll('input').forEach(input => {
     input.addEventListener('input', () => validarCampo(input));
@@ -226,6 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
       alert(error.message);
     }
   }
+
 
   cargarEstudiantes();
 });

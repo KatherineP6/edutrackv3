@@ -3,11 +3,7 @@ const Asistencia = require('../../models/estudiantes/asistenciaModel'); // Assum
 const Rendimiento = require('../../models/estudiantes/rendimientoModel'); // Assuming this model exists
 
 exports.getAllEstudiantes = async () => {
-    try {
-        return await Estudiante.find();
-    } catch (error) {
-        throw new Error('Error al obtener estudiantes: ' + error.message);
-    }
+   return await Estudiante.find().lean();
 };
 
 exports.getEstudianteById = async (id) => {
@@ -20,8 +16,24 @@ exports.getEstudianteById = async (id) => {
 
 const bcrypt = require('bcrypt');
 
-exports.createEstudiante = async (estudianteData) => {
-    try {
+exports.createEstudiante = async (data) => {
+     const { nombre, apellido, correo, edad } = data;
+
+    if (!nombre || !apellido || !correo || !edad ) {
+      throw new Error('Campos requeridos faltantes.');
+    }
+
+    const estudianteData = {
+      nombre,
+      apellido,
+      correo,
+      edad,
+  
+    };
+
+    const estudiante = new Estudiante(estudianteData);
+    return await estudiante.save();
+    /* try {
         // Hash password before saving
         if (estudianteData.password) {
             const saltRounds = 10;
@@ -32,7 +44,7 @@ exports.createEstudiante = async (estudianteData) => {
         return await estudiante.save();
     } catch (error) {
         throw new Error('Error al crear estudiante: ' + error.message);
-    }
+    }*/
 };
 
 exports.updateEstudiante = async (id, estudianteData) => {

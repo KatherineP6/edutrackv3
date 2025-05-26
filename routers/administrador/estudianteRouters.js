@@ -2,6 +2,14 @@ const express = require('express');
 const router = express.Router();
 const userLogin = require('../../middlewares/comun/userLogin');
 //const tareaRouters = require('./estudiante/tareaRouters');
+const estudiController = require('../../controllers/administrador/estudiantesController');
+
+router.get('/',  estudiController.getAllEstudiantes);
+router.post('/',  estudiController.createEstudiante);
+router.put('/:id',  estudiController.updateEstudiante);
+router.delete('/:id',  estudiController.deleteEstudiante);
+
+
 
 // Route to render student dashboard
 router.get('/dashboard', userLogin, (req, res) => {

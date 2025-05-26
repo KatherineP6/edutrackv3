@@ -27,23 +27,36 @@ exports.getCursoById = async (req, res) => {
 };
 
 exports.createCurso = async (req, res) => {
-  try {
-    const curso = await cursoService.createCurso(req.body);
-    res.status(201).json({ message: 'Curso creado exitosamente.', curso });
-  } catch (error) {
-    console.error('Error creando curso:', error);
-    res.status(500).json({ message: 'Error interno al crear curso.' });
-  }
+   try {
+      const { nombre, descripcion, tipo, precio,carreraId,semestre } = req.body;
+      const nuevaCurso = new Curso({ nombre, descripcion, tipo, precio,carreraId,semestre });
+      const savedCurso = await nuevaCurso.save();
+      res.status(201).json(savedCurso);
+    } catch (error) {
+      console.error('Error creating curso:', error);
+      res.status(500).json({ message: 'Error al crear la curso' });
+    }
+
 };
 
 exports.updateCurso = async (req, res) => {
-  try {
-    const curso = await cursoService.updateCurso(req.params.id, req.body);
-    res.json({ message: 'Curso actualizado exitosamente.', curso });
-  } catch (error) {
-    console.error('Error actualizando curso:', error);
-    res.status(500).json({ message: 'Error interno al actualizar curso.' });
-  }
+    try {
+      const { id } = req.params;
+      const { nombre, descripcion, tipo, precio, carreraId, semestre } = req.body;
+      const updatedCurso = await Curso.findByIdAndUpdate(
+        id,
+        { nombre, descripcion, tipo, precio, carreraId, semestre },
+        { new: true }
+      );
+      if (!updatedCurso) {
+        return res.status(404).json({ message: 'Carrera no encontrada' });
+      }
+      res.json(updatedCurso);
+    } catch (error) {
+      console.error('Error updating carrera:', error);
+      res.status(500).json({ message: 'Error al actualizar la carrera' });
+    }
+
 };
 
 exports.deleteCurso = async (req, res) => {
