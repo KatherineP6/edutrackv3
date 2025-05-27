@@ -191,8 +191,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const correo = formDocente.correoDoc.value;
     const edad = formDocente.edadDoc.value;
     const telefono = formDocente.telefonoDoc.value;
-    const estado = formDocente.estadoDoc.value;
-    const gradoAcademico = formDocente.gradoAcademicoDoc.value;
+    //const estado = formDocente.estadoDoc.value;
+    const estado = true;
+    const gradoAcademico = formDocente.gradoAcademico.value;
     const password = formDocente.passwordDoc.value;
 
     // Obtener cursos seleccionados
@@ -255,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
       formDocente.edadDoc.value = fila.cells[3].textContent;
       formDocente.telefonoDoc.value = fila.cells[4].textContent;
       formDocente.estadoDoc.value = fila.cells[5].textContent;
-      formDocente.gradoAcademicoDoc.value = fila.cells[6].textContent;
+      formDocente.gradoAcademico.value = fila.cells[6].textContent;
 
       // Cargar cursos asignados en el select múltiple
       const cursosAsignados = JSON.parse(fila.dataset.cursosAsignados || '[]');
