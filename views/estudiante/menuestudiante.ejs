@@ -40,10 +40,14 @@
   <div class="main-content">
     <header class="header">
       <div class="user-header-info">
-        <div class="user-avatar" id="headerUserAvatar"><%= user.name ? user.name.charAt(0).toUpperCase() : 'U' %></div>
+        <div class="user-avatar" id="headerUserAvatar"><%= user.nombre ? user.nombre.charAt(0).toUpperCase() : 'U' %></div>
         <div>
-          <h2 id="headerUserName"><%= user.name %></h2>
-          <p id="headerUserEmail"><%= user.email %></p>
+          <div style="display: flex;">
+            <h2 id="headerUserName"><%= user.nombre %></h2> 
+            <h2 id="headerUserName">&nbsp;</h2> 
+            <h2 id="headerUserName"><%= user.apellidos %></h2>
+          </div>
+          <p id="headerUserEmail"><%= user.correo %></p>
         </div>
       </div>
       <button id="logoutButton" class="logout-button" aria-label="Cerrar sesión">
@@ -61,5 +65,38 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="/assets/js/comun/chatbot.js"></script>
   <script src="/assets/js/estudiante/menuestudiante.js"></script>
+  <style>
+    .chatbot-header {
+      background-color: #95ccb9 !important;
+      color: white !important;
+      padding: 12px 15px;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 18px;
+      font-weight: bold;
+  }
+  #chatbotSend {
+    background-color: #95ccb9 !important;
+      color: white !important;
+    padding: 8px 14px;
+    border: none;
+    margin-left: 9px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 17px;
+    transition: background-color 0.3s ease;
+  }
+  #chatbotMessages {
+    padding: 15px;
+    overflow-y: auto;
+    flex-grow: 1;
+    height: calc(100% - 150px);
+    font-size: 15px;
+    background: white;
+}
+  </style>
 </body>
 </html>

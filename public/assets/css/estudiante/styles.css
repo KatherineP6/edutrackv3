@@ -10,7 +10,7 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  width: 250px;
+  width: 16rem;
   height: 100%;
   background-color: #95ccb9; /* Changed to lighter green */
   color: white;
@@ -68,7 +68,7 @@ body {
 }
 
 .menu-button {
-  width: 100%;
+  width: 80%;
   background: none;
   border: none;
   color: white;

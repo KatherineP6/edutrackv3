@@ -1,82 +1,41 @@
-<section id="generar-reportes-section" class="tab-section">
-  <div class="section-header">
-    <h2>Generar Reportes</h2>
-    <button id="generatePdfBtn" class="btn-primary">📝 Generar PDF</button>
+
+<section id="generar-reportes-section" class="tab-section active">
+   <div class="section-header">
+    <div>
+      <h2>Reportes</h2>
+    </div>
+    <div style="text-align-last: end;">
+      <button id="generatePdfBtn" class="btn-primary">📝 Generar PDF</button>
+    </div>    
   </div>
-  <div class="cards-container" style="display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap;">
-    <div class="card full-width" style="background: white; padding: 1rem; margin-top: 1rem; flex: 1 1 60%;">
-      <h4>Mejores Docentes</h4>
-      <table id="bestTeachersTable" class="data-table" style="margin-top: 0.5rem;">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Correo</th>
-            <th>Salones Asignados</th>
-            <th>Rendimiento Promedio</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% if (docentes && docentes.length > 0) { %>
-            <% docentes.forEach(function(docente) { %>
-              <tr>
-                <td><%= docente.Nombre %> <%= docente.Apellido %></td>
-                <td><%= docente.correo %></td>
-                <td>
-                  <% 
-                    var assignedSalones = 0;
-                    if (salones && salones.length > 0) {
-                      assignedSalones = salones.filter(function(salon) {
-                        return salon.docente && salon.docente.toString() === docente._id.toString();
-                      }).length;
-                    }
-                  %>
-                  <%= assignedSalones %>
-                </td>
-                <td>
-                  <% 
-                    var avgPerformance = 0;
-                    if (salones && salones.length > 0) {
-                      var assigned = salones.filter(function(salon) {
-                        return salon.docente && salon.docente.toString() === docente._id.toString();
-                      });
-                      if (assigned.length > 0) {
-                        avgPerformance = Math.round(assigned.reduce(function(sum, s) {
-                          return sum + (s.rendimiento || 0);
-                        }, 0) / assigned.length);
-                      }
-                    }
-                  %>
-                  <span class="<%= avgPerformance >= 80 ? 'text-green-600' : avgPerformance >= 70 ? 'text-amber-600' : 'text-red-600' %>" style="font-weight: 600;">
-                    <%= avgPerformance %>%
-                  </span>
-                </td>
-              </tr>
-            <% }); %>
-          <% } else { %>
-            <tr>
-              <td colspan="4" style="text-align: center;">No hay docentes disponibles</td>
-            </tr>
-          <% } %>
-        </tbody>
-      </table>
-    </div>
-    <div class="stat-card amber" style="flex-direction: column; align-items: center; width: 500px; height: 500px; margin-top: 1rem;">
-      <h4 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Rendimiento de Salones</h4>
-      <canvas id="performancePieChart" width="500" height="500"></canvas>
-    </div>
-    <div style="width: 100%; display: flex; gap: 1rem; margin-top: 1rem;">
-      <div class="stat-card blue" style="flex: 1; text-align: center;">
-        <h4>Total Salones</h4>
-        <p id="reportTotalClassrooms">0</p>
+  <div class="generar-reportes-home">
+
+    <div class="button-table-container">
+        <div class="card full-width">
+          <div class="card-body">
+            <table id="reporteTable" class="data-table">
+              <thead>
+                <tr>
+                  <th>Carrera</th>
+                  <th>Duracion Carrera</th>
+                  <th>Precio</th>
+                  <th>Cantidad de Cursos</th>
+                  <th>Precio*Cursos</th>
+                  <th>Cantidad de Estudiantes</th>
+                  <th>Precio*Estudiantes</th>
+                                    
+                  
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Aquí se llenarán los datos de los docentes -->
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-      <div class="stat-card indigo" style="flex: 1; text-align: center;">
-        <h4>Total Estudiantes</h4>
-        <p id="reportTotalStudents">0</p>
-      </div>
-      <div class="stat-card teal" style="flex: 1; text-align: center;">
-        <h4>Total Docentes</h4>
-        <p id="reportTotalTeachers">0</p>
-      </div>
-    </div>
+
+    
   </div>
 </section>
+<script src="/assets/js/administrador/generarreporte.js"></script>
