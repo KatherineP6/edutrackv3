@@ -17,7 +17,9 @@
                   <th>Apellido</th>
                   <th>Correo</th>
                   <th>Edad</th>
+                  <th>Teléfono</th>
                   <th>Grado Académico</th>
+                  <th>Cursos que Imparte</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -39,32 +41,43 @@
         <button id="modalDocenteCloseBtn" aria-label="Cerrar diálogo">&times;</button>
       </header>
       <form id="formDocente" class="modal-body" novalidate>
-        <div class="form-group mb-3">
-          <label for="nombreDoc">Nombre</label>
-          <input type="text" id="nombreDoc" name="nombreDoc" class="form-control" required />
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <div style="flex: 1 1 45%;">
+            <label for="nombreDoc">Nombre</label>
+            <input type="text" id="nombreDoc" name="nombreDoc" class="form-control" required />
+          </div>
+          <div style="flex: 1 1 45%;">
+            <label for="apellidoDoc">Apellido</label>
+            <input type="text" id="apellidoDoc" name="apellidoDoc" class="form-control" required />
+          </div>
+          <div style="flex: 1 1 45%;">
+            <label for="correoDoc">Correo</label>
+            <input type="email" id="correoDoc" name="correoDoc" class="form-control" required />
+          </div>
+          <div style="flex: 1 1 45%;">
+            <label for="passwordDoc">Password</label>
+            <input type="password" id="passwordDoc" name="passwordDoc" class="form-control" />
+          </div>
+          <div style="flex: 1 1 45%;">
+            <label for="edadDoc">Edad</label>
+            <input type="number" id="edadDoc" name="edadDoc" class="form-control" min="18" />
+          </div>
+          <div style="flex: 1 1 45%;">
+            <label for="telefonoDoc">Teléfono</label>
+            <input type="text" id="telefonoDoc" name="telefonoDoc" class="form-control" />
+          </div>
+          <div style="flex: 1 1 100%;">
+            <label for="gradoAcademico">Grado Académico</label>
+            <input type="text" id="gradoAcademico" name="gradoAcademico" class="form-control" />
+          </div>
+          <div style="flex: 1 1 100%;">
+            <label for="cursosAsignados">Cursos que Imparte</label>
+            <select id="cursosAsignados" name="cursosAsignados" class="form-control" multiple size="5">
+              <!-- Opciones cargadas dinámicamente -->
+            </select>
+          </div>
         </div>
-
-        <div class="form-group mb-3">
-          <label for="apellidoDoc">Apellido</label>
-          <input type="text" id="apellidoDoc" name="apellidoDoc" class="form-control" required />
-        </div>
-
-        <div class="form-group mb-3">
-          <label for="correoDoc">Correo</label>
-          <input type="email" id="correoDoc" name="correoDoc" class="form-control" required />
-        </div>
-
-        <div class="form-group mb-3">
-          <label for="edadDoc">Edad</label>
-          <input type="number" id="edadDoc" name="edadDoc" class="form-control" min="18" required />
-        </div>
-
-        <div class="form-group mb-3">
-          <label for="gradoAcademico">Grado Académico</label>
-          <input type="text" id="gradoAcademico" name="gradoAcademico" class="form-control" required />
-        </div>
-
-        <div class="form-group mb-3">
+        <div class="form-group mb-3" style="margin-top: 1rem;">
           <button type="button" id="cancelDocenteBtn" class="btn-secondary">Cancelar</button>
           <button type="submit" id="saveDocenteBtn" class="btn-primary">Guardar</button>
         </div>

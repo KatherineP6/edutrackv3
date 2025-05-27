@@ -1,8 +1,11 @@
+
+
+
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const docenteSchema = new Schema({
-  password: { 
+  password: {
     type: String,
     required: true
   },
@@ -10,40 +13,32 @@ const docenteSchema = new Schema({
     type: String,
     required: true
   },
-  Apellido: {
+  Edad: String,
+  Apellidos: {
     type: String,
-    trim: true
+    required: true
   },
-  Edad: {
-    type: String,
-    trim: true
-  },
-  Telefono: {
-    type: String,
-    trim: true
-  },
-  Estado: {
-    type: String,
-    trim: true
-  },
-  GradoAcademico: {
-    type: String,
-    trim: true
-  },
+  Direccion: String,
+  Telefono: String,
+  Estado: String,
+  Salon: String,
+  documentos: String,
+  GradoAcademico: String,
   correo: {
     type: String,
     required: true,
     unique: true,
     trim: true,
-    lowercase: true
   },
-  cursosAsignados: [{
-    type: Schema.Types.ObjectId,
-    ref: 'cursos' // Referencia al modelo de cursos
-  }]
+  cursos: [{
+    type: String,
+    required: false
+  }],
+  
 }, {
-  timestamps: true
+  timestamps: true 
 });
 
 const Docente = mongoose.model('Docente', docenteSchema, 'UsuarioDocente');
+
 module.exports = Docente;

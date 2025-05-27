@@ -8,7 +8,7 @@
         <button id="createCursoBtn" class="btn-primary">➕ Nuevo Curso</button>
       </div>
       <div class="button-table-container">
-        <div class="card full-width">
+        <div class="card">
           <div class="card-body">
             <table id="cursosSectionTable" class="data-table" style="min-width: 900px;">
               <thead>
@@ -17,8 +17,8 @@
                   <th>Descripción</th>
                   <th>Tipo</th>
                   <th>Precio</th>
+                  <th>Carrera</th>
                   <th>Semestre</th>
-                  <th>Carrera Asociada</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -47,22 +47,14 @@
 
         <div class="form-group mb-3">
           <label for="descripcion">Descripción</label>
-          <textarea id="descripcion" name="descripcion" class="form-control" rows="3" required></textarea>
+          <textarea id="descripcion" name="descripcion" class="form-control" rows="3"></textarea>
         </div>
 
         <div class="form-group mb-3">
           <label for="tipo">Tipo</label>
           <select id="tipo" name="tipo" class="form-control" required>
-            <option value="">Seleccione un tipo</option>
+            <option value="taller" selected>Taller</option>
             <option value="carrera">Carrera</option>
-            <option value="taller">Taller</option>
-          </select>
-        </div>
-
-        <div class="form-group mb-3" id="carreraSelectGroup" style="display:none;">
-          <label for="carreraId">Carrera Asociada</label>
-          <select id="carreraId" name="carreraId" class="form-control">
-            <option value="">Seleccione una carrera</option>
           </select>
         </div>
 
@@ -71,7 +63,18 @@
           <input type="number" id="precio" name="precio" class="form-control" min="0" step="0.01" required />
         </div>
 
-        <div class="form-group mb-3">
+        <div class="form-group mb-3" id="carreraGroup" style="display:none;">
+          <label for="carreraId">Carrera</label>
+          <select id="carreraId" name="carreraId" class="form-control" required>
+            <% if (typeof carreras !== 'undefined') { %>
+              <% carreras.forEach(function(carrera) { %>
+                <option value="<%= carrera._id %>"><%= carrera.nombre %></option>
+              <% }); %>
+            <% } %>
+          </select>
+        </div>
+
+        <div class="form-group mb-3" id="semestreGroup" style="display:none;">
           <label for="semestre">Semestre</label>
           <input type="number" id="semestre" name="semestre" class="form-control" min="1" />
         </div>
@@ -101,5 +104,26 @@
     </div>
   </div>
 </section>
-
 <script src="/assets/js/administrador/cursos.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const tipoSelect = document.getElementById('tipo');
+    const carreraGroup = document.getElementById('carreraGroup');
+    const semestreGroup = document.getElementById('semestreGroup');
+
+    function toggleCarreraSemestre() {
+      if (tipoSelect.value === 'carrera') {
+        carreraGroup.style.display = 'block';
+        semestreGroup.style.display = 'block';
+      } else {
+        carreraGroup.style.display = 'none';
+        semestreGroup.style.display = 'none';
+      }
+    }
+
+    tipoSelect.addEventListener('change', toggleCarreraSemestre);
+
+    // Inicializar estado al cargar la página/modal
+    toggleCarreraSemestre();
+  });
+</script>

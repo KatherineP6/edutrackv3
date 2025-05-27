@@ -1,22 +1,24 @@
 <section id="estudiantes" class="tab-section active">
   <div class="dashboard-home">
     <div class="charts-stats">
-        <div class="section-header d-flex justify-content-between align-items-center mb-3">
+      <div class="section-header d-flex justify-content-between align-items-center mb-3">
         <h2>Gestión de Estudiantes</h2>    
       </div>
-    <div>
-    <button id="createEstudianteBtn" class="btn-primary">➕ Nuevo Estudiante</button>
-    </div>
+      <div>
+        <button id="createEstudianteBtn" class="btn-primary">➕ Nuevo Estudiante</button>
+      </div>
       <div class="button-table-container">
-         <div class="card full-width">
+        <div class="card full-width">
           <div class="card-body">
-            <table id="studentsSectionTable" class="data-table" style="min-width: 900px;">
+            <table id="studentsSectionTable" class="data-table">
               <thead>
                 <tr>
                   <th>Nombre</th>
                   <th>Apellido</th>
                   <th>Correo</th>
                   <th>Edad</th>
+                  <th>Dirección</th>
+                  <th>Carrera</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -31,35 +33,48 @@
   </div>
 
   <!-- Modal -->
-  <div id="modalContainer" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalEstudianteTitle">
+  <div id="modalEstudianteContainer" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalEstudianteTitle">
     <div class="modal-content">
       <header class="modal-header">
-        <h3 id="modalTitle">Nuevo Estudiante</h3>
-        <button id="modalCloseBtn" aria-label="Cerrar diálogo">&times;</button>
+        <h3 id="modalEstudianteTitle">Nuevo Estudiante</h3>
+        <button id="modalEstudianteCloseBtn" aria-label="Cerrar diálogo">&times;</button>
       </header>
       <form id="formEstudiante" class="modal-body" novalidate>
-        <div class="form-group mb-3">
-          <label for="nombreEst">Nombre</label>
-          <input type="text" id="nombreEst" name="nombreEst" class="form-control" required />
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <div style="flex: 1 1 45%;">
+            <label for="nombreEst">Nombre</label>
+            <input type="text" id="nombreEst" name="nombreEst" class="form-control" required />
+          </div>
+          <div style="flex: 1 1 45%;">
+            <label for="apellidoEst">Apellido</label>
+            <input type="text" id="apellidoEst" name="apellidoEst" class="form-control" required />
+          </div>
+          <div style="flex: 1 1 45%;">
+            <label for="correoEst">Correo</label>
+            <input type="email" id="correoEst" name="correoEst" class="form-control" required />
+          </div>
+          <div style="flex: 1 1 45%;">
+            <label for="passwordEst">Password</label>
+            <input type="password" id="passwordEst" name="passwordEst" class="form-control" required />
+          </div>
+          <div style="flex: 1 1 45%;">
+            <label for="edadEst">Edad</label>
+            <input type="number" id="edadEst" name="edadEst" class="form-control" min="0" />
+          </div>
+          <div style="flex: 1 1 45%;">
+            <label for="direccionEst">Dirección</label>
+            <input type="text" id="direccionEst" name="direccionEst" class="form-control" />
+          </div>
+          <div style="flex: 1 1 45%;">
+            <label for="carreraEst">Carrera</label>
+            <select id="carreraEst" name="carreraEst" class="form-control">
+              <option value="">Seleccione una carrera</option>
+              <!-- Opciones cargadas dinámicamente -->
+            </select>
+          </div>
         </div>
-
-        <div class="form-group mb-3">
-          <label for="apellidoEst">Apellido</label>
-          <input type="text" id="apellidoEst" name="apellidoEst" class="form-control" required />
-        </div>
-
-        <div class="form-group mb-3">
-          <label for="correoEst">Correo</label>
-          <input type="email" id="correoEst" name="correoEst" class="form-control" required />
-        </div>
-
-        <div class="form-group mb-3">
-          <label for="edadEst">Edad</label>
-          <input type="number" id="edadEst" name="edadEst" class="form-control" min="1" required />
-        </div>
-
-        <div class="form-group mb-3">
-          <button type="button" id="CancelBtn" class="btn-secondary">Cancelar</button>
+        <div class="form-group mb-3" style="margin-top: 1rem;">
+          <button type="button" id="cancelEstudianteBtn" class="btn-secondary">Cancelar</button>
           <button type="submit" id="saveEstudianteBtn" class="btn-primary">Guardar</button>
         </div>
       </form>
@@ -67,21 +82,21 @@
   </div>
 
   <!-- Delete Confirmation Modal -->
-  <div id="deleteConfirmModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="deleteEstudianteTitle">
+  <div id="deleteEstudianteModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="deleteEstudianteTitle">
     <div class="modal-content">
       <header class="modal-header">
-        <h3 id="deleteModalTitle">Confirmar Eliminación</h3>
-        <button id="deleteModalCloseBtn" aria-label="Cerrar diálogo">&times;</button>
+        <h3 id="deleteEstudianteTitle">Confirmar Eliminación</h3>
+        <button id="deleteEstudianteCloseBtn" aria-label="Cerrar diálogo">&times;</button>
       </header>
       <div class="modal-body">
         <p>¿Estás seguro de que deseas eliminar este estudiante?</p>
         <div class="form-group mb-3">
-          <button type="button" id="deleteCancelBtn" class="btn-secondary">Cancelar</button>
-          <button type="button" id="deleteConfirmBtn" class="btn-primary">Eliminar</button>
+          <button type="button" id="cancelDeleteEstudianteBtn" class="btn-secondary">Cancelar</button>
+          <button type="button" id="confirmDeleteEstudianteBtn" class="btn-primary">Eliminar</button>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<script src="/assets/js/administrador/estudiantes.js"></script>
+<script src="/assets/js/administrador/estudiante.js"></script>

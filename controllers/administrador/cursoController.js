@@ -28,13 +28,12 @@ exports.getCursoById = async (req, res) => {
 
 exports.createCurso = async (req, res) => {
    try {
-      const { nombre, descripcion, tipo, precio,carreraId,semestre } = req.body;
-      const nuevaCurso = new Curso({ nombre, descripcion, tipo, precio,carreraId,semestre });
-      const savedCurso = await nuevaCurso.save();
+      const { nombre, descripcion, tipo, precio, carreraId, semestre } = req.body;
+      const savedCurso = await cursoService.createCurso({ nombre, descripcion, tipo, precio, carreraId, semestre });
       res.status(201).json(savedCurso);
     } catch (error) {
       console.error('Error creating curso:', error);
-      res.status(500).json({ message: 'Error al crear la curso' });
+      res.status(500).json({ message: 'Error al crear el curso' });
     }
 
 };
@@ -43,18 +42,14 @@ exports.updateCurso = async (req, res) => {
     try {
       const { id } = req.params;
       const { nombre, descripcion, tipo, precio, carreraId, semestre } = req.body;
-      const updatedCurso = await Curso.findByIdAndUpdate(
-        id,
-        { nombre, descripcion, tipo, precio, carreraId, semestre },
-        { new: true }
-      );
+      const updatedCurso = await cursoService.updateCurso(id, { nombre, descripcion, tipo, precio, carreraId, semestre });
       if (!updatedCurso) {
-        return res.status(404).json({ message: 'Carrera no encontrada' });
+        return res.status(404).json({ message: 'Curso no encontrado' });
       }
       res.json(updatedCurso);
     } catch (error) {
-      console.error('Error updating carrera:', error);
-      res.status(500).json({ message: 'Error al actualizar la carrera' });
+      console.error('Error updating curso:', error);
+      res.status(500).json({ message: 'Error al actualizar el curso' });
     }
 
 };

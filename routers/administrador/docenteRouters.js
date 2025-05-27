@@ -5,26 +5,37 @@ const docenteController = require('../../controllers/administrador/docenteContro
 
 // Route to render docente dashboard
 router.get('/dashboard', userLogin, (req, res) => {
-if (req.session.userRole !== 'Docente') {
-return res.status(403).send('Acceso denegado');
-}
-res.render('administrador/docente', {
-user: {
-id: req.session.userId,
-role: req.session.userRole,
-email: req.session.email
-}
-});
+  if (req.session.userRole !== 'Docente') {
+    return res.status(403).send('Acceso denegado');
+  }
+  res.render('administrador/docente', {
+    user: {
+      id: req.session.userId,
+      role: req.session.userRole,
+      email: req.session.email
+    }
+  });
 });
 
 // API route to get all docentes
 router.get('/', userLogin, docenteController.getAllDocentes);
 
+// API route to create a docente
+router.post('/', userLogin, docenteController.createDocente);
+
+// API route to get a docente by id
+router.get('/:id', userLogin, docenteController.getDocenteById);
+
+// API route to update a docente
+router.put('/:id', userLogin, docenteController.updateDocente);
+
+// API route to delete a docente
+router.delete('/:id', userLogin, docenteController.deleteDocente);
+
 // API route to get courses for logged-in docente
 router.get('/cursos', userLogin, docenteController.getCoursesForDocente);
 
 const salonController = require('../../controllers/administrador/salonController');
-
 const Salon = require('../../models/administrador/salonModel');
 
 // Get all cursos for logged-in docente
@@ -50,6 +61,5 @@ router.put('/cursos/:id', userLogin, salonController.updateSalon);
 
 // Delete curso
 router.delete('/cursos/:id', userLogin, salonController.deleteSalon);
-
 
 module.exports = router;

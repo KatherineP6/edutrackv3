@@ -1,11 +1,11 @@
-const Docente = require('../../models/administrador/docenteModel');
+const docenteService = require('../../services/administrador/docenteService');
 const bcrypt = require('bcrypt');
 const SALT_ROUNDS = 10;
 
 // --- API Docentes ---
 exports.getAllDocentes = async (req, res) => {
     try {
-        const docentes = await Docente.find().lean();
+        const docentes = await docenteService.getAllDocentes();
         res.json(docentes);
     } catch (error) {
         console.error('Error obteniendo docentes:', error);
@@ -15,7 +15,7 @@ exports.getAllDocentes = async (req, res) => {
 
 exports.getDocenteById = async (req, res) => {
     try {
-        const docente = await Docente.findById(req.params.id);
+        const docente = await docenteService.getDocenteById(req.params.id);
         if (!docente) {
             return res.status(404).json({ message: 'Docente no encontrado.' });
         }
@@ -28,22 +28,36 @@ exports.getDocenteById = async (req, res) => {
 
 exports.createDocente = async (req, res) => {
     try {
-        const { nombre, apellido, email, password } = req.body;
+        const { nombre, apellido, email, password, edad, telefono, estado, gradoAcademico, cursosAsignados } = req.body;
 
-        if (!nombre || !apellido || !email || !password) {
-            return res.status(400).json({ message: 'Todos los campos son requeridos.' });
+        if (!nombre) {
+            return res.status(400).json({ message: 'El campo nombre es requerido.' });
+        }
+        if (!apellido) {
+            return res.status(400).json({ message: 'El campo apellido es requerido.' });
+        }
+        if (!email) {
+            return res.status(400).json({ message: 'El campo email es requerido.' });
+        }
+        if (!password) {
+            return res.status(400).json({ message: 'El campo password es requerido.' });
         }
 
         const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
-        const docente = new Docente({
+        const docenteData = {
             nombre,
             apellido,
             email,
-            password: hashedPassword
-        });
+            password: hashedPassword,
+            Edad: edad,
+            Telefono: telefono,
+            Estado: estado,
+            GradoAcademico: gradoAcademico,
+            cursosAsignados: cursosAsignados || []
+        };
 
-        await docente.save();
+        const docente = await docenteService.createDocente(docenteData);
         res.status(201).json({ message: 'Docente creado exitosamente.', docente });
     } catch (error) {
         console.error('Error creando docente:', error);
@@ -53,17 +67,34 @@ exports.createDocente = async (req, res) => {
 
 exports.updateDocente = async (req, res) => {
     try {
-        const { nombre, apellido, email } = req.body;
+        const { nombre, apellido, email, password, edad, telefono, estado, gradoAcademico, cursosAsignados } = req.body;
 
-        if (!nombre || !apellido || !email) {
-            return res.status(400).json({ message: 'Todos los campos son requeridos.' });
+        if (!nombre) {
+            return res.status(400).json({ message: 'El campo nombre es requerido.' });
+        }
+        if (!apellido) {
+            return res.status(400).json({ message: 'El campo apellido es requerido.' });
+        }
+        if (!email) {
+            return res.status(400).json({ message: 'El campo email es requerido.' });
         }
 
-        const docente = await Docente.findByIdAndUpdate(
-            req.params.id,
-            { nombre, apellido, email },
-            { new: true }
-        );
+        const docenteData = {
+            nombre,
+            apellido,
+            email,
+            Edad: edad,
+            Telefono: telefono,
+            Estado: estado,
+            GradoAcademico: gradoAcademico,
+            cursosAsignados: cursosAsignados || []
+        };
+
+        if (password) {
+            docenteData.password = await bcrypt.hash(password, SALT_ROUNDS);
+        }
+
+        const docente = await docenteService.updateDocente(req.params.id, docenteData);
 
         if (!docente) {
             return res.status(404).json({ message: 'Docente no encontrado.' });
@@ -78,7 +109,7 @@ exports.updateDocente = async (req, res) => {
 
 exports.deleteDocente = async (req, res) => {
     try {
-        const docente = await Docente.findByIdAndDelete(req.params.id);
+        const docente = await docenteService.deleteDocente(req.params.id);
 
         if (!docente) {
             return res.status(404).json({ message: 'Docente no encontrado.' });
@@ -94,7 +125,7 @@ exports.deleteDocente = async (req, res) => {
 exports.getCoursesForDocente = async (req, res) => {
     try {
         const docenteId = req.session.userId;
-        const cursos = await Salon.find({ docente: docenteId }).populate('docente').lean();
+        const cursos = await docenteService.getCoursesForDocente(docenteId);
         res.json(cursos);
     } catch (error) {
         console.error('Error obteniendo cursos:', error);

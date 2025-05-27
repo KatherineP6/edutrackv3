@@ -22,14 +22,18 @@ const cursoSchema = new Schema({
     required: true,
     default: 0
   },
-  carreraId: {
-    type: String,
-    required: function() { return this.tipo === 'carrera'; },
-    trim: true
-  },
+  carreras: [{
+    type: Schema.Types.ObjectId,
+    ref: 'carreras',
+    required: function () {
+      return this.tipo === 'carrera';
+    }
+  }],
   semestre: {
     type: Number,
-    required: function() { return this.tipo === 'carrera'; }
+    required: function () {
+      return this.tipo === 'carrera';
+    }
   }
 }, {
   timestamps: true

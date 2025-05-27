@@ -2,12 +2,12 @@ const express = require('express');
 const router = express.Router();
 const adminController = require('../../controllers/administrador/adminController');
 const salonController = require('../../controllers/administrador/salonController');
-const estudiantesController = require('../../controllers/administrador/estudiantesController');
+const estudianteController = require('../../controllers/administrador/estudianteController');
 const carreraController = require('../../controllers/administrador/carreraController');
 const userLogin = require('../../middlewares/comun/userLogin'); 
 
 console.log('Tipo de userLogin:', typeof userLogin);
-console.log('Tipo de estudiantesController.getAllEstudiantes:', typeof estudiantesController.getAllEstudiantes);
+console.log('Tipo de estudianteController.getAllEstudiantes:', typeof estudianteController.getAllEstudiantes);
 
 // Servir archivos estáticos
 router.use('/assets', express.static('public/assets'));
@@ -36,11 +36,11 @@ router.delete('/api/salones/:id', userLogin, salonController.deleteSalon);
 //yyyrouter.delete('/api/salones/:id/estudiantes/:estudianteId', userLogin, salonController.unassignEstudianteFromSalon);
 
 // Rutas para estudiantes
-router.get('/api/estudiantes', userLogin, estudiantesController.getAllEstudiantes);
+router.get('/api/estudiantes', userLogin, estudianteController.getAllEstudiantes);
 //router.get('/api/estudiantes/disponibles', userLogin, salonController.getAvailableEstudiantes);
-router.post('/api/estudiantes', userLogin, estudiantesController.createEstudiante);
-router.get('/api/estudiantes/:id', userLogin, estudiantesController.getEstudianteById);
-router.put('/api/estudiantes/:id', userLogin, estudiantesController.updateEstudiante);
+router.post('/api/estudiantes', userLogin, estudianteController.createEstudiante);
+router.get('/api/estudiantes/:id', userLogin, estudianteController.getEstudianteById);
+router.put('/api/estudiantes/:id', userLogin, estudianteController.updateEstudiante);
 
 // Rutas para carreras
 router.get('/', userLogin, carreraController.getAllCarrera);

@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>EduTrack360 - Panel Estudiante</title>
-  <link rel="stylesheet" href="/assets/css/estudiantes/estudiantes.css" />
-  <link rel="stylesheet" href="/assets/css/estudiantes/chatbot.css" />
+  <link rel="stylesheet" href="/assets/css/estudiante/estudiante.css" />
+  <link rel="stylesheet" href="/assets/css/estudiante/chatbot.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
 <body>
@@ -22,10 +22,10 @@
     </div>
     <nav>
       <ul id="menuItems" class="menu-items">
-        <li><a href="/estudiantes/miscursos" class="menu-link active">📚 Mis Cursos</a></li>
-        <li><a href="/estudiantes/actividades" class="menu-link">📋 Mis Tareas</a></li>
-        <li><a href="/estudiantes/miperfil" class="menu-link">📈 Mi Perfil</a></li>
-        <li><a href="/estudiantes/asistencia" class="menu-link">🗓️ Mi Asistencia</a></li>
+        <li><a href="/estudiante/miscursos" class="menu-link active">📚 Mis Cursos</a></li>
+        <li><a href="/estudiante/actividades" class="menu-link">📋 Mis Tareas</a></li>
+        <li><a href="/estudiante/miperfil" class="menu-link">📈 Mi Perfil</a></li>
+        <li><a href="/estudiante/asistencia" class="menu-link">🗓️ Mi Asistencia</a></li>
       </ul>
     </nav>
   </aside>
@@ -76,8 +76,8 @@
     <%- include('../comun/chatbot', { user: user }) %>
   </div>
 
-  <script src="/assets/js/estudiantes/estudiantes.js"></script>
+  <script src="/assets/js/estudiante/estudiante.js"></script>
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/assets/js/estudiantes/chatbot.js"></script>
+  <script src="/assets/js/estudiante/chatbot.js"></script>
 </body>
 </html>

@@ -6,11 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const formCurso = document.getElementById('formCurso');
   const tablaCuerpo = document.querySelector('#cursosSectionTable tbody');
   const tipoSelect = document.getElementById('tipo');
-  const carreraSelectGroup = document.getElementById('carreraSelectGroup');
+  const carreraGroup = document.getElementById('carreraGroup');
   const carreraSelect = document.getElementById('carreraId');
 
   let editandoFila = null;
   let editandoCursoId = null;
+  let carrerasList = [];
 
   function abrirModal() {
     modal.classList.remove('hidden');
@@ -95,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = await fetch('/api/carreras');
       if (!response.ok) throw new Error('Error al cargar carreras');
       const data = await response.json();
+      carrerasList = data;
       populateCarreraSelect(data);
     } catch (error) {
       alert(error.message);
@@ -111,11 +113,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function getCarreraNombreById(id) {
+    const carrera = carrerasList.find(c => String(c._id) === String(id));
+    return carrera ? carrera.nombre : '';
+  }
+
   function updateCarreraSelectVisibility() {
     if (tipoSelect.value === 'carrera') {
-      carreraSelectGroup.style.display = 'block';
+      carreraGroup.style.display = 'block';
     } else {
-      carreraSelectGroup.style.display = 'none';
+      carreraGroup.style.display = 'none';
       carreraSelect.value = '';
     }
   }
@@ -177,6 +184,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  async function cargarCursos() {
+    try {
+      const response = await fetch('/api/cursos');
+      if (!response.ok) throw new Error('Error al cargar cursos');
+      const data = await response.json();
+      data.forEach(curso => agregarFila(curso));
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+
+  async function init() {
+    await fetchCarreras();
+    await cargarCursos();
+  }
+
   function agregarFila(curso) {
     const fila = document.createElement('tr');
     fila.dataset.id = curso._id;
@@ -185,8 +208,8 @@ document.addEventListener('DOMContentLoaded', () => {
       <td>${curso.descripcion || ''}</td>
       <td>${curso.tipo}</td>
       <td>${curso.precio.toFixed(2)}</td>
+      <td>${curso.carreraId ? getCarreraNombreById(curso.carreraId) : ''}</td>
       <td>${curso.semestre || ''}</td>
-      <td>${curso.carreraId || ''}</td>
       <td>
         <button class="btn-editar">Editar</button>
         <button class="btn-borrar">Borrar</button>
@@ -223,8 +246,8 @@ document.addEventListener('DOMContentLoaded', () => {
           editandoFila.cells[1].textContent = descripcion;
           editandoFila.cells[2].textContent = tipo;
           editandoFila.cells[3].textContent = precio.toFixed(2);
-          editandoFila.cells[4].textContent = semestre || '';
-          editandoFila.cells[5].textContent = carreraId || '';
+          editandoFila.cells[4].textContent = getCarreraNombreById(carreraId);
+          editandoFila.cells[5].textContent = semestre || '';
         }
       } else {
         const result = await crearCurso(cursoData);
@@ -257,8 +280,11 @@ document.addEventListener('DOMContentLoaded', () => {
       formCurso.descripcion.value = fila.cells[1].textContent;
       formCurso.tipo.value = fila.cells[2].textContent;
       formCurso.precio.value = fila.cells[3].textContent;
-      formCurso.semestre.value = fila.cells[4].textContent;
-      formCurso.carreraId.value = fila.cells[5].textContent;
+      // To get carreraId from name, find in carrerasList
+      const carreraNombre = fila.cells[4].textContent;
+      const carreraObj = carrerasList.find(c => c.nombre === carreraNombre);
+      formCurso.carreraId.value = carreraObj ? carreraObj._id : '';
+      formCurso.semestre.value = fila.cells[5].textContent;
       editandoFila = fila;
       editandoCursoId = fila.dataset.id || null;
       document.getElementById('modalTitle').textContent = 'Editar Curso';
@@ -274,26 +300,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateCarreraSelectVisibility() {
     if (tipoSelect.value === 'carrera') {
-      carreraSelectGroup.style.display = 'block';
+      carreraGroup.style.display = 'block';
     } else {
-      carreraSelectGroup.style.display = 'none';
+      carreraGroup.style.display = 'none';
       carreraSelect.value = '';
     }
   }
 
   tipoSelect.addEventListener('change', updateCarreraSelectVisibility);
 
-  fetchCarreras();
-  cargarCursos();
-
-  async function cargarCursos() {
-    try {
-      const response = await fetch('/api/cursos');
-      if (!response.ok) throw new Error('Error al cargar cursos');
-      const data = await response.json();
-      data.forEach(curso => agregarFila(curso));
-    } catch (error) {
-      alert(error.message);
-    }
-  }
+  init();
 });

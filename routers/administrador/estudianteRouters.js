@@ -1,22 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const userLogin = require('../../middlewares/comun/userLogin');
-//const tareaRouters = require('./estudiante/tareaRouters');
-const estudiController = require('../../controllers/administrador/estudiantesController');
+const estudianteController = require('../../controllers/administrador/estudianteController');
 
-router.get('/',  estudiController.getAllEstudiantes);
-router.post('/',  estudiController.createEstudiante);
-router.put('/:id',  estudiController.updateEstudiante);
-router.delete('/:id',  estudiController.deleteEstudiante);
-
-
-
-// Route to render student dashboard
-router.get('/dashboard', userLogin, (req, res) => {
-    if (req.session.userRole !== 'Estudiante') {
-        return res.status(403).send('Acceso denegado');
-    }
-    res.render('estudiantes/dashboard', {
+// Ruta para renderizar la vista de estudiantes
+router.get('/view', userLogin, (req, res) => {
+    res.render('administrador/ver-estudiantes', {
         user: {
             id: req.session.userId,
             role: req.session.userRole,
@@ -26,8 +15,26 @@ router.get('/dashboard', userLogin, (req, res) => {
     });
 });
 
-// Mount tarea routers for tasks API
-//router.use('/tareas', userLogin, tareaRouters);
+// Ruta para obtener todos los estudiantes en JSON
+router.get('/', estudianteController.getAllEstudiantes);
+router.post('/',  estudianteController.createEstudiante);
+router.put('/:id',  estudianteController.updateEstudiante);
+router.delete('/:id',  estudianteController.deleteEstudiante);
+
+// Route to render student dashboard
+router.get('/dashboard', userLogin, (req, res) => {
+    if (req.session.userRole !== 'Estudiante') {
+        return res.status(403).send('Acceso denegado');
+    }
+    res.render('estudiante/dashboard', {
+        user: {
+            id: req.session.userId,
+            role: req.session.userRole,
+            email: req.session.email,
+            name: req.session.userName || ''
+        }
+    });
+});
 
 // Stub route for cursos
 router.get('/cursos', userLogin, async (req, res) => {
@@ -42,11 +49,6 @@ router.get('/cursos', userLogin, async (req, res) => {
     res.status(500).json({ message: 'Error obteniendo cursos' });
   }
 });
-
-// Stub route for seguimiento academico
-const estudianteController = require('../../controllers/estudiantes/estudianteController');
-
-router.get('/seguimiento', userLogin, estudianteController.getSeguimientoData);
 
 // Stub route for asistencia
 router.get('/asistencia', userLogin, async (req, res) => {

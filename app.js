@@ -82,7 +82,7 @@ app.use('/api/cursos', userLogin, require('./routers/administrador/cursoRouters'
 app.use('/api/carreras', userLogin, require('./routers/administrador/carreraRouters'));
 
 // Route for student dashboard
-app.use('/estudiante', require('./routers/administrador/estudianteRouters'));
+
 
 // Route for docente dashboard
 app.use('/administrador', userLogin, docenteRouters);

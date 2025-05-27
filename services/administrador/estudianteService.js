@@ -1,6 +1,4 @@
 const Estudiante = require('../../models/administrador/estudianteModel');
-const Asistencia = require('../../models/estudiantes/asistenciaModel'); // Assuming this model exists
-const Rendimiento = require('../../models/estudiantes/rendimientoModel'); // Assuming this model exists
 
 exports.getAllEstudiantes = async () => {
    return await Estudiante.find().lean();
