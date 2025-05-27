@@ -73,3 +73,13 @@ exports.deleteCarrera = async (req, res) => {
     res.status(500).json({ message: 'Error al eliminar la carrera' });
   }
 };
+
+exports.getAllCarreraPublic = async (req, res) => {
+  try {
+    const carreras = await Carrera.find().lean();
+    res.status(200).json(carreras);
+  } catch (error) {
+    console.error('Error al obtener carreras públicas:', error);
+    res.status(500).json({ message: 'Error al obtener las carreras públicas' });
+  }
+};

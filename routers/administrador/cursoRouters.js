@@ -5,6 +5,7 @@ const cursoController = require('../../controllers/administrador/cursoController
 
 //router.get('/', userLogin, (req, res) => res.redirect('/admin/cursos'));
 router.get('/',  cursoController.getAllCursos);
+router.get('/precio', cursoController.getPrecioCursoByNombre);
 router.get('/:id',  cursoController.getCursoById);
 router.post('/',  cursoController.createCurso);
 router.put('/:id',  cursoController.updateCurso);

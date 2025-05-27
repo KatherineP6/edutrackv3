@@ -103,15 +103,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fila.innerHTML = `
       <td>${estudiante.nombre}</td>
-      <td>${estudiante.apellido || ''}</td>
+      <td>${estudiante.apellidos || ''}</td>
       <td>${estudiante.correo}</td>
       <td>${estudiante.edad || ''}</td>
       <td>${estudiante.direccion || ''}</td>
       <td>${estudiante.nombreCarrera || ''}</td>
       <td>${cursosTexto}</td>
       <td>
-        <button class="btn-editar">Editar</button>
-        <button class="btn-borrar">Borrar</button>
+        <button class="btn btn-sm btn-primary btn-editar" title="Editar" style="margin-right: 5px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16">
+            <path d="M12.146.854a.5.5 0 0 1 .708 0l2.292 2.292a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 3L13 4.793 14.793 3 13 1.207 11.207 3zM12 5.207L10.793 4 3 11.793V13h1.207L12 5.207z"/>
+          </svg>
+        </button>
+        <button class="btn btn-sm btn-danger btn-borrar" title="Eliminar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16">
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+          </svg>
+        </button>
       </td>
     `;
 
@@ -181,11 +189,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Validación de campos requeridos
     const nombre = formEstudiante.nombreEst.value.trim();
-    const apellido = formEstudiante.apellidoEst.value.trim();
+    const apellidos = formEstudiante.apellidoEst.value.trim();
     const correo = formEstudiante.correoEst.value.trim();
     const password = formEstudiante.passwordEst.value.trim();
 
-    if (!nombre || !apellido || !correo || (!estudianteEditandoId && !password)) {
+    if (!nombre || !apellidos || !correo || (!estudianteEditandoId && !password)) {
       showToast('Nombre, apellidos, correo y password son requeridos.');
       return;
     }
@@ -195,13 +203,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const payload = {
       nombre: data.nombreEst,
-      apellido: data.apellidoEst,
+      apellidos: data.apellidoEst,
       correo: data.correoEst,
       edad: data.edadEst,
       direccion: data.direccionEst,
       password: data.passwordEst && data.passwordEst.trim() !== '' ? data.passwordEst : undefined,
       carreraId: data.carreraEst,
-      cursosEst: Array.from(selectCursos.selectedOptions).map(opt => opt.value)
+      cursosInscritos: Array.from(selectCursos.selectedOptions).map(opt => ({ _id: opt.value }))
     };
 
     try {
@@ -234,26 +242,29 @@ document.addEventListener('DOMContentLoaded', () => {
     estudianteEditandoId = estudiante._id;
     modalTitle.textContent = 'Editar Estudiante';
     formEstudiante.nombreEst.value = estudiante.nombre || '';
-    formEstudiante.apellidoEst.value = estudiante.apellido || '';
+    formEstudiante.apellidoEst.value = estudiante.apellidos || '';
     formEstudiante.correoEst.value = estudiante.correo || '';
     formEstudiante.passwordEst.value = '';
     formEstudiante.edadEst.value = estudiante.edad || '';
     formEstudiante.direccionEst.value = estudiante.direccion || '';
-    formEstudiante.carreraEst.value = estudiante.carreraId || '';
+    // Set career select value or default to empty string for placeholder
+    formEstudiante.carreraEst.value = estudiante.carreraId ? estudiante.carreraId.toString() : '';
 
-    // Limpiar selección previa
+    // Clear previous course selections
     for (let i = 0; i < selectCursos.options.length; i++) {
       selectCursos.options[i].selected = false;
     }
-    // Seleccionar cursos asignados
+    // Select assigned courses properly
     if (Array.isArray(estudiante.cursosEst)) {
-      for (let j = 0; j < estudiante.cursosEst.length; j++) {
-        for (let i = 0; i < selectCursos.options.length; i++) {
-          if (selectCursos.options[i].value.toString() === estudiante.cursosEst[j]._id.toString() ||
-              selectCursos.options[i].value.toString() === estudiante.cursosEst[j].toString()) {
-            selectCursos.options[i].selected = true;
-            break;
-          }
+      const cursosIds = estudiante.cursosEst.map(curso => {
+        if (typeof curso === 'object' && curso !== null && '_id' in curso) {
+          return curso._id.toString();
+        }
+        return curso.toString();
+      });
+      for (let i = 0; i < selectCursos.options.length; i++) {
+        if (cursosIds.includes(selectCursos.options[i].value.toString())) {
+          selectCursos.options[i].selected = true;
         }
       }
     }

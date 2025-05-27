@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+
         
         for(var i = 0; i<data.length ; i++){
           var carrera = data[i];
@@ -78,6 +79,59 @@ document.addEventListener('DOMContentLoaded', () => {
  
 
   lleanrTabla();
- 
+
+  // PDF generation logic
+  const { jsPDF } = window.jspdf;
+
+  const generatePdfBtn = document.getElementById('generatePdfBtn');
+  generatePdfBtn.addEventListener('click', () => {
+    const doc = new jsPDF({ orientation: 'landscape' });
+
+    // Centered and bold title
+    doc.setFontSize(18);
+    doc.setFont(undefined, 'bold');
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const title = 'Reporte de Carreras';
+    const textWidth = doc.getTextWidth(title);
+    const x = (pageWidth - textWidth) / 2;
+    doc.text(title, x, 22);
+    doc.setFont(undefined, 'normal');
+
+    const headers = ['Carrera', 'Duracion Carrera', 'Precio', 'Cantidad de Cursos', 'Precio*Cursos', 'Cantidad de Estudiantes', 'Precio*Estudiantes'];
+
+    const rows = [];
+    document.querySelectorAll('#reporteTable tbody tr').forEach(row => {
+      const rowData = [];
+      row.querySelectorAll('td').forEach(td => {
+        rowData.push(td.textContent);
+      });
+      rows.push(rowData);
+    });
+
+    doc.autoTable({
+      head: [headers],
+      body: rows,
+      startY: 30,
+      styles: { fontSize: 12, cellPadding: 4 },
+      headStyles: { fillColor: [22, 160, 133], textColor: 255, fontStyle: 'bold' },
+      alternateRowStyles: { fillColor: [240, 240, 240] },
+      theme: 'striped',
+      margin: { left: 14, right: 14 },
+      tableLineWidth: 0,
+      tableLineColor: 255,
+      didDrawCell: (data) => {
+        if (data.section === 'body' && data.cell.section === 'body') {
+          // Draw only horizontal lines between rows
+          const { doc, cell, row } = data;
+          const y = cell.y + cell.height;
+          doc.setDrawColor(200);
+          doc.setLineWidth(0.1);
+          doc.line(cell.x, y, cell.x + cell.width, y);
+        }
+      }
+    });
+
+    doc.save('reporte_carreras.pdf');
+  });
 
 });

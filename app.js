@@ -1,3 +1,5 @@
+// ... existing imports and setup ...
+
 const express = require('express');
 const app = express();
 const path = require('path');
@@ -5,6 +7,7 @@ const morgan = require('morgan');
 const session = require('express-session');
 const flash = require('connect-flash');
 const socket = require('socket.io');
+const sharedsession = require("express-socket.io-session"); // Add this
 const docenteRouters = require('./routers/administrador/docenteRouters');
 
 // Importar middlewares
@@ -31,7 +34,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Configuración de sesión
-app.use(session({
+const sessionMiddleware = session({
     secret: 'EduTrack360_SecretKey_2024',
     resave: false,
     saveUninitialized: false,
@@ -39,7 +42,8 @@ app.use(session({
         secure: false,
         maxAge: 24 * 60 * 60 * 1000 // 24 horas
     }
-}));
+});
+app.use(sessionMiddleware);
 
 // Configuración de flash messages
 app.use(flash());
@@ -90,6 +94,11 @@ app.use('/docente', userLogin, docenteRouters);
 // Crear servidor HTTP y usar socket.io
 const server = require('http').createServer(app);
 const io = socket(server);
+
+// Integrar sesión con socket.io
+io.use(sharedsession(sessionMiddleware, {
+    autoSave:true
+}));
 
 // Integración de Socket.IO
 require('./socket')(io);

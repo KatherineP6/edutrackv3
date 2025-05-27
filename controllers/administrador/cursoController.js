@@ -71,3 +71,20 @@ exports.renderCursosPage = (req, res) => {
     body: 'administrador/_ver-cursos'
   });
 };
+
+exports.getPrecioCursoByNombre = async (req, res) => {
+  try {
+    const nombreCurso = req.query.nombre;
+    if (!nombreCurso) {
+      return res.status(400).json({ message: 'El parámetro nombre es requerido.' });
+    }
+    const curso = await cursoService.getCursoByNombre(nombreCurso);
+    if (!curso) {
+      return res.status(404).json({ message: 'Curso no encontrado.' });
+    }
+    res.json({ nombre: curso.nombre, precio: curso.precio });
+  } catch (error) {
+    console.error('Error al obtener precio del curso:', error);
+    res.status(500).json({ message: 'Error interno al obtener precio del curso.' });
+  }
+};

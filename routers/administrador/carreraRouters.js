@@ -7,6 +7,7 @@ const carreraController = require('../../controllers/administrador/carreraContro
 
 // Rutas para carreras
 router.get('/',  carreraController.getAllCarrera);
+router.get('/public', carreraController.getAllCarreraPublic);
 router.post('/',  carreraController.createCarrera);
 router.put('/:id',  carreraController.updateCarrera);
 router.delete('/:id',  carreraController.deleteCarrera);
