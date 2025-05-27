@@ -30,9 +30,9 @@ const estudianteSchema = new Schema({
     trim: true,
   },
   carreraId: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref: 'Carrera',
     required: false,
-    trim: true
   },
   semestreActual: {
     type: Number,

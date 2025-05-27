@@ -1,284 +1,250 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const modal = document.getElementById('modalDocenteContainer');
+  const tablaCuerpo = document.querySelector('#teachersSectionTable tbody');
+  const modalDocente = document.getElementById('modalDocenteContainer');
+  const modalTitle = document.getElementById('modalDocenteTitle');
+  const formDocente = document.getElementById('formDocente');
   const btnNuevoDocente = document.getElementById('createDocenteBtn');
   const btnCerrarModal = document.getElementById('modalDocenteCloseBtn');
-  const btnCancelar = document.getElementById('cancelDocenteBtn');
-  const formDocente = document.getElementById('formDocente');
-  const tablaCuerpo = document.querySelector('#teachersSectionTable tbody');
-  const cursosSelect = document.getElementById('cursosAsignados');
+  const btnCancelarModal = document.getElementById('cancelDocenteBtn');
 
-  let editandoFila = null;
-  let editandoDocenteId = null;
+  const deleteModal = document.getElementById('deleteDocenteModal');
+  const btnCerrarDeleteModal = document.getElementById('deleteDocenteCloseBtn');
+  const btnCancelarDelete = document.getElementById('cancelDeleteDocenteBtn');
+  const btnConfirmarDelete = document.getElementById('confirmDeleteDocenteBtn');
+
+  let docenteEditandoId = null;
+  let docenteEliminandoId = null;
+
+  const selectCursos = formDocente.querySelector('#cursosAsignados');
+  const passwordField = formDocente.querySelector('#passwordDoc');
+
+  async function cargarCursos() {
+    try {
+      const response = await fetch('/api/cursos', { credentials: 'include' });
+      if (!response.ok) throw new Error('Error al cargar cursos');
+      const cursos = await response.json();
+      selectCursos.innerHTML = '';
+      cursos.forEach(curso => {
+        const option = document.createElement('option');
+        option.value = curso._id;
+        option.textContent = curso.nombre;
+        selectCursos.appendChild(option);
+      });
+    } catch (error) {
+      alert(error.message);
+    }
+  }
 
   function abrirModal() {
-    modal.classList.remove('hidden');
-    formDocente.reset();
-    limpiarErrores();
-    editandoFila = null;
-    editandoDocenteId = null;
-    document.getElementById('modalDocenteTitle').textContent = 'Nuevo Docente';
+    modalDocente.classList.remove('hidden');
   }
 
   function cerrarModal() {
-    modal.classList.add('hidden');
+    modalDocente.classList.add('hidden');
     formDocente.reset();
-    limpiarErrores();
-    editandoFila = null;
-    editandoDocenteId = null;
+    docenteEditandoId = null;
   }
 
-  function mostrarError(input, mensaje) {
-    let errorElem = input.parentElement.querySelector('.error-message');
-    if (!errorElem) {
-      errorElem = document.createElement('small');
-      errorElem.className = 'error-message';
-      errorElem.style.color = 'red';
-      input.parentElement.appendChild(errorElem);
-    }
-    errorElem.textContent = mensaje;
-    input.classList.add('input-error');
+  function abrirDeleteModal() {
+    deleteModal.classList.remove('hidden');
   }
 
-  function limpiarError(input) {
-    const errorElem = input.parentElement.querySelector('.error-message');
-    if (errorElem) errorElem.textContent = '';
-    input.classList.remove('input-error');
-  }
-
-  function limpiarErrores() {
-    formDocente.querySelectorAll('.error-message').forEach(e => e.textContent = '');
-    formDocente.querySelectorAll('.input-error').forEach(i => i.classList.remove('input-error'));
-  }
-
-  function validarCampo(input) {
-    limpiarError(input);
-    if (!input.value.trim()) {
-      mostrarError(input, 'Este campo es obligatorio');
-      return false;
-    }
-    if (input.id === 'correoDoc') {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(input.value.trim())) {
-        mostrarError(input, 'Correo inválido');
-        return false;
-      }
-    }
-    return true;
-  }
-
-  function validarFormulario() {
-    limpiarErrores();
-    let valido = true;
-    formDocente.querySelectorAll('input[required]').forEach(input => {
-      if (!validarCampo(input)) valido = false;
-    });
-    return valido;
-  }
-
-  async function fetchCursos() {
-    try {
-      const response = await fetch('/api/cursos');
-      if (!response.ok) throw new Error('Error al cargar cursos');
-      const data = await response.json();
-      populateCursosSelect(data);
-    } catch (error) {
-      alert(error.message);
-    }
-  }
-
-  function populateCursosSelect(cursos) {
-    cursosSelect.innerHTML = '';
-    cursos.forEach(curso => {
-      const option = document.createElement('option');
-      option.value = curso._id;
-      option.textContent = curso.Nombre || curso.nombre || 'Curso';
-      cursosSelect.appendChild(option);
-    });
-  }
-
-  async function crearDocente(data) {
-    try {
-      const response = await fetch('/api/docentes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(data)
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message);
-      }
-      return await response.json();
-    } catch (error) {
-      alert(error.message);
-      throw error;
-    }
-  }
-
-  async function actualizarDocente(id, data) {
-    try {
-      const response = await fetch(`/api/docentes/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(data)
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al actualizar docente');
-      }
-      return await response.json();
-    } catch (error) {
-      alert(error.message);
-      throw error;
-    }
-  }
-
-  async function eliminarDocente(id) {
-    try {
-      const response = await fetch(`/api/docentes/${id}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al eliminar docente');
-      }
-      return await response.json();
-    } catch (error) {
-      alert(error.message);
-      throw error;
-    }
-  }
-
-  async function cargarDocentes() {
-    try {
-      const response = await fetch('/api/docentes');
-      if (!response.ok) throw new Error('Error al cargar docentes');
-      const data = await response.json();
-      data.forEach(docente => agregarFila(docente));
-    } catch (error) {
-      alert(error.message);
-    }
+  function cerrarDeleteModal() {
+    deleteModal.classList.add('hidden');
+    docenteEliminandoId = null;
   }
 
   function agregarFila(docente) {
     const fila = document.createElement('tr');
     fila.dataset.id = docente._id;
-    fila.dataset.cursosAsignados = JSON.stringify(docente.cursosAsignados || []);
+
+    // cursosAsignados is now array of objects {_id, nombre}
+    const cursosTexto = Array.isArray(docente.cursosAsignados)
+      ? docente.cursosAsignados.map(curso => curso.nombre).join(', ')
+      : '';
+
     fila.innerHTML = `
       <td>${docente.nombre}</td>
       <td>${docente.apellido || ''}</td>
       <td>${docente.correo}</td>
       <td>${docente.edad || ''}</td>
       <td>${docente.telefono || ''}</td>
-      <td>${docente.estado || ''}</td>
+      <td>${docente.estado}</td>
       <td>${docente.gradoAcademico || ''}</td>
+      <td>${cursosTexto}</td>
       <td>
         <button class="btn-editar">Editar</button>
         <button class="btn-borrar">Borrar</button>
       </td>
     `;
+
+    fila.querySelector('.btn-editar').addEventListener('click', () => abrirModalEditar(docente));
+    fila.querySelector('.btn-borrar').addEventListener('click', () => abrirModalEliminar(docente._id));
+
     tablaCuerpo.appendChild(fila);
   }
 
-  formDocente.addEventListener('submit', async e => {
-    e.preventDefault();
-    if (!validarFormulario()) return;
-
-    const nombre = formDocente.nombreDoc.value;
-    const apellido = formDocente.apellidoDoc.value;
-    const correo = formDocente.correoDoc.value;
-    const edad = formDocente.edadDoc.value;
-    const telefono = formDocente.telefonoDoc.value;
-    //const estado = formDocente.estadoDoc.value;
-    const estado = true;
-    const gradoAcademico = formDocente.gradoAcademico.value;
-    const password = formDocente.passwordDoc.value;
-
-    // Obtener cursos seleccionados
-    const selectedOptions = Array.from(cursosSelect.selectedOptions);
-    const cursosAsignados = selectedOptions.map(option => option.value);
-
-    const docenteData = {
-      nombre: nombre,
-      apellido: apellido,
-      correo: correo,
-      edad: edad,
-      telefono: telefono,
-      estado: estado,
-      gradoAcademico: gradoAcademico,
-      password: password,
-      cursosAsignados: cursosAsignados
-    };
-
+  async function cargarDocentes() {
     try {
-      if (editandoDocenteId) {
-        const result = await actualizarDocente(editandoDocenteId, docenteData);
-        if (editandoFila) {
-          editandoFila.cells[0].textContent = nombre;
-          editandoFila.cells[1].textContent = apellido;
-          editandoFila.cells[2].textContent = correo;
-          editandoFila.cells[3].textContent = edad;
-          editandoFila.cells[4].textContent = telefono;
-          editandoFila.cells[5].textContent = estado;
-          editandoFila.cells[6].textContent = gradoAcademico;
-        }
-      } else {
-        const result = await crearDocente(docenteData);
-        agregarFila(result.docente || result);
-      }
-      cerrarModal();
+      const response = await fetch('/api/docentes', { credentials: 'include' });
+      if (!response.ok) throw new Error('Error al cargar docentes');
+      const data = await response.json();
+      tablaCuerpo.innerHTML = '';
+      data.forEach(docente => agregarFila(docente));
     } catch (error) {
-      // Error ya manejado
+      alert(error.message);
     }
-  });
-
-  tablaCuerpo.addEventListener('click', async e => {
-    if (e.target.classList.contains('btn-borrar')) {
-      const fila = e.target.closest('tr');
-      const docenteId = fila.dataset.id;
-      if (docenteId) {
-        try {
-          await eliminarDocente(docenteId);
-          fila.remove();
-        } catch (error) {
-          // Error ya manejado
-        }
-      } else {
-        fila.remove();
-      }
-    } else if (e.target.classList.contains('btn-editar')) {
-      const fila = e.target.closest('tr');
-      formDocente.nombreDoc.value = fila.cells[0].textContent;
-      formDocente.apellidoDoc.value = fila.cells[1].textContent;
-      formDocente.correoDoc.value = fila.cells[2].textContent;
-      formDocente.edadDoc.value = fila.cells[3].textContent;
-      formDocente.telefonoDoc.value = fila.cells[4].textContent;
-      formDocente.estadoDoc.value = fila.cells[5].textContent;
-      formDocente.gradoAcademico.value = fila.cells[6].textContent;
-
-      // Cargar cursos asignados en el select múltiple
-      const cursosAsignados = JSON.parse(fila.dataset.cursosAsignados || '[]');
-      for (const option of cursosSelect.options) {
-        option.selected = cursosAsignados.includes(option.value);
-      }
-
-      editandoFila = fila;
-      editandoDocenteId = fila.dataset.id || null;
-      document.getElementById('modalDocenteTitle').textContent = 'Editar Docente';
-      modal.classList.remove('hidden');
-    }
-  });
-
-  btnNuevoDocente.addEventListener('click', abrirModal);
-  btnCerrarModal.addEventListener('click', cerrarModal);
-  btnCancelar.addEventListener('click', cerrarModal);
-
-  async function init() {
-    await fetchCursos();
-    await cargarDocentes();
   }
 
-  init();
+  btnNuevoDocente.addEventListener('click', () => {
+    docenteEditandoId = null;
+    modalTitle.textContent = 'Nuevo Docente';
+    formDocente.reset();
+    passwordField.required = true;
+    passwordField.parentElement.style.display = 'block';
+    abrirModal();
+  });
+
+  // Toast notification container
+  const toastContainer = document.createElement('div');
+  toastContainer.id = 'toastContainer';
+  toastContainer.style.position = 'fixed';
+  toastContainer.style.top = '1rem';
+  toastContainer.style.right = '1rem';
+  toastContainer.style.zIndex = '9999';
+  document.body.appendChild(toastContainer);
+
+  function showToast(message, duration = 3000) {
+    const toast = document.createElement('div');
+    toast.textContent = message;
+    toast.style.background = '#4BB543';
+    toast.style.color = 'white';
+    toast.style.padding = '10px 20px';
+    toast.style.marginTop = '10px';
+    toast.style.borderRadius = '5px';
+    toast.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
+    toast.style.opacity = '0.9';
+    toast.style.transition = 'opacity 0.5s ease';
+
+    toastContainer.appendChild(toast);
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      setTimeout(() => {
+        toastContainer.removeChild(toast);
+      }, 500);
+    }, duration);
+  }
+
+  btnCerrarModal.addEventListener('click', cerrarModal);
+  btnCancelarModal.addEventListener('click', cerrarModal);
+
+  formDocente.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(formDocente);
+    const data = Object.fromEntries(formData.entries());
+
+    const payload = {
+      nombre: data.nombreDoc,
+      apellido: data.apellidoDoc,
+      correo: data.correoDoc,
+      edad: data.edadDoc,
+      telefono: data.telefonoDoc,
+      gradoAcademico: data.gradoAcademico,
+      estado: data.estado === 'true' || data.estado === true || data.estado === 'on' ? true : false,
+      cursosAsignados: Array.from(selectCursos.selectedOptions).map(opt => opt.value)
+    };
+
+    if (data.passwordDoc && data.passwordDoc.trim() !== '') {
+      payload.password = data.passwordDoc;
+    }
+
+    try {
+      let response;
+      if (docenteEditandoId) {
+        response = await fetch(`/api/docentes/${docenteEditandoId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          credentials: 'include'
+        });
+      } else {
+        response = await fetch('/api/docentes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          credentials: 'include'
+        });
+      }
+      if (!response.ok) throw new Error('Error al guardar docente');
+      // Reemplazar alert por toast
+      showToast(docenteEditandoId ? 'Docente actualizado exitosamente' : 'Docente creado exitosamente');
+      cerrarModal();
+      cargarDocentes();
+    } catch (error) {
+      // Reemplazar alert por toast
+      showToast(error.message || 'Error al guardar docente');
+    }
+  });
+
+  function abrirModalEditar(docente) {
+    docenteEditandoId = docente._id;
+    modalTitle.textContent = 'Editar Docente';
+    formDocente.nombreDoc.value = docente.nombre || '';
+    formDocente.apellidoDoc.value = docente.apellido || '';
+    formDocente.correoDoc.value = docente.correo || '';
+    formDocente.passwordDoc.value = '';
+    formDocente.edadDoc.value = docente.edad || '';
+    formDocente.telefonoDoc.value = docente.telefono || '';
+    formDocente.gradoAcademico.value = docente.gradoAcademico || '';
+
+    // Limpiar selección previa
+    for (let i = 0; i < selectCursos.options.length; i++) {
+      selectCursos.options[i].selected = false;
+    }
+    // Seleccionar cursos asignados
+    if (Array.isArray(docente.cursosAsignados)) {
+     // docente.cursosAsignados.forEach(cursoId => {
+      for (let j = 0; j < docente.cursosAsignados.length; j++) {
+        for (let i = 0; i < selectCursos.options.length; i++) {
+          // Convert both to string for safe comparison
+          if (selectCursos.options[i].value.toString() === docente.cursosAsignados[j]._id.toString()) {
+            selectCursos.options[i].selected = true;
+            break;
+          }
+        }
+      }//});
+    }
+
+    passwordField.required = false;
+    passwordField.parentElement.style.display = 'none';
+
+    abrirModal();
+  }
+
+  function abrirModalEliminar(id) {
+    docenteEliminandoId = id;
+    abrirDeleteModal();
+  }
+
+  btnCerrarDeleteModal.addEventListener('click', cerrarDeleteModal);
+  btnCancelarDelete.addEventListener('click', cerrarDeleteModal);
+
+  btnConfirmarDelete.addEventListener('click', async () => {
+    try {
+      const response = await fetch(`/api/docentes/${docenteEliminandoId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Error al eliminar docente');
+      alert('Docente eliminado exitosamente');
+      cerrarDeleteModal();
+      cargarDocentes();
+    } catch (error) {
+      alert(error.message);
+    }
+  });
+
+  cargarCursos();
+  cargarDocentes();
 });

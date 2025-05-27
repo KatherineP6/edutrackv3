@@ -86,6 +86,11 @@ document.addEventListener('DOMContentLoaded', () => {
     limpiarErrores();
     let valido = true;
     formCurso.querySelectorAll('input, select, textarea').forEach(input => {
+      // descripcion not required if tipo is taller
+      if (input.id === 'descripcion' && tipoSelect.value === 'taller') {
+        limpiarError(input);
+        return true;
+      }
       if (!validarCampo(input)) valido = false;
     });
     return valido;

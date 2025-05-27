@@ -10,10 +10,24 @@ const CursoService = {
   },
 
   createCurso: async (data) => {
-    const { nombre, descripcion, tipo, precio, carreraId, semestre } = data;
+    let { nombre, descripcion, tipo, precio, carreraId, semestre } = data;
 
-    if (!nombre || !descripcion || !tipo || precio === undefined) {
+    descripcion = descripcion ? descripcion.trim() : descripcion;
+
+    if (!nombre || !tipo || precio === undefined) {
       throw new Error('Campos requeridos faltantes.');
+    }
+
+    if (tipo === 'carrera' && (!carreraId || carreraId.trim() === '')) {
+      throw new Error('Debe seleccionar una carrera para cursos tipo carrera.');
+    }
+
+    if (tipo === 'taller') {
+      carreraId = null;
+    }
+
+    if (tipo !== 'taller' && (!descripcion || descripcion.trim() === '')) {
+      throw new Error('La descripción es obligatoria para cursos tipo carrera.');
     }
 
     const CursoData = {
@@ -30,10 +44,24 @@ const CursoService = {
   },
 
   updateCurso: async (id, data) => {
-    const { nombre, descripcion, tipo, precio, carreraId, semestre } = data;
+    let { nombre, descripcion, tipo, precio, carreraId, semestre } = data;
 
-    if (!nombre || !descripcion || !tipo || precio === undefined) {
+    descripcion = descripcion ? descripcion.trim() : descripcion;
+
+    if (!nombre || !tipo || precio === undefined) {
       throw new Error('Campos requeridos faltantes.');
+    }
+
+    if (tipo === 'carrera' && (!carreraId || carreraId.trim() === '')) {
+      throw new Error('Debe seleccionar una carrera para cursos tipo carrera.');
+    }
+
+    if (tipo === 'taller') {
+      carreraId = null;
+    }
+
+    if (tipo !== 'taller' && (!descripcion || descripcion.trim() === '')) {
+      throw new Error('La descripción es obligatoria para cursos tipo carrera.');
     }
 
     const updateData = {

@@ -387,10 +387,24 @@ button {
 }
 
 /* Data table */
+/* Estilos existentes */
+
 .data-table {
   width: 100%;
+  max-height: 1000px; /* Altura máxima para la tabla */
+  overflow-y: auto; /* Scroll vertical si el contenido excede la altura */
+  display: block;
   border-collapse: collapse;
 }
+
+/* Opcional: para que el encabezado quede fijo al hacer scroll */
+.data-table thead tr {
+  position: sticky;
+  top: 0;
+  background-color: #f8f9fa;
+  z-index: 1;
+}
+
 
 .data-table thead {
   background-color: var(--color-gray-100);
@@ -415,7 +429,7 @@ button {
 }
 
 /* Responsive adjustments */
-@media (max-width: 767px) {
+@media (max-width: 907px) {
   .charts-stats {
     grid-template-columns: 1fr;
   }

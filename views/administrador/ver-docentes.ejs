@@ -18,7 +18,8 @@
                   <th>Correo</th>
                   <th>Edad</th>
                   <th>Teléfono</th>
-                  <th>Estado</th>
+                  <th>Activo</th>
+                  <th>Grado Academico</th>
                   <th>Cursos que Imparte</th>
                   <th>Acciones</th>
                 </tr>
@@ -75,6 +76,12 @@
             <select id="cursosAsignados" name="cursosAsignados" class="form-control" multiple size="5">
               <!-- Opciones cargadas dinámicamente -->
             </select>
+          </div>
+          <div style="flex: 1 1 100%; margin-top: 1rem;">
+            <label for="estadoDoc">
+              <input type="checkbox" id="estadoDoc" name="estadoDoc" checked />
+              Activo
+            </label>
           </div>
         </div>
         <div class="form-group mb-3" style="margin-top: 1rem;">
