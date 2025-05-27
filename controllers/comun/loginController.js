@@ -75,6 +75,10 @@ exports.processLogin = async (req, res) => {
 
             if (userRole === 'Administrador') {
                 redirectUrl = '/admin';  
+            } else if (userRole === 'Docente') {
+                redirectUrl = '/docente/dashboard';
+            } else if (userRole === 'Estudiante') {
+                redirectUrl = '/estudiante/dashboard';
             }
 
             console.log('Inicio de sesión exitoso para', userRole, 'con ID:', user._id, '. Redirigiendo a:', redirectUrl);

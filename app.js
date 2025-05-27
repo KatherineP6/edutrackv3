@@ -72,20 +72,20 @@ app.use('/admin/cursos', userLogin, require('./routers/administrador/cursoRouter
 // Montar router comun/userRouters para rutas de usuario, incluyendo /logout
 app.use('/', require('./routers/comun/userRouters'));
 
+// Montar router para rutas de estudiante (vistas)
+app.use('/estudiante', userLogin, require('./routers/administrador/estudianteRouters'));
 
+// Montar router para rutas API de estudiante
+app.use('/api/estudiantes', userLogin, require('./routers/administrador/estudianteRouters'));
 
 // API Routes
 app.use('/api/docentes', userLogin, require('./routers/administrador/docenteRouters'));
-app.use('/api/estudiantes', userLogin, require('./routers/administrador/estudianteRouters'));
 app.use('/api/salones', userLogin, require('./routers/administrador/salonRouters'));
 app.use('/api/cursos', userLogin, require('./routers/administrador/cursoRouters'));
 app.use('/api/carreras', userLogin, require('./routers/administrador/carreraRouters'));
 
-// Route for student dashboard
-
-
 // Route for docente dashboard
-app.use('/administrador', userLogin, docenteRouters);
+app.use('/docente', userLogin, docenteRouters);
 
 // Crear servidor HTTP y usar socket.io
 const server = require('http').createServer(app);

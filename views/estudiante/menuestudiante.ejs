@@ -4,28 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>EduTrack360 - Panel Estudiante</title>
-  <link rel="stylesheet" href="/assets/css/estudiante/estudiante.css" />
-  <link rel="stylesheet" href="/assets/css/estudiante/chatbot.css" />
+  <link rel="stylesheet" href="/assets/css/estudiante/styles.css" />
+  <link rel="stylesheet" href="/assets/css/comun/chatbot.css" />
+  <link rel="stylesheet" href="/assets/css/estudiante/modal.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
 <body>
-  <button id="sidebarToggle" aria-label="Toggle menu" class="sidebar-toggle">&#9776;</button>
+  <button id="sidebarToggle" aria-label="Toggle menu" class="sidebar-toggle">
+    &#9776;
+  </button>
 
-  <aside id="sidebar" class="sidebar blue-sidebar">
+  <aside id="sidebar" class="sidebar">
     <div class="sidebar-header">
       <div class="logo">🎓</div>
       <div>
-        <h2 class="title">EduTrack360</h2>
-        <p class="subtitle">Panel Estudiante</p>
+        <h2 class="title" style="font-size: 30px;">EduTrack360</h2>
+        <p class="subtitle" style="font-size: 17px;">Panel Estudiante</p>
       </div>
       <button id="sidebarClose" class="sidebar-close" aria-label="Close menu">&times;</button>
     </div>
-    <nav>
-      <ul id="menuItems" class="menu-items">
-        <li><a href="/estudiante/miscursos" class="menu-link active">📚 Mis Cursos</a></li>
-        <li><a href="/estudiante/actividades" class="menu-link">📋 Mis Tareas</a></li>
-        <li><a href="/estudiante/miperfil" class="menu-link">📈 Mi Perfil</a></li>
-        <li><a href="/estudiante/asistencia" class="menu-link">🗓️ Mi Asistencia</a></li>
+
+    <nav class="menu">
+      <ul id="menuItems">
+        <li><a href="/estudiante/dashboard" class="menu-button <%= activeSection === 'dashboard' ? 'active' : '' %>">📊 Dashboard</a></li>
+        <li><a href="/estudiante/miperfil" class="menu-button <%= activeSection === 'miperfil' ? 'active' : '' %>">📚 Mi Perfil</a></li>
+        <li><a href="/estudiante/actividades" class="menu-button <%= activeSection === 'actividades' ? 'active' : '' %>">📚 Actividades</a></li>
+        <li><a href="/estudiante/cursos" class="menu-button <%= activeSection === 'cursos' ? 'active' : '' %>">📖 Cursos</a></li>
+        <li><a href="/estudiante/asistencia" class="menu-button <%= activeSection === 'asistencia' ? 'active' : '' %>">📝 Asistencia</a></li>
       </ul>
     </nav>
   </aside>
@@ -34,50 +39,27 @@
 
   <div class="main-content">
     <header class="header">
-      <button id="logoutButton" class="logout-button" aria-label="Cerrar sesión">🔓 Cerrar sesión</button>
+      <div class="user-header-info">
+        <div class="user-avatar" id="headerUserAvatar"><%= user.name ? user.name.charAt(0).toUpperCase() : 'U' %></div>
+        <div>
+          <h2 id="headerUserName"><%= user.name %></h2>
+          <p id="headerUserEmail"><%= user.email %></p>
+        </div>
+      </div>
+      <button id="logoutButton" class="logout-button" aria-label="Cerrar sesión">
+        🔓 Cerrar sesión
+      </button>
     </header>
 
-    <main id="estudianteContent" class="estudiante-content">
-      <section id="mis-cursos" class="tab-section active">
-        <h2>Mis Cursos</h2>
-        <div id="cursosContainer">
-          <!-- Cursos list rendered here -->
-        </div>
-      </section>
-      <section id="mis-tareas" class="tab-section">
-        <h2>Mis Tareas</h2>
-        <div id="tareasContainer">
-          <!-- Tareas list rendered here -->
-        </div>
-      </section>
-      <section id="mi-seguimiento" class="tab-section">
-        <h2>Mi Seguimiento Académico</h2>
-        <canvas id="rendimientoChart" width="500" height="500" style="display: block; margin: 1rem auto;"></canvas>
-        <canvas id="asistenciaChart" width="500" height="500" style="display: block; margin: 1rem auto;"></canvas>
-      </section>
-      <section id="mi-asistencia" class="tab-section">
-        <h2>Mi Asistencia</h2>
-        <table id="asistenciaTable" class="data-table" style="width: 100%; margin-top: 1rem;">
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Curso</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Asistencia records inserted by JS -->
-          </tbody>
-        </table>
-      </section>
+    <main id="docenteContent" class="docente-content">
+      <%- include(body, locals) %>
     </main>
-
-    <!-- Include chatbot partial -->
-    <%- include('../comun/chatbot', { user: user }) %>
   </div>
 
-  <script src="/assets/js/estudiante/estudiante.js"></script>
+  <%- include('../comun/chatbot') %>
+
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/assets/js/estudiante/chatbot.js"></script>
+  <script src="/assets/js/comun/chatbot.js"></script>
+  <script src="/assets/js/estudiante/menuestudiante.js"></script>
 </body>
 </html>

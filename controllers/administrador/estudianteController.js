@@ -40,6 +40,24 @@ exports.getEstudianteById = async (req, res) => {
     }
 };
 
+// Helper function to get estudiante data by ID (without Express req, res)
+exports.getEstudianteByIdData = async (id) => {
+    try {
+        const estudiante = await Estudiante.findById(id).lean();
+        if (!estudiante) {
+            return null;
+        }
+        const carrera = estudiante.carreraId ? await Carrera.findById(estudiante.carreraId).lean() : null;
+        return {
+            ...estudiante,
+            nombreCarrera: carrera ? carrera.nombre : null
+        };
+    } catch (error) {
+        console.error('Error obteniendo estudiante:', error);
+        throw error;
+    }
+};
+
 exports.createEstudiante = async (req, res) => {
     try {
         const { nombre, apellidos, correo, edad, password, direccion, carreraId } = req.body;

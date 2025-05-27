@@ -1,3 +1,4 @@
+
 const express = require('express');
 const router = express.Router();
 const userLogin = require('../../middlewares/comun/userLogin');
@@ -8,12 +9,49 @@ router.get('/dashboard', userLogin, (req, res) => {
   if (req.session.userRole !== 'Docente') {
     return res.status(403).send('Acceso denegado');
   }
-  res.render('administrador/docente', {
+  res.render('docente/menudocentes', {
     user: {
       id: req.session.userId,
       role: req.session.userRole,
-      email: req.session.email
-    }
+      email: req.session.email,
+      name: req.session.userName || ''
+    },
+    activeSection: 'dashboard',
+    body: 'dashboard'
+  });
+});
+
+// Route to render cursos view
+router.get('/cursos', userLogin, (req, res) => {
+  if (req.session.userRole !== 'Docente') {
+    return res.status(403).send('Acceso denegado');
+  }
+  res.render('docente/menudocentes', {
+    user: {
+      id: req.session.userId,
+      role: req.session.userRole,
+      email: req.session.email,
+      name: req.session.userName || ''
+    },
+    activeSection: 'cursos',
+    body: 'cursos'
+  });
+});
+
+// Route to render miperfil view
+router.get('/miperfil', userLogin, (req, res) => {
+  if (req.session.userRole !== 'Docente') {
+    return res.status(403).send('Acceso denegado');
+  }
+  res.render('docente/menudocentes', {
+    user: {
+      id: req.session.userId,
+      role: req.session.userRole,
+      email: req.session.email,
+      name: req.session.userName || ''
+    },
+    activeSection: 'miperfil',
+    body: 'miperfil'
   });
 });
 

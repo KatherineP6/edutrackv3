@@ -26,13 +26,32 @@ router.get('/dashboard', userLogin, (req, res) => {
     if (req.session.userRole !== 'Estudiante') {
         return res.status(403).send('Acceso denegado');
     }
-    res.render('estudiante/dashboard', {
+    res.render('estudiante/menuestudiante', {
         user: {
             id: req.session.userId,
             role: req.session.userRole,
             email: req.session.email,
             name: req.session.userName || ''
-        }
+        },
+        activeSection: 'dashboard',
+        body: 'dashboard'
+    });
+});
+
+// Ruta para renderizar la vista de actividades del estudiante
+router.get('/actividades', userLogin, (req, res) => {
+    if (req.session.userRole !== 'Estudiante') {
+        return res.status(403).send('Acceso denegado');
+    }
+    res.render('estudiante/menuestudiante', {
+        user: {
+            id: req.session.userId,
+            role: req.session.userRole,
+            email: req.session.email,
+            name: req.session.userName || ''
+        },
+        activeSection: 'actividades',
+        body: 'estudiante/actividades'
     });
 });
 
@@ -62,6 +81,33 @@ router.get('/asistencia', userLogin, async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Error obteniendo asistencia' });
   }
+});
+
+const mongoose = require('mongoose');
+
+// Route to render student profile (miperfil) view
+router.get('/miperfil', userLogin, async (req, res) => {
+    if (req.session.userRole !== 'Estudiante') {
+        return res.status(403).send('Acceso denegado');
+    }
+    try {
+        const estudianteId = req.session.userId;
+        if (!mongoose.Types.ObjectId.isValid(estudianteId)) {
+            return res.status(400).send('ID de estudiante inválido');
+        }
+        const estudiante = await estudianteController.getEstudianteByIdData(estudianteId);
+        if (!estudiante) {
+            return res.status(404).send('Estudiante no encontrado');
+        }
+        res.render('estudiante/menuestudiante', {
+            user: estudiante,
+            activeSection: 'miperfil',
+            body: 'miperfil'
+        });
+    } catch (error) {
+        console.error('Error al obtener perfil del estudiante:', error);
+        res.status(500).send('Error interno del servidor');
+    }
 });
 
 module.exports = router;
