@@ -23,8 +23,8 @@ const docenteSchema = new Schema({
     trim: true
   },
   estado: {
-    type: String,
-    trim: true
+    type: Boolean,
+    default: true // Activo por defecto
   },
   gradoAcademico: {
     type: String,
@@ -39,8 +39,7 @@ const docenteSchema = new Schema({
   },
   cursosAsignados: [{
     type: Schema.Types.ObjectId,
-    ref: 'cursos' // Referencia al modelo de cursos
-    
+    ref: 'cursos'
   }]
 }, {
   timestamps: true

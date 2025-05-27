@@ -17,7 +17,10 @@ const estudianteSchema = new Schema({
   },
   direccion: String,
   telefono: String,
-  estado: String,
+  estado: {
+    type: Boolean,
+    default: true // Activo por defecto
+  },
   salon: String,
   documentos: String,
   correo: {
@@ -39,11 +42,9 @@ const estudianteSchema = new Schema({
     type: String,
     required: false
   }],
-  
 }, {
   timestamps: true 
 });
 
 const Estudiante = mongoose.model('Estudiante', estudianteSchema, 'UsuarioEstudiante');
-
 module.exports = Estudiante;
