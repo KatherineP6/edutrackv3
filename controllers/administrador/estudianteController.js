@@ -7,9 +7,7 @@ const SALT_ROUNDS = 10;
 // --- API Estudiantes ---
 exports.getAllEstudiantes = async (req, res) => {
     try {
-        // Obtener estudiantes con nombre de carrera
         const estudiantes = await Estudiante.find().lean();
-        // Obtener todas las carreras para mapear nombre
         const carreras = await Carrera.find().lean();
         const estudiantesConCarrera = estudiantes.map(est => {
             const carrera = carreras.find(c => c._id.toString() === est.carreraId);
@@ -54,10 +52,10 @@ exports.createEstudiante = async (req, res) => {
 
         const estudiante = new Estudiante({
             password: hashedPassword,
-            Nombre: nombre,
-            Edad: edad,
-            Apellidos: apellidos,
-            Direccion: direccion || '',
+            nombre,
+            edad,
+            apellidos,
+            direccion: direccion || '',
             correo,
             carreraId: carreraId || null
         });
@@ -80,10 +78,10 @@ exports.updateEstudiante = async (req, res) => {
         }
 
         const updateData = {
-            Nombre: nombre,
-            Apellidos: apellidos,
-            Edad: edad,
-            Direccion: direccion || '',
+            nombre,
+            apellidos,
+            edad,
+            direccion: direccion || '',
             correo,
             carreraId: carreraId || null
         };

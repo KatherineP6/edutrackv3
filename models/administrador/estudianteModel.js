@@ -6,19 +6,19 @@ const estudianteSchema = new Schema({
     type: String,
     required: true
   },
-  Nombre: {
+  nombre: {
     type: String,
     required: true
   },
-  Edad: String,
-  Apellidos: {
+  edad: String,
+  apellidos: {
     type: String,
     required: true
   },
-  Direccion: String,
-  Telefono: String,
-  Estado: String,
-  Salon: String,
+  direccion: String,
+  telefono: String,
+  estado: String,
+  salon: String,
   documentos: String,
   correo: {
     type: String,
@@ -39,10 +39,7 @@ const estudianteSchema = new Schema({
     type: String,
     required: false
   }],
-  fecha_creacion: {
-    type: Date,
-    default: Date.now
-  }
+  
 }, {
   timestamps: true 
 });

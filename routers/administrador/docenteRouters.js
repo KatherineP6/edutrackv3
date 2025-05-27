@@ -33,7 +33,7 @@ router.put('/:id', userLogin, docenteController.updateDocente);
 router.delete('/:id', userLogin, docenteController.deleteDocente);
 
 // API route to get courses for logged-in docente
-router.get('/cursos', userLogin, docenteController.getCoursesForDocente);
+// router.get('/cursos', userLogin, docenteController.getCoursesForDocente);
 
 const salonController = require('../../controllers/administrador/salonController');
 const Salon = require('../../models/administrador/salonModel');

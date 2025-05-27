@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let editandoFila = null;
   let editandoDocenteId = null;
-  let cursosList = [];
 
   function abrirModal() {
     modal.classList.remove('hidden');
@@ -64,20 +63,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return false;
       }
     }
-    if (input.id === 'edadDoc') {
-      const edad = parseInt(input.value, 10);
-      if (isNaN(edad) || edad < 0) {
-        mostrarError(input, 'Edad inválida');
-        return false;
-      }
-    }
     return true;
   }
 
   function validarFormulario() {
     limpiarErrores();
     let valido = true;
-    formDocente.querySelectorAll('input').forEach(input => {
+    formDocente.querySelectorAll('input[required]').forEach(input => {
       if (!validarCampo(input)) valido = false;
     });
     return valido;
@@ -88,7 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = await fetch('/api/cursos');
       if (!response.ok) throw new Error('Error al cargar cursos');
       const data = await response.json();
-      cursosList = data;
       populateCursosSelect(data);
     } catch (error) {
       alert(error.message);
@@ -100,17 +91,9 @@ document.addEventListener('DOMContentLoaded', () => {
     cursos.forEach(curso => {
       const option = document.createElement('option');
       option.value = curso._id;
-      option.textContent = curso.nombre;
+      option.textContent = curso.Nombre || curso.nombre || 'Curso';
       cursosSelect.appendChild(option);
     });
-  }
-
-  function getCursoNombresByIds(ids) {
-    if (!ids || !Array.isArray(ids)) return '';
-    const nombres = cursosList
-      .filter(curso => ids.includes(curso._id))
-      .map(curso => curso.nombre);
-    return nombres.join(', ');
   }
 
   async function crearDocente(data) {
@@ -183,15 +166,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const fila = document.createElement('tr');
     fila.dataset.id = docente._id;
     fila.dataset.cursosAsignados = JSON.stringify(docente.cursosAsignados || []);
-    fila.dataset.telefono = docente.Telefono || '';
     fila.innerHTML = `
-      <td>${docente.Nombre}</td>
-      <td>${docente.Apellido || ''}</td>
+      <td>${docente.nombre}</td>
+      <td>${docente.apellido || ''}</td>
       <td>${docente.correo}</td>
-      <td>${docente.Edad || ''}</td>
-      <td>${docente.Telefono || ''}</td>
-      <td>${docente.GradoAcademico || ''}</td>
-      <td>${getCursoNombresByIds(docente.cursosAsignados)}</td>
+      <td>${docente.edad || ''}</td>
+      <td>${docente.telefono || ''}</td>
+      <td>${docente.estado || ''}</td>
+      <td>${docente.gradoAcademico || ''}</td>
       <td>
         <button class="btn-editar">Editar</button>
         <button class="btn-borrar">Borrar</button>
@@ -209,19 +191,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const correo = formDocente.correoDoc.value;
     const edad = formDocente.edadDoc.value;
     const telefono = formDocente.telefonoDoc.value;
-    const gradoAcademico = formDocente.gradoAcademico.value;
+    const estado = formDocente.estadoDoc.value;
+    const gradoAcademico = formDocente.gradoAcademicoDoc.value;
     const password = formDocente.passwordDoc.value;
-    const cursosAsignados = Array.from(cursosSelect.selectedOptions).map(option => option.value);
+
+    // Obtener cursos seleccionados
+    const selectedOptions = Array.from(cursosSelect.selectedOptions);
+    const cursosAsignados = selectedOptions.map(option => option.value);
 
     const docenteData = {
-      Nombre: nombre,
-      Apellido: apellido,
+      nombre: nombre,
+      apellido: apellido,
       correo: correo,
-      Edad: edad,
-      Telefono: telefono,
-      GradoAcademico: gradoAcademico,
-      password: password || undefined,
-      cursosAsignados: cursosAsignados,
+      edad: edad,
+      telefono: telefono,
+      estado: estado,
+      gradoAcademico: gradoAcademico,
+      password: password,
+      cursosAsignados: cursosAsignados
     };
 
     try {
@@ -233,8 +220,8 @@ document.addEventListener('DOMContentLoaded', () => {
           editandoFila.cells[2].textContent = correo;
           editandoFila.cells[3].textContent = edad;
           editandoFila.cells[4].textContent = telefono;
-          editandoFila.cells[5].textContent = gradoAcademico;
-          editandoFila.cells[6].textContent = getCursoNombresByIds(cursosAsignados);
+          editandoFila.cells[5].textContent = estado;
+          editandoFila.cells[6].textContent = gradoAcademico;
         }
       } else {
         const result = await crearDocente(docenteData);
@@ -242,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       cerrarModal();
     } catch (error) {
-      // Error already handled
+      // Error ya manejado
     }
   });
 
@@ -255,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
           await eliminarDocente(docenteId);
           fila.remove();
         } catch (error) {
-          // Error already handled
+          // Error ya manejado
         }
       } else {
         fila.remove();
@@ -266,14 +253,15 @@ document.addEventListener('DOMContentLoaded', () => {
       formDocente.apellidoDoc.value = fila.cells[1].textContent;
       formDocente.correoDoc.value = fila.cells[2].textContent;
       formDocente.edadDoc.value = fila.cells[3].textContent;
-      formDocente.telefonoDoc.value = fila.dataset.telefono || '';
-      formDocente.gradoAcademico.value = fila.cells[5].textContent;
+      formDocente.telefonoDoc.value = fila.cells[4].textContent;
+      formDocente.estadoDoc.value = fila.cells[5].textContent;
+      formDocente.gradoAcademicoDoc.value = fila.cells[6].textContent;
 
-      // Seleccionar cursos asignados en el select múltiple
+      // Cargar cursos asignados en el select múltiple
       const cursosAsignados = JSON.parse(fila.dataset.cursosAsignados || '[]');
-      Array.from(cursosSelect.options).forEach(option => {
+      for (const option of cursosSelect.options) {
         option.selected = cursosAsignados.includes(option.value);
-      });
+      }
 
       editandoFila = fila;
       editandoDocenteId = fila.dataset.id || null;

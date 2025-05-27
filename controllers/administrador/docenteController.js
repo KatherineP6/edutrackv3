@@ -1,21 +1,21 @@
-const docenteService = require('../../services/administrador/docenteService');
+const Docente = require('../../models/administrador/docenteModel');
 const bcrypt = require('bcrypt');
 const SALT_ROUNDS = 10;
 
 // --- API Docentes ---
 exports.getAllDocentes = async (req, res) => {
     try {
-        const docentes = await docenteService.getAllDocentes();
-        res.json(docentes);
+        const docentes = await Docente.find().lean();
+        res.status(200).json(docentes);
     } catch (error) {
-        console.error('Error obteniendo docentes:', error);
-        res.status(500).json({ message: 'Error interno al obtener docentes.' });
+        console.error('Error al obtener docentes:', error);
+        res.status(500).json({ error: error.message });
     }
 };
 
 exports.getDocenteById = async (req, res) => {
     try {
-        const docente = await docenteService.getDocenteById(req.params.id);
+        const docente = await Docente.findById(req.params.id).lean();
         if (!docente) {
             return res.status(404).json({ message: 'Docente no encontrado.' });
         }
@@ -28,37 +28,28 @@ exports.getDocenteById = async (req, res) => {
 
 exports.createDocente = async (req, res) => {
     try {
-        const { nombre, apellido, email, password, edad, telefono, estado, gradoAcademico, cursosAsignados } = req.body;
+        const { nombre, apellido, correo, password, edad, telefono, estado, gradoAcademico, cursosAsignados } = req.body;
 
-        if (!nombre) {
-            return res.status(400).json({ message: 'El campo nombre es requerido.' });
-        }
-        if (!apellido) {
-            return res.status(400).json({ message: 'El campo apellido es requerido.' });
-        }
-        if (!email) {
-            return res.status(400).json({ message: 'El campo email es requerido.' });
-        }
-        if (!password) {
-            return res.status(400).json({ message: 'El campo password es requerido.' });
+        if (!nombre || !correo || !password) {
+            return res.status(400).json({ message: 'Nombre, correo y password son requeridos.' });
         }
 
         const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
-        const docenteData = {
+        const docente = new Docente({
             nombre,
-            apellido,
-            email,
+            apellido: apellido || '',
+            correo,
             password: hashedPassword,
-            Edad: edad,
-            Telefono: telefono,
-            Estado: estado,
-            GradoAcademico: gradoAcademico,
+            edad: edad || '',
+            telefono: telefono || '',
+            estado: estado || '',
+            gradoAcademico: gradoAcademico || '',
             cursosAsignados: cursosAsignados || []
-        };
+        });
 
-        const docente = await docenteService.createDocente(docenteData);
-        res.status(201).json({ message: 'Docente creado exitosamente.', docente });
+        const savedDocente = await docente.save();
+        res.status(201).json({ message: 'Docente creado exitosamente.', docente: savedDocente });
     } catch (error) {
         console.error('Error creando docente:', error);
         res.status(500).json({ message: 'Error interno al crear docente.' });
@@ -67,34 +58,29 @@ exports.createDocente = async (req, res) => {
 
 exports.updateDocente = async (req, res) => {
     try {
-        const { nombre, apellido, email, password, edad, telefono, estado, gradoAcademico, cursosAsignados } = req.body;
+        const { id } = req.params;
+        const { nombre, apellido, correo, password, edad, telefono, estado, gradoAcademico, cursosAsignados } = req.body;
 
-        if (!nombre) {
-            return res.status(400).json({ message: 'El campo nombre es requerido.' });
-        }
-        if (!apellido) {
-            return res.status(400).json({ message: 'El campo apellido es requerido.' });
-        }
-        if (!email) {
-            return res.status(400).json({ message: 'El campo email es requerido.' });
+        if (!nombre || !correo) {
+            return res.status(400).json({ message: 'Nombre y correo son requeridos.' });
         }
 
-        const docenteData = {
+        const updateData = {
             nombre,
-            apellido,
-            email,
-            Edad: edad,
-            Telefono: telefono,
-            Estado: estado,
-            GradoAcademico: gradoAcademico,
+            apellido: apellido || '',
+            correo,
+            edad: edad || '',
+            telefono: telefono || '',
+            estado: estado || '',
+            gradoAcademico: gradoAcademico || '',
             cursosAsignados: cursosAsignados || []
         };
 
         if (password) {
-            docenteData.password = await bcrypt.hash(password, SALT_ROUNDS);
+            updateData.password = await bcrypt.hash(password, SALT_ROUNDS);
         }
 
-        const docente = await docenteService.updateDocente(req.params.id, docenteData);
+        const docente = await Docente.findByIdAndUpdate(id, updateData, { new: true });
 
         if (!docente) {
             return res.status(404).json({ message: 'Docente no encontrado.' });
@@ -109,7 +95,7 @@ exports.updateDocente = async (req, res) => {
 
 exports.deleteDocente = async (req, res) => {
     try {
-        const docente = await docenteService.deleteDocente(req.params.id);
+        const docente = await Docente.findByIdAndDelete(req.params.id);
 
         if (!docente) {
             return res.status(404).json({ message: 'Docente no encontrado.' });
@@ -119,16 +105,5 @@ exports.deleteDocente = async (req, res) => {
     } catch (error) {
         console.error('Error eliminando docente:', error);
         res.status(500).json({ message: 'Error interno al eliminar docente.' });
-    }
-};
-
-exports.getCoursesForDocente = async (req, res) => {
-    try {
-        const docenteId = req.session.userId;
-        const cursos = await docenteService.getCoursesForDocente(docenteId);
-        res.json(cursos);
-    } catch (error) {
-        console.error('Error obteniendo cursos:', error);
-        res.status(500).json({ message: 'Error obteniendo cursos', error: error.message });
     }
 };

@@ -175,11 +175,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const fila = document.createElement('tr');
     fila.dataset.id = estudiante._id;
     fila.innerHTML = `
-      <td>${estudiante.Nombre}</td>
-      <td>${estudiante.Apellidos || ''}</td>
+      <td>${estudiante.nombre}</td>
+      <td>${estudiante.apellidos || ''}</td>
       <td>${estudiante.correo}</td>
-      <td>${estudiante.Edad || ''}</td>
-      <td>${estudiante.Direccion || ''}</td>
+      <td>${estudiante.edad || ''}</td>
+      <td>${estudiante.direccion || ''}</td>
       <td>${estudiante.nombreCarrera || ''}</td>
       <td>
         <button class="btn-editar">Editar</button>
@@ -202,11 +202,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const carreraId = formEstudiante.carreraEst.value;
 
     const estudianteData = {
-      Nombre: nombre,
-      Apellidos: apellido,
+      nombre: nombre,
+      apellidos: apellido,
       correo: correo,
-      Edad: edad,
-      Direccion: direccion,
+      edad: edad,
+      direccion: direccion,
       password: password,
       carreraId: carreraId || null
     };

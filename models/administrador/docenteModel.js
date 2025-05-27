@@ -6,27 +6,27 @@ const docenteSchema = new Schema({
     type: String,
     required: true
   },
-  Nombre: {
+  nombre: {
     type: String,
     required: true
   },
-  Apellido: {
+  apellido: {
     type: String,
     trim: true
   },
-  Edad: {
+  edad: {
     type: String,
     trim: true
   },
-  Telefono: {
+  telefono: {
     type: String,
     trim: true
   },
-  Estado: {
+  estado: {
     type: String,
     trim: true
   },
-  GradoAcademico: {
+  gradoAcademico: {
     type: String,
     trim: true
   },
@@ -40,6 +40,7 @@ const docenteSchema = new Schema({
   cursosAsignados: [{
     type: Schema.Types.ObjectId,
     ref: 'cursos' // Referencia al modelo de cursos
+    
   }]
 }, {
   timestamps: true
