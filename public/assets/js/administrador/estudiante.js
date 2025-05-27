@@ -1,95 +1,34 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const modal = document.getElementById('modalEstudianteContainer');
+  const tablaCuerpo = document.querySelector('#studentsSectionTable tbody');
+  const modalEstudiante = document.getElementById('modalEstudianteContainer');
+  const modalTitle = document.getElementById('modalEstudianteTitle');
+  const formEstudiante = document.getElementById('formEstudiante');
   const btnNuevoEstudiante = document.getElementById('createEstudianteBtn');
   const btnCerrarModal = document.getElementById('modalEstudianteCloseBtn');
-  const btnCancelar = document.getElementById('cancelEstudianteBtn');
-  const formEstudiante = document.getElementById('formEstudiante');
-  const tablaCuerpo = document.querySelector('#studentsSectionTable tbody');
-  const carreraSelect = document.getElementById('carreraEst');
+  const btnCancelarModal = document.getElementById('cancelEstudianteBtn');
 
-  let editandoFila = null;
-  let editandoEstudianteId = null;
+  const deleteModal = document.getElementById('deleteEstudianteModal');
+  const btnCerrarDeleteModal = document.getElementById('deleteEstudianteCloseBtn');
+  const btnCancelarDelete = document.getElementById('cancelDeleteEstudianteBtn');
+  const btnConfirmarDelete = document.getElementById('confirmDeleteEstudianteBtn');
+
+  let estudianteEditandoId = null;
+  let estudianteEliminandoId = null;
+
+  const selectCursos = formEstudiante.querySelector('#cursosEst');
+  const passwordField = formEstudiante.querySelector('#passwordEst');
+
+  let cursosList = [];
+  const carreraSelect = formEstudiante.querySelector('#carreraEst');
   let carrerasList = [];
 
-  function abrirModal() {
-    modal.classList.remove('hidden');
-    formEstudiante.reset();
-    limpiarErrores();
-    editandoFila = null;
-    editandoEstudianteId = null;
-    document.getElementById('modalEstudianteTitle').textContent = 'Nuevo Estudiante';
-  }
-
-  function cerrarModal() {
-    modal.classList.add('hidden');
-    formEstudiante.reset();
-    limpiarErrores();
-    editandoFila = null;
-    editandoEstudianteId = null;
-  }
-
-  function mostrarError(input, mensaje) {
-    let errorElem = input.parentElement.querySelector('.error-message');
-    if (!errorElem) {
-      errorElem = document.createElement('small');
-      errorElem.className = 'error-message';
-      errorElem.style.color = 'red';
-      input.parentElement.appendChild(errorElem);
-    }
-    errorElem.textContent = mensaje;
-    input.classList.add('input-error');
-  }
-
-  function limpiarError(input) {
-    const errorElem = input.parentElement.querySelector('.error-message');
-    if (errorElem) errorElem.textContent = '';
-    input.classList.remove('input-error');
-  }
-
-  function limpiarErrores() {
-    formEstudiante.querySelectorAll('.error-message').forEach(e => e.textContent = '');
-    formEstudiante.querySelectorAll('.input-error').forEach(i => i.classList.remove('input-error'));
-  }
-
-  function validarCampo(input) {
-    limpiarError(input);
-    if (!input.value.trim()) {
-      mostrarError(input, 'Este campo es obligatorio');
-      return false;
-    }
-    if (input.id === 'correoEst') {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(input.value.trim())) {
-        mostrarError(input, 'Correo inválido');
-        return false;
-      }
-    }
-    if (input.id === 'edadEst') {
-      const edad = parseInt(input.value, 10);
-      if (isNaN(edad) || edad < 0) {
-        mostrarError(input, 'Edad inválida');
-        return false;
-      }
-    }
-    return true;
-  }
-
-  function validarFormulario() {
-    limpiarErrores();
-    let valido = true;
-    formEstudiante.querySelectorAll('input[required]').forEach(input => {
-      if (!validarCampo(input)) valido = false;
-    });
-    return valido;
-  }
-
-  async function fetchCarreras() {
+  async function cargarCarreras() {
     try {
-      const response = await fetch('/api/carreras');
+      const response = await fetch('/api/carreras', { credentials: 'include' });
       if (!response.ok) throw new Error('Error al cargar carreras');
-      const data = await response.json();
-      carrerasList = data;
-      populateCarreraSelect(data);
+      const carreras = await response.json();
+      carrerasList = carreras;
+      populateCarreraSelect(carreras);
     } catch (error) {
       alert(error.message);
     }
@@ -105,174 +44,238 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  async function crearEstudiante(data) {
+  async function cargarCursos() {
     try {
-      const response = await fetch('/api/estudiantes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(data)
+      const response = await fetch('/api/cursos', { credentials: 'include' });
+      if (!response.ok) throw new Error('Error al cargar cursos');
+      const cursos = await response.json();
+      cursosList = cursos;
+      selectCursos.innerHTML = '';
+      cursos.forEach(curso => {
+        const option = document.createElement('option');
+        option.value = curso._id;
+        option.textContent = curso.nombre;
+        selectCursos.appendChild(option);
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message);
-      }
-      return await response.json();
     } catch (error) {
       alert(error.message);
-      throw error;
     }
   }
 
-  async function actualizarEstudiante(id, data) {
-    try {
-      const response = await fetch(`/api/estudiantes/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(data)
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al actualizar estudiante');
-      }
-      return await response.json();
-    } catch (error) {
-      alert(error.message);
-      throw error;
-    }
+  function abrirModal() {
+    modalEstudiante.classList.remove('hidden');
   }
 
-  async function eliminarEstudiante(id) {
-    try {
-      const response = await fetch(`/api/estudiantes/${id}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al eliminar estudiante');
-      }
-      return await response.json();
-    } catch (error) {
-      alert(error.message);
-      throw error;
-    }
+  function cerrarModal() {
+    modalEstudiante.classList.add('hidden');
+    formEstudiante.reset();
+    estudianteEditandoId = null;
+  }
+
+  function abrirDeleteModal() {
+    deleteModal.classList.remove('hidden');
+  }
+
+  function cerrarDeleteModal() {
+    deleteModal.classList.add('hidden');
+    estudianteEliminandoId = null;
+  }
+
+  function agregarFila(estudiante) {
+    const fila = document.createElement('tr');
+    fila.dataset.id = estudiante._id;
+
+    const cursosTexto = Array.isArray(estudiante.cursosEst)
+      ? estudiante.cursosEst.map(curso => curso.nombre).join(', ')
+      : '';
+
+    fila.innerHTML = `
+      <td>${estudiante.nombre}</td>
+      <td>${estudiante.apellido || ''}</td>
+      <td>${estudiante.correo}</td>
+      <td>${estudiante.edad || ''}</td>
+      <td>${estudiante.direccion || ''}</td>
+      <td>${estudiante.nombreCarrera || ''}</td>
+      <td>${cursosTexto}</td>
+      <td>
+        <button class="btn-editar">Editar</button>
+        <button class="btn-borrar">Borrar</button>
+      </td>
+    `;
+
+    fila.querySelector('.btn-editar').addEventListener('click', () => abrirModalEditar(estudiante));
+    fila.querySelector('.btn-borrar').addEventListener('click', () => abrirModalEliminar(estudiante._id));
+
+    tablaCuerpo.appendChild(fila);
   }
 
   async function cargarEstudiantes() {
     try {
-      const response = await fetch('/api/estudiantes');
+      const response = await fetch('/api/estudiantes', { credentials: 'include' });
       if (!response.ok) throw new Error('Error al cargar estudiantes');
       const data = await response.json();
+      tablaCuerpo.innerHTML = '';
       data.forEach(estudiante => agregarFila(estudiante));
     } catch (error) {
       alert(error.message);
     }
   }
 
-  function agregarFila(estudiante) {
-    const fila = document.createElement('tr');
-    fila.dataset.id = estudiante._id;
-    fila.innerHTML = `
-      <td>${estudiante.nombre}</td>
-      <td>${estudiante.apellidos || ''}</td>
-      <td>${estudiante.correo}</td>
-      <td>${estudiante.edad || ''}</td>
-      <td>${estudiante.direccion || ''}</td>
-      <td>${estudiante.nombreCarrera || ''}</td>
-      <td>
-        <button class="btn-editar">Editar</button>
-        <button class="btn-borrar">Borrar</button>
-      </td>
-    `;
-    tablaCuerpo.appendChild(fila);
+  btnNuevoEstudiante.addEventListener('click', () => {
+    estudianteEditandoId = null;
+    modalTitle.textContent = 'Nuevo Estudiante';
+    formEstudiante.reset();
+    passwordField.required = true;
+    passwordField.parentElement.style.display = 'block';
+    abrirModal();
+  });
+
+  // Toast notification container
+  const toastContainer = document.createElement('div');
+  toastContainer.id = 'toastContainer';
+  toastContainer.style.position = 'fixed';
+  toastContainer.style.top = '1rem';
+  toastContainer.style.right = '1rem';
+  toastContainer.style.zIndex = '9999';
+  document.body.appendChild(toastContainer);
+
+  function showToast(message, duration = 3000) {
+    const toast = document.createElement('div');
+    toast.textContent = message;
+    toast.style.background = '#4BB543';
+    toast.style.color = 'white';
+    toast.style.padding = '10px 20px';
+    toast.style.marginTop = '10px';
+    toast.style.borderRadius = '5px';
+    toast.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
+    toast.style.opacity = '0.9';
+    toast.style.transition = 'opacity 0.5s ease';
+
+    toastContainer.appendChild(toast);
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      setTimeout(() => {
+        toastContainer.removeChild(toast);
+      }, 500);
+    }, duration);
   }
 
-  formEstudiante.addEventListener('submit', async e => {
+  btnCerrarModal.addEventListener('click', cerrarModal);
+  btnCancelarModal.addEventListener('click', cerrarModal);
+
+  formEstudiante.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (!validarFormulario()) return;
 
-    const nombre = formEstudiante.nombreEst.value;
-    const apellido = formEstudiante.apellidoEst.value;
-    const correo = formEstudiante.correoEst.value;
-    const edad = formEstudiante.edadEst.value;
-    const direccion = formEstudiante.direccionEst.value;
-    const password = formEstudiante.passwordEst.value;
-    const carreraId = formEstudiante.carreraEst.value;
+    // Validación de campos requeridos
+    const nombre = formEstudiante.nombreEst.value.trim();
+    const apellido = formEstudiante.apellidoEst.value.trim();
+    const correo = formEstudiante.correoEst.value.trim();
+    const password = formEstudiante.passwordEst.value.trim();
 
-    const estudianteData = {
-      nombre: nombre,
-      apellidos: apellido,
-      correo: correo,
-      edad: edad,
-      direccion: direccion,
-      password: password,
-      carreraId: carreraId || null
+    if (!nombre || !apellido || !correo || (!estudianteEditandoId && !password)) {
+      showToast('Nombre, apellidos, correo y password son requeridos.');
+      return;
+    }
+
+    const formData = new FormData(formEstudiante);
+    const data = Object.fromEntries(formData.entries());
+
+    const payload = {
+      nombre: data.nombreEst,
+      apellido: data.apellidoEst,
+      correo: data.correoEst,
+      edad: data.edadEst,
+      direccion: data.direccionEst,
+      password: data.passwordEst && data.passwordEst.trim() !== '' ? data.passwordEst : undefined,
+      carreraId: data.carreraEst,
+      cursosEst: Array.from(selectCursos.selectedOptions).map(opt => opt.value)
     };
 
     try {
-      if (editandoEstudianteId) {
-        const result = await actualizarEstudiante(editandoEstudianteId, estudianteData);
-        if (editandoFila) {
-          editandoFila.cells[0].textContent = nombre;
-          editandoFila.cells[1].textContent = apellido;
-          editandoFila.cells[2].textContent = correo;
-          editandoFila.cells[3].textContent = edad;
-          editandoFila.cells[4].textContent = direccion;
-          editandoFila.cells[5].textContent = carreraId ? carrerasList.find(c => c._id === carreraId)?.nombre || '' : '';
-        }
+      let response;
+      if (estudianteEditandoId) {
+        response = await fetch(`/api/estudiantes/${estudianteEditandoId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          credentials: 'include'
+        });
       } else {
-        const result = await crearEstudiante(estudianteData);
-        agregarFila(result.estudiante || result);
+        response = await fetch('/api/estudiantes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          credentials: 'include'
+        });
       }
+      if (!response.ok) throw new Error('Error al guardar estudiante');
+      showToast(estudianteEditandoId ? 'Estudiante actualizado exitosamente' : 'Estudiante creado exitosamente');
       cerrarModal();
+      cargarEstudiantes();
     } catch (error) {
-      // Error ya manejado
+      showToast(error.message || 'Error al guardar estudiante');
     }
   });
 
-  tablaCuerpo.addEventListener('click', async e => {
-    if (e.target.classList.contains('btn-borrar')) {
-      const fila = e.target.closest('tr');
-      const estudianteId = fila.dataset.id;
-      if (estudianteId) {
-        try {
-          await eliminarEstudiante(estudianteId);
-          fila.remove();
-        } catch (error) {
-          // Error ya manejado
+  function abrirModalEditar(estudiante) {
+    estudianteEditandoId = estudiante._id;
+    modalTitle.textContent = 'Editar Estudiante';
+    formEstudiante.nombreEst.value = estudiante.nombre || '';
+    formEstudiante.apellidoEst.value = estudiante.apellido || '';
+    formEstudiante.correoEst.value = estudiante.correo || '';
+    formEstudiante.passwordEst.value = '';
+    formEstudiante.edadEst.value = estudiante.edad || '';
+    formEstudiante.direccionEst.value = estudiante.direccion || '';
+    formEstudiante.carreraEst.value = estudiante.carreraId || '';
+
+    // Limpiar selección previa
+    for (let i = 0; i < selectCursos.options.length; i++) {
+      selectCursos.options[i].selected = false;
+    }
+    // Seleccionar cursos asignados
+    if (Array.isArray(estudiante.cursosEst)) {
+      for (let j = 0; j < estudiante.cursosEst.length; j++) {
+        for (let i = 0; i < selectCursos.options.length; i++) {
+          if (selectCursos.options[i].value.toString() === estudiante.cursosEst[j]._id.toString() ||
+              selectCursos.options[i].value.toString() === estudiante.cursosEst[j].toString()) {
+            selectCursos.options[i].selected = true;
+            break;
+          }
         }
-      } else {
-        fila.remove();
       }
-    } else if (e.target.classList.contains('btn-editar')) {
-      const fila = e.target.closest('tr');
-      formEstudiante.nombreEst.value = fila.cells[0].textContent;
-      formEstudiante.apellidoEst.value = fila.cells[1].textContent;
-      formEstudiante.correoEst.value = fila.cells[2].textContent;
-      formEstudiante.edadEst.value = fila.cells[3].textContent;
-      formEstudiante.direccionEst.value = fila.cells[4].textContent;
-
-      const nombreCarrera = fila.cells[5].textContent;
-      const carrera = carrerasList.find(c => c.nombre === nombreCarrera);
-      formEstudiante.carreraEst.value = carrera ? carrera._id : '';
-
-      editandoFila = fila;
-      editandoEstudianteId = fila.dataset.id || null;
-      document.getElementById('modalEstudianteTitle').textContent = 'Editar Estudiante';
-      modal.classList.remove('hidden');
     }
-  });
 
-  btnNuevoEstudiante.addEventListener('click', abrirModal);
-  btnCerrarModal.addEventListener('click', cerrarModal);
-  btnCancelar.addEventListener('click', cerrarModal);
+    passwordField.required = false;
+    passwordField.parentElement.style.display = 'none';
 
-  async function init() {
-    await fetchCarreras();
-    await cargarEstudiantes();
+    abrirModal();
   }
 
-  init();
+  function abrirModalEliminar(id) {
+    estudianteEliminandoId = id;
+    abrirDeleteModal();
+  }
+
+  btnCerrarDeleteModal.addEventListener('click', cerrarDeleteModal);
+  btnCancelarDelete.addEventListener('click', cerrarDeleteModal);
+
+  btnConfirmarDelete.addEventListener('click', async () => {
+    try {
+      const response = await fetch(`/api/estudiantes/${estudianteEliminandoId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Error al eliminar estudiante');
+      alert('Estudiante eliminado exitosamente');
+      cerrarDeleteModal();
+      cargarEstudiantes();
+    } catch (error) {
+      alert(error.message);
+    }
+  });
+
+  cargarCarreras();
+  cargarCursos();
+  cargarEstudiantes();
 });
