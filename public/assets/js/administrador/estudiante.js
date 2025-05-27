@@ -50,17 +50,29 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!response.ok) throw new Error('Error al cargar cursos');
       const cursos = await response.json();
       cursosList = cursos;
-      selectCursos.innerHTML = '';
-      cursos.forEach(curso => {
-        const option = document.createElement('option');
-        option.value = curso._id;
-        option.textContent = curso.nombre;
-        selectCursos.appendChild(option);
-      });
+      filtrarYCargarCursos(carreraSelect.value);
     } catch (error) {
       alert(error.message);
     }
   }
+
+  function filtrarYCargarCursos(carreraId) {
+    selectCursos.innerHTML = '';
+    const cursosFiltrados = cursosList.filter(curso => {
+      // Compare string representations to avoid type mismatch
+      return !carreraId || (curso.carreraId && curso.carreraId.toString() === carreraId.toString());
+    });
+    cursosFiltrados.forEach(curso => {
+      const option = document.createElement('option');
+      option.value = curso._id;
+      option.textContent = curso.nombre;
+      selectCursos.appendChild(option);
+    });
+  }
+
+  carreraSelect.addEventListener('change', () => {
+    filtrarYCargarCursos(carreraSelect.value);
+  });
 
   function abrirModal() {
     modalEstudiante.classList.remove('hidden');
