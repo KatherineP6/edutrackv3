@@ -1,0 +1,101 @@
+<section id="soporte" class="tab-section active">
+  <div class="dashboard-home">
+    <div class="charts-stats">
+      <div class="section-header d-flex justify-content-between align-items-center mb-3">
+        <h2>Gestión de Agentes de Soporte</h2>    
+      </div>
+      <div>
+        <button id="createSoporteBtn" class="btn-primary">➕ Nuevo Agente de Soporte</button>
+      </div>
+      <div class="button-table-container">
+        <div class="card full-width">
+          <div class="card-body">
+            <table id="soporteSectionTable" class="data-table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Apellido</th>
+                  <th>Correo</th>
+                  <th>Teléfono</th>
+                  <th>Dirección</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Aquí se llenarán los datos de los agentes de soporte -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modalSoporteContainer" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalSoporteTitle">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h3 id="modalSoporteTitle">Nuevo Agente de Soporte</h3>
+        <button id="modalSoporteCloseBtn" aria-label="Cerrar diálogo">&times;</button>
+      </header>
+      <form id="formSoporte" class="modal-body" novalidate>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <div style="flex: 1 1 45%;">
+            <label for="nombreSoporte">Nombre</label>
+            <input type="text" id="nombreSoporte" name="nombreSoporte" class="form-control" required />
+          </div>
+          <div style="flex: 1 1 45%;">
+            <label for="apellidoSoporte">Apellido</label>
+            <input type="text" id="apellidoSoporte" name="apellidoSoporte" class="form-control" required />
+          </div>
+          <div style="flex: 1 1 45%;">
+            <label for="correoSoporte">Correo</label>
+            <input type="email" id="correoSoporte" name="correoSoporte" class="form-control" required />
+          </div>
+          <div style="flex: 1 1 45%;">
+            <label for="passwordSoporte">Password</label>
+            <input type="password" id="passwordSoporte" name="passwordSoporte" class="form-control" />
+          </div>
+          <div style="flex: 1 1 45%;">
+            <label for="telefonoSoporte">Teléfono</label>
+            <input type="text" id="telefonoSoporte" name="telefonoSoporte" class="form-control" />
+          </div>
+            <div style="flex: 1 1 45%;">
+            <label for="direccionSoporte">Direccion</label>
+            <input type="text" id="direccionSoporte" name="direccionSoporte" class="form-control" />
+          </div>
+          <div style="flex: 1 1 100%; margin-top: 1rem;">
+            <label for="estadoSoporte">
+              <input type="checkbox" id="estadoSoporte" name="estadoSoporte" checked />
+              Activo
+            </label>
+          </div>
+        </div>
+        <div class="form-group mb-3" style="margin-top: 1rem;">
+          <button type="button" id="cancelSoporteBtn" class="btn-secondary">Cancelar</button>
+          <button type="submit" id="saveSoporteBtn" class="btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteSoporteModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="deleteSoporteTitle">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h3 id="deleteSoporteTitle">Confirmar Eliminación</h3>
+        <button id="deleteSoporteCloseBtn" aria-label="Cerrar diálogo">&times;</button>
+      </header>
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas eliminar este agente de soporte?</p>
+        <div class="form-group mb-3">
+          <button type="button" id="cancelDeleteSoporteBtn" class="btn-secondary">Cancelar</button>
+          <button type="button" id="confirmDeleteSoporteBtn" class="btn-primary">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="/assets/js/administrador/soporte.js"></script>

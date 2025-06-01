@@ -1,25 +1,24 @@
-<div id="chatbot" class="chatbot" data-username="<%= user && user.name ? user.name : 'Usuario' %>">
-  <div class="chatbot-header">
-      <span>Chatbot EduTrack360</span>
-      <button id="minimizeChatbot" class="minimize-chatbot" aria-label="Minimizar chat">−</button>
-      <button id="closeChatbot" class="close-chatbot" aria-label="Cerrar chat">×</button>
+
+<div id="chatbot" class="chat-container" data-username="<%= typeof user !== 'undefined' && user.name ? user.name : 'Usuario' %>">
+  <button class="chat-toggle" id="chatToggle">💬</button>
+  <div class="chat-header">
+    🎨 Chat EduTrack360
+    <button id="minimizeChatbot" title="Minimizar chat" style="background:none; border:none; font-size:18px; cursor:pointer;">&#x2212;</button>
   </div>
-  <div id="chatbotMessages" class="chatbot-messages">
+  <div class="chat-body" id="chatbotMessages">
       <!-- Los mensajes aparecerán aquí -->
   </div>
 
-  <textarea id="chatbotInput" placeholder="Escribe tu mensaje"></textarea>
-  <button id="chatbotSend" class="chatbot-send">>></button>
+  <div class="chat-input">
+    <input type="text" id="chatbotInput" placeholder="Escribe tu mensaje" />
+    <button id="chatbotSend" class="chatbot-send">>></button>
+  </div>
   <div id="writing"></div>
-
-  <!-- Added input and button for changing username -->
-
 </div>
 
-<div id="chatbotMinimized" class="chatbot-minimized" style="display:none;" aria-label="Chatbot minimizado" tabindex="0">
-  <span>Chatbot EduTrack360</span>
+
+<div id="chatbotBubble" style="display:none; position: fixed; bottom: 20px; right: 20px; background-color: #cdb4db; color: #2d3142; border-radius: 50%; width: 60px; height: 60px; font-size: 28px; text-align: center; line-height: 60px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+  💬
 </div>
 
-<div id="chatbotBubble" class="chatbot-bubble" style="display:none;" aria-label="Chatbot burbuja minimizada" tabindex="0" title="Abrir chat">
-  <img src="/assets/img/chatbot_icon.png" alt="Chatbot" />
-</div>
+<link rel="stylesheet" href="/assets/css/comun/chatbot_pastel.css" />

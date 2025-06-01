@@ -110,6 +110,14 @@
         <div class="container">
             <p>&copy; 2025 EduTrack360 - Todos los derechos reservados.</p>
         </div>
-    </footer>
+</footer>
+
+<!-- Chatbot container -->
+<div id="chatbot-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+  <%- include('../comun/chatbot') %>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/assets/js/comun/chatbot.js"></script>
 </body>
 </html>

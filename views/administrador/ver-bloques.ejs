@@ -1,0 +1,142 @@
+<section id="bloques" class="tab-section active">
+  <div class="dashboard-home">
+    <div class="charts-stats">
+      <div class="section-header d-flex justify-content-between align-items-center mb-3">
+        <h2>Gestión de Bloques</h2>
+      </div>
+      <div>
+        <button id="createBloqueBtn" class="btn-primary">➕ Nuevo Bloque</button>
+      </div>
+      <div class="button-table-container">
+        <div class="card">
+          <div class="card-body">
+            <table id="bloquesTable" class="data-table" style="min-width: 900px;">
+              <thead>
+                <tr>
+                  <th>Fecha Inicio</th>
+                  <th>Fecha Fin</th>
+                  <th>Días de la Semana</th>
+                  <th>Hora Inicio</th>
+                  <th>Hora Fin</th>
+                  <th>Curso</th>
+                  <th>Docente</th>
+                  <th>Salón</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Aquí se llenarán los datos de los bloques -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modalContainer" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h3 id="modalTitle">Nuevo Bloque</h3>
+        <button id="modalCloseBtn" aria-label="Cerrar diálogo">&times;</button>
+      </header>
+      <form id="formBloque" class="modal-body" novalidate>
+        <div class="row">
+          <div class="form-group mb-3 col-md-12">
+            <label for="diasSemana">Días de la Semana</label>
+            <select id="diasSemana" name="diasSemana" class="form-control" multiple required>
+              <option value="Lunes">Lunes</option>
+              <option value="Martes">Martes</option>
+              <option value="Miércoles">Miércoles</option>
+              <option value="Jueves">Jueves</option>
+              <option value="Viernes">Viernes</option>
+              <option value="Sábado">Sábado</option>
+              <option value="Domingo">Domingo</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group mb-1 col-md-3">
+            <label for="fechaInicio">Fecha Inicio</label>
+            <input type="date" id="fechaInicio" name="fechaInicio" class="form-control" required />
+          </div>
+
+          <div class="form-group mb-1 col-md-3">
+            <label for="fechaFin">Fecha Fin</label>
+            <input type="date" id="fechaFin" name="fechaFin" class="form-control" required />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group mb-3 col-md-6">
+            <label for="horaInicio">Hora Inicio</label>
+            <input type="time" id="horaInicio" name="horaInicio" class="form-control" required />
+          </div>
+
+          <div class="form-group mb-3 col-md-6">
+            <label for="horaFin">Hora Fin</label>
+            <input type="time" id="horaFin" name="horaFin" class="form-control" required />
+          </div>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="curso">Curso</label>
+          <select id="curso" name="curso" class="form-control" required>
+            <option value="" disabled selected>Selecciona un curso</option>
+            <!-- Opciones de cursos cargadas dinámicamente -->
+          </select>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="docente">Docente</label>
+          <select id="docente" name="docente" class="form-control" required>
+            <option value="" disabled selected>Selecciona un docente</option>
+            <!-- Opciones de docentes cargadas dinámicamente -->
+          </select>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="salon">Salón</label>
+          <select id="salon" name="salon" class="form-control" required>
+            <option value="" disabled selected>Selecciona un salón</option>
+            <!-- Opciones de salones cargadas dinámicamente -->
+          </select>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="estado">
+            <input type="checkbox" id="estado" name="estado" checked />
+            Activo
+          </label>
+        </div>
+
+        <div class="form-group mb-3">
+          <button type="button" id="cancelBtn" class="btn-secondary">Cancelar</button>
+          <button type="submit" id="saveBtn" class="btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteConfirmModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h3 id="deleteModalTitle">Confirmar Eliminación</h3>
+        <button id="deleteModalCloseBtn" aria-label="Cerrar diálogo">&times;</button>
+      </header>
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas eliminar este bloque?</p>
+        <div class="form-group mb-3">
+          <button type="button" id="deleteCancelBtn" class="btn-secondary">Cancelar</button>
+          <button type="button" id="deleteConfirmBtn" class="btn-primary">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="/assets/js/administrador/bloque.js"></script>

@@ -32,7 +32,7 @@
     </div>
   </div>
 
-  <!-- Modal -->
+  <!-- Modal para crear/editar curso -->
   <div id="modalContainer" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-content">
       <header class="modal-header">
@@ -53,8 +53,8 @@
         <div class="form-group mb-3">
           <label for="tipo">Tipo</label>
           <select id="tipo" name="tipo" class="form-control" required>
-            <option value="taller" selected>Taller</option>
-            <option value="carrera">Carrera</option>
+            <option value="Practico" selected>Practico</option>
+            <option value="Teorico">Teorico</option>
           </select>
         </div>
 
@@ -63,25 +63,35 @@
           <input type="number" id="precio" name="precio" class="form-control" min="0" step="0.01" required />
         </div>
 
-        <div class="form-group mb-3" id="carreraGroup" style="display:none;">
-          <label for="carreraId">Carrera</label>
-          <select id="carreraId" name="carreraId" class="form-control" required>
-            <% if (typeof carreras !== 'undefined') { %>
-              <% carreras.forEach(function(carrera) { %>
-                <option value="<%= carrera._id %>"><%= carrera.nombre %></option>
-              <% }); %>
-            <% } %>
-          </select>
-        </div>
-
-        <div class="form-group mb-3" id="semestreGroup" style="display:none;">
-          <label for="semestre">Semestre</label>
-          <input type="number" id="semestre" name="semestre" class="form-control" min="1" />
-        </div>
-
         <div class="form-group mb-3">
           <button type="button" id="CancelBtn" class="btn-secondary">Cancelar</button>
           <button type="submit" id="SaveBtn" class="btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal para seleccionar carrera y semestre -->
+  <div id="modalCarreraSemestre" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalCarreraSemestreTitle">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h3 id="modalCarreraSemestreTitle">Seleccionar Carrera y Semestre</h3>
+        <button id="modalCarreraSemestreCloseBtn" aria-label="Cerrar diálogo">&times;</button>
+      </header>
+      <form id="formCarreraSemestre" class="modal-body" novalidate>
+        <div class="form-group mb-3">
+          <label for="semestreSelect">Semestre</label>
+          <input type="number" id="semestreSelect" name="semestreSelect" class="form-control" min="1" max="30" required />
+        </div>
+        <div class="form-group mb-3">
+          <label for="carreraSelect">Carrera</label>
+          <select id="carreraSelect" name="carreraSelect" class="form-control" required>
+            <option value="">Seleccione una carrera</option>
+          </select>
+        </div>
+        <div class="form-group mb-3">
+          <button type="button" id="cancelCarreraSemestreBtn" class="btn-secondary">Cancelar</button>
+          <button type="submit" id="saveCarreraSemestreBtn" class="btn-primary">Guardar</button>
         </div>
       </form>
     </div>
@@ -105,25 +115,3 @@
   </div>
 </section>
 <script src="/assets/js/administrador/cursos.js"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const tipoSelect = document.getElementById('tipo');
-    const carreraGroup = document.getElementById('carreraGroup');
-    const semestreGroup = document.getElementById('semestreGroup');
-
-    function toggleCarreraSemestre() {
-      if (tipoSelect.value === 'carrera') {
-        carreraGroup.style.display = 'block';
-        semestreGroup.style.display = 'block';
-      } else {
-        carreraGroup.style.display = 'none';
-        semestreGroup.style.display = 'none';
-      }
-    }
-
-    tipoSelect.addEventListener('change', toggleCarreraSemestre);
-
-    // Inicializar estado al cargar la página/modal
-    toggleCarreraSemestre();
-  });
-</script>

@@ -14,19 +14,13 @@ exports.getAllCarrera = async (req, res) => {
   console.log('Sesión usuario:', req.session.userId, req.session.userRole);
   try {
     const carreras = await carreraService.getAllCarrera();
-    //console.log(docentes); // **No necesitamos esto para la respuesta**
-    res.status(200).json(carreras); // **Enviamos la respuesta como JSON**
+    
+    res.status(200).json(carreras); 
   } catch (error) {
     console.error('Error al obtener docentes:', error);
-    res.status(500).json({ "error": error.message }); // **Enviamos el error como JSON**
+    res.status(500).json({ "error": error.message }); 
   }
- /* try {
-    const carreras = await Carrera.find().lean();
-    res.json(carreras);
-  } catch (error) {
-    console.error('Error fetching carreras:', error);
-    res.status(500).json({ message: 'Error al obtener las carreras' });
-  }*/
+ 
 };
 
 exports.createCarrera = async (req, res) => {

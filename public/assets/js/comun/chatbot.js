@@ -11,15 +11,24 @@ window.onload = () => {
     const changeUsernameButton = document.getElementById('changeUsernameButton');
     const usernameInput = document.getElementById('usernameInput');
     const minimizeChatButton = document.getElementById('minimizeChatbot');
-    const chatbotMinimized = document.getElementById('chatbotMinimized');
+    // const chatbotMinimized = document.getElementById('chatbotMinimized');
     const chatbotBubble = document.getElementById('chatbotBubble');
 
     function displayMessage(sender, message) {
         const messageElement = document.createElement('div');
         messageElement.classList.add(`${sender}-message`);
-        messageElement.textContent = `${sender === 'user' ? username : 'Bot'}: ${message}`;
+        if (sender === 'bot') {
+            const colorClasses = ['color1', 'color2', 'color3', 'color4'];
+            const randomColor = colorClasses[Math.floor(Math.random() * colorClasses.length)];
+            messageElement.classList.add(randomColor);
+            messageElement.textContent = `Bot: ${message}`;
+        } else {
+            messageElement.textContent = `${username}: ${message}`;
+        }
         chatbotMessages.appendChild(messageElement);
-        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        setTimeout(() => {
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        }, 0);
     }
 
     chatbotSendButton.addEventListener('click', () => {
@@ -71,19 +80,19 @@ window.onload = () => {
 
     minimizeChatButton.addEventListener('click', () => {
         chatbotElement.classList.add('minimized');
-        chatbotMinimized.style.display = 'none';
+        // chatbotMinimized.style.display = 'none';
         chatbotBubble.style.display = 'block';
     });
 
-    chatbotMinimized.addEventListener('click', () => {
-        chatbotElement.classList.remove('minimized');
-        chatbotMinimized.style.display = 'none';
-        chatbotBubble.style.display = 'none';
-    });
+    // chatbotMinimized.addEventListener('click', () => {
+    //     chatbotElement.style.display = 'block';
+    //     chatbotMinimized.style.display = 'none';
+    //     chatbotBubble.style.display = 'none';
+    // });
 
     chatbotBubble.addEventListener('click', () => {
         chatbotElement.classList.remove('minimized');
-        chatbotMinimized.style.display = 'none';
+        // chatbotMinimized.style.display = 'none';
         chatbotBubble.style.display = 'none';
     });
 };

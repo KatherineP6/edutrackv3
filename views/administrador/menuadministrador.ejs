@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>EduTrack360 - Panel Administrativo</title>
   <link rel="stylesheet" href="/assets/css/administrador/styles.css" />
-  <link rel="stylesheet" href="/assets/css/comun/chatbot.css" />
+ 
     <link rel="stylesheet" href="/assets/css/administrador/modal.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -32,11 +32,13 @@
       <ul id="menuItems" class="menu-items">
         <li><a href="/admin/dashboard" class="menu-button <%= activeSection === 'dashboard' ? 'active' : '' %>">📊 Dashboard</a></li>
         <li><a href="/admin/salones" class="menu-button <%= activeSection === 'salones' ? 'active' : '' %>">📚 Ver Salones</a></li>
+        <li><a href="/admin/bloques" class="menu-button <%= activeSection === 'bloques' ? 'active' : '' %>">📚 Ver Bloques</a></li>
         <li><a href="/admin/carreras" class="menu-button <%= activeSection === 'carreras' ? 'active' : '' %>">🎓 Ver Carreras</a></li>
         <li><a href="/admin/cursos" class="menu-button <%= activeSection === 'cursos' ? 'active' : '' %>">📚 Ver Cursos</a></li>
         <li><a href="/admin/estudiantes" class="menu-button <%= activeSection === 'estudiante' ? 'active' : '' %>">🎓 Ver Estudiantes</a></li>
         <li><a href="/admin/docentes" class="menu-button <%= activeSection === 'docentes' ? 'active' : '' %>">👥 Ver Docentes</a></li>
         <li><a href="/admin/reportes" class="menu-button <%= activeSection === 'reportes' ? 'active' : '' %>">📄 Generar Reportes</a></li>
+        <li><a href="/admin/soporte" class="menu-button <%= activeSection === 'soporte' ? 'active' : '' %>">🛠️ Agentes de Soporte</a></li>
       </ul>
     </nav>
   </aside>

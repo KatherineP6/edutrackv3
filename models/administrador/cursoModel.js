@@ -14,7 +14,6 @@ const cursoSchema = new Schema({
   },
   tipo: {
     type: String,
-    enum: ['carrera', 'taller'],
     required: true
   },
   precio: {
@@ -23,18 +22,16 @@ const cursoSchema = new Schema({
     default: 0
   },
   carreras: [{
-    type: Schema.Types.ObjectId,
-    ref: 'carreras',
-    required: function () {
-      return this.tipo === 'carrera';
+    carrera: {
+      type: Schema.Types.ObjectId,
+      ref: 'carreras',
+      required: true
+    },
+    semestre: {
+      type: Number,
+      required: true
     }
-  }],
-  semestre: {
-    type: Number,
-    required: function () {
-      return this.tipo === 'carrera';
-    }
-  }
+  }]
 }, {
   timestamps: true
 });

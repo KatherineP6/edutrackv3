@@ -14,9 +14,10 @@
               <thead>
                 <tr>
                  
-                  <th>Bloque</th>
+                  <th>Nombre</th>
                   <th>Ubicación</th>
-                  <th>Capacidad</th>                
+                  <th>Capacidad</th>    
+                  <th>Descripcion</th>              
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -39,21 +40,9 @@
       </header>
       <form id="formSalon" class="modal-body" novalidate>
         <div class="form-group mb-3">
-          <label for="bloque">Bloque</label>
-          <select id="bloque" name="bloque" class="form-control" required>
-            <option value="">Seleccione un bloque</option>
-            <option value="A1">A1</option>
-            <option value="A2">A2</option>
-            <option value="A3">A3</option>
-            <option value="B1">B1</option>
-            <option value="B2">B2</option>
-            <option value="B3">B3</option>
-            <option value="C1">C1</option>
-            <option value="C2">C2</option>
-            <option value="C3">C3</option>
-            <option value="D1">D1</option>
-            <option value="D2">D2</option>
-            <option value="D3">D3</option>
+          <label for="Nombre">Nombre</label>
+          <input id="nombre" name="nombre" class="form-control" required>
+         
           </select>
          
         </div>
@@ -69,6 +58,11 @@
           <input type="number" id="capacidad" name="capacidad" class="form-control" min="1" required />        
         </div>
 
+         <div class="form-group mb-3">
+          <label for="descripcion">Descripcion</label>
+          <input type="text" id="descripcion" name="descripcion" class="form-control" required />
+         
+        </div>
       
         <div class="form-group mb-3">
           <button type="button" id="CancelBtn" class="btn-secondary">Cancelar</button>

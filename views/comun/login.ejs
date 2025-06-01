@@ -25,6 +25,7 @@
             <button class="role-button" onclick="showLogin('Administrador')">Administrador</button>
             <button class="role-button" onclick="showLogin('Estudiante')">Estudiante</button>
             <button class="role-button" onclick="showLogin('Docente')">Docente</button>
+            <button class="role-button" onclick="showLogin('Soporte')">Soporte</button>
         </div>
         <div class="right-section" id="login-form" style="display: none;">
             <h2 class="login-title" id="login-role-title">Iniciar sesión</h2>
@@ -55,14 +56,20 @@
             document.getElementById('login-form').style.display = 'flex';
             document.getElementById('login-role-title').textContent = `Iniciar sesión como ${role}`;
             document.getElementById('userRole').value = role;
-            document.getElementById('error-message').style.display = 'none'; // Ocultar mensajes de error al cambiar de rol
+            var errorMessageElem = document.querySelector('.error-message');
+            if (errorMessageElem) {
+                errorMessageElem.style.display = 'none'; // Ocultar mensajes de error al cambiar de rol
+            }
         }
 
         function goBack() {
             document.getElementById('role-selection').style.display = 'flex';
             document.getElementById('login-form').style.display = 'none';
             document.getElementById('userRole').value = '';
-            document.getElementById('error-message').style.display = 'none'; // Ocultar mensajes de error al volver
+            var errorMessageElem = document.querySelector('.error-message');
+            if (errorMessageElem) {
+                errorMessageElem.style.display = 'none'; // Ocultar mensajes de error al volver
+            }
         }
     </script>
 </body>

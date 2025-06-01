@@ -24,7 +24,7 @@ const docenteSchema = new Schema({
   },
   estado: {
     type: Boolean,
-    default: true // Activo por defecto
+    default: true 
   },
   gradoAcademico: {
     type: String,

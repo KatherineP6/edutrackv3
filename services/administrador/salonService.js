@@ -11,16 +11,17 @@ const salonService = {
   },
 
   createSalon: async (data) => {
-    const { capacidad, bloque, ubicacion } = data;
+    const { capacidad, nombre, ubicacion,descripcion } = data;
 
-    if (!capacidad || !bloque || !ubicacion) {
+    if (!capacidad || !nombre || !ubicacion) {
       throw new Error('Todos los campos son requeridos.');
     }
 
     const salonData = {
       capacidad: parseInt(capacidad),
-      bloque,
-      ubicacion
+      nombre,
+      ubicacion,
+      descripcion
     };
 
     const salon = new Salon(salonData);
@@ -28,16 +29,17 @@ const salonService = {
   },
 
   updateSalon: async (id, data) => {
-    const { capacidad, bloque, ubicacion } = data;
+    const { capacidad, nombre, ubicacion,descripcion } = data;
 
-    if (!capacidad || !bloque || !ubicacion) {
+    if (!capacidad || !nombre || !ubicacion) {
       throw new Error('Todos los campos son requeridos.');
     }
 
     const updateData = {
       capacidad: parseInt(capacidad),
-      bloque,
-      ubicacion
+      nombre,
+      ubicacion,
+      descripcion
     };
 
     const salon = await Salon.findByIdAndUpdate(
@@ -63,13 +65,7 @@ const salonService = {
     return salon;
   },
 
-  getSalonesRendimiento: async () => {
-    const salones = await Salon.find().select('bloque rendimiento').lean();
-    return {
-      labels: salones.map(s => s.bloque),
-      data: salones.map(s => s.rendimiento || 0)
-    };
-  }
+ 
 };
 
 module.exports = salonService;

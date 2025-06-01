@@ -3,6 +3,7 @@ const Salon = require('../../models/administrador/salonModel');
 const Estudiante = require('../../models/administrador/estudianteModel');
 const Docente = require('../../models/administrador/docenteModel');
 const Carrera = require('../../models/administrador/carreraModel');
+const Bloque = require('../../models/administrador/bloqueModel');
 
 // --- Renderizado Vistas ---
 exports.renderAdminDashboard = async (req, res) => {
@@ -34,6 +35,12 @@ exports.renderAdminDashboard = async (req, res) => {
         } else if (path.includes('/carreras')) {
             bodyView = 'ver-carreras';
             activeSection = 'carreras';
+        } else if (path.includes('/bloques')) {
+            bodyView = 'ver-bloques';
+            activeSection = 'bloques';
+        } else if (path.includes('/soporte')) {
+            bodyView = 'ver-agentesoporte';
+            activeSection = 'soporte';
         } else {
             // Redirigir por defecto al dashboard
             return res.redirect('/admin/dashboard');
@@ -45,6 +52,8 @@ exports.renderAdminDashboard = async (req, res) => {
             Estudiante.countDocuments(),
             Docente.countDocuments(),
             Carrera.countDocuments(),
+            Salon.countDocuments(),
+
         ]);
 
         // Obtener las carreras con más estudiantes (Top 5)

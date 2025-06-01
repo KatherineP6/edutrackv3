@@ -26,13 +26,13 @@ exports.getSalonById = async (req, res) => {
 
 exports.createSalon = async (req, res) => {
     try {
-        const { bloque, capacidad, ubicacion } = req.body;
+        const { nombre, capacidad, ubicacion,descripcion } = req.body;
 
-        if (!bloque || !capacidad || !ubicacion) {
+        if (!nombre || !capacidad || !ubicacion) {
             return res.status(400).json({ message: 'Todos los campos son requeridos.' });
         }
 
-        const salon = await salonService.createSalon({ bloque, capacidad, ubicacion });
+        const salon = await salonService.createSalon({ nombre, capacidad, ubicacion,descripcion });
         res.status(201).json({ message: 'Salon creado exitosamente.', salon });
     } catch (error) {
         console.error('Error creando salon:', error);
@@ -42,13 +42,13 @@ exports.createSalon = async (req, res) => {
 
 exports.updateSalon = async (req, res) => {
     try {
-        const { bloque, capacidad, ubicacion } = req.body;
+        const { nombre, capacidad, ubicacion,descripcion } = req.body;
 
-        if (!bloque || !capacidad || !ubicacion) {
+        if (!nombre || !capacidad || !ubicacion) {
             return res.status(400).json({ message: 'Todos los campos son requeridos.' });
         }
 
-        const salon = await salonService.updateSalon(req.params.id, { bloque, capacidad, ubicacion });
+        const salon = await salonService.updateSalon(req.params.id, { nombre, capacidad, ubicacion,descripcion });
         res.json({ message: 'Salon actualizado exitosamente.', salon });
     } catch (error) {
         console.error('Error actualizando salon:', error);

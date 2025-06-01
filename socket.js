@@ -1,8 +1,10 @@
 const MessageService = require('./services/comun/messageService');
+const TicketService = require('./services/comun/ticketService');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const messageService = new MessageService();
 const pdfParse = require('pdf-parse');
 const fs = require('fs');
+const Carrera = require('./models/administrador/carreraModel');
 
 let pdfContent = '';
 
@@ -31,14 +33,25 @@ module.exports = (io) => {
       console.error("Error al obtener los mensajes:", error.message);
     }
 
+    socket.on('load-messages-by-ticket', async (ticketId) => {
+      try {
+        const messages = await messageService.getMessagesByTicket(ticketId);
+        socket.emit('messages-by-ticket', messages);
+      } catch (error) {
+        console.error("Error al obtener mensajes por ticket:", error.message);
+      }
+    });
+
     socket.on('new-message', async (data) => {
       try {
         const userMessage = data.message.toLowerCase();
 
-        // Guardar el mensaje del usuario en la base de datos
+        // Guardar el mensaje del usuario en la base de datos con ticket o sin ticket
         const messageData = {
           username: data.username || "Usuario desconocido",  // Nombre de usuario dinámico
           message: data.message,
+          ticket: data.ticket || "SIN TICKET - CHATBOT",
+          rol: data.rol || "user"
         };
 
         // Llamar al método create para guardar el mensaje del usuario
@@ -54,21 +67,28 @@ module.exports = (io) => {
         ) {
 
           // Aquí puedes redirigir a la lógica para contactar al administrador
-          console.log('Redirigiendo al administrador...');
-          io.emit('chatbot-response', 'Estamos conectándote con un administrador. Un momento, por favor...');
+          console.log('Redirigiendo su solicitud ...');
 
-          // Aquí podrías notificar a un administrador real o abrir una nueva conexión para este propósito.
-          // Por ejemplo, crear una lógica para redirigir a un administrador real.
+          // Crear ticket para el usuario
+          const userName = data.username || "Usuario desconocido";
+          const userRole = data.userRole || "sin rol";
+          const ticket = await TicketService.createTicket(userName, userRole);
+          console.log('Ticket creado:', ticket);
 
-        } else {
-          // Si no se detecta que el usuario quiere hablar con un administrador, Ollama responde normalmente.
+          // Emitir evento para actualizar la lista de tickets en tiempo real
+          io.emit('new-ticket', ticket);
+
+          io.emit('chatbot-response', 'Estamos conectándote con un administrador y/o soporte. Un momento, por favor...');
+        } else if (userMessage.includes("carreras")) {
+          // Consultar la cantidad de carreras en la base de datos
+          const count = await Carrera.countDocuments();
+          const responseMessage = `Actualmente tenemos ${count} carreras disponibles. ¿Quieres saber más detalles?`;
+          io.emit('chatbot-response', responseMessage);
+        } else if (userMessage.includes("becas") || userMessage.includes("descuentos")) {
+          // Responder con información del PDF para becas y descuentos
           const prompt = `
-          Ejemplo 1:
-          Usuario: ¿Cuáles son las funcionalidades de Edutrack360?
-          Edutrack360 responde: Edutrack360 es una plataforma educativa diseñada para gestionar cursos, realizar seguimientos académicos, y más.
-
-          ---
-
+          Eres un chatbot que responde preguntas sobre el contenido del PDF cargado.
+          El PDF contiene información sobre becas, descuentos y otros beneficios.
           Usuario: ${data.message}
           `;
 
@@ -89,6 +109,40 @@ module.exports = (io) => {
           const botMessageData = {
             username: "botedu",  // Nombre de usuario del bot
             message: botMessage,
+            ticket: "SIN TICKET - CHATBOT",
+            rol: "bot"
+          };
+          await messageService.create(botMessageData);  // Guardar respuesta del bot
+
+          // Enviar la respuesta del bot al cliente
+          io.emit('chatbot-response', botMessage);
+        } else {
+          // Si no se detecta que el usuario quiere hablar con un administrador, Ollama responde normalmente.
+          const prompt = `
+          Eres un chatbot que responde preguntas sobre el contenido del PDF cargado.
+          El PDF contiene información sobre la institución educativa, sus servicios, programas académicos y más.
+          Usuario: ${data.message}
+          `;
+
+          const response = await fetch('http://localhost:11434/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              model: 'llama3.2', 
+              prompt,
+              stream: false
+            })
+          });
+
+          const result = await response.json();
+          const botMessage = result.response?.trim() || 'No encontré información relevante en el PDF.';
+          
+          // Guardar la respuesta del bot en la base de datos con el nombre de usuario "botedu"
+          const botMessageData = {
+            username: "botedu",  // Nombre de usuario del bot
+            message: botMessage,
+            ticket: "SIN TICKET - CHATBOT",
+            rol: "bot"
           };
           await messageService.create(botMessageData);  // Guardar respuesta del bot
 
@@ -100,5 +154,5 @@ module.exports = (io) => {
         io.emit('chatbot-response', 'Hubo un error al procesar tu solicitud.');
       }
     });
-  });
-};
+  });   
+}

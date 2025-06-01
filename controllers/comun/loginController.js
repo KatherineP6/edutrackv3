@@ -1,6 +1,7 @@
 const Admin = require('../../models/administrador/adminModel');
 const Estudiante = require('../../models/administrador/estudianteModel');
 const Docente = require('../../models/administrador/docenteModel');
+const Soporte = require('../../models/administrador/soporte');
 const bcrypt = require('bcrypt');
 
 exports.showLoginForm = (req, res) => {
@@ -48,6 +49,10 @@ exports.processLogin = async (req, res) => {
                 console.log('Buscando docente con email:', email);
                 user = await Docente.findOne({ correo: email });
                 break;
+            case 'Soporte':
+                console.log('Buscando soporte con email:', email);
+                user = await Soporte.findOne({ correo: email });
+                break;
             default:
                 console.log('Rol de usuario inválido:', userRole);
                 return res.status(400).send('Rol de usuario inválido.');
@@ -79,6 +84,8 @@ exports.processLogin = async (req, res) => {
                 redirectUrl = '/docente/dashboard';
             } else if (userRole === 'Estudiante') {
                 redirectUrl = '/estudiante/dashboard';
+            } else if (userRole === 'Soporte') {
+                redirectUrl = '/soporte/dashboard';
             }
 
             console.log('Inicio de sesión exitoso para', userRole, 'con ID:', user._id, '. Redirigiendo a:', redirectUrl);

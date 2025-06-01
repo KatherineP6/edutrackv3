@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Soporte EDUTRACK360</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/assets/css/comun/centroSoporte.css" />
+</head>
+<body class="bg-gray-100 h-screen flex flex-col">
+
+    <header class="shadow-md flex justify-between items-center text-white">
+        <div class="text-2xl font-extrabold flex items-center gap-3">
+            <span>🎓</span>
+            <span>EDUTRACK360</span>
+        </div>
+    <div class="flex items-center gap-6 text-lg">
+        <span>Soporte: <strong><%= userName %></strong></span>
+        <form id="logout-form" method="POST" action="/logout" style="display:inline;">
+            <button type="submit" class="bg-red-600 hover:bg-red-700 px-5 py-2 rounded-lg font-medium transition-all shadow-lg hover:shadow-xl">Cerrar sesión</button>
+        </form>
+    </div>
+    </header>
+
+    <main class="flex flex-1 overflow-hidden">
+
+        <aside class="w-80 bg-white border-r overflow-y-auto">
+            <h2 class="text-white text-xl font-semibold px-5 py-4 tracking-wide">
+                🎟️ Tickets en espera
+            </h2>
+            <ul id="ticket-list" class="divide-y divide-gray-200">
+                <% if (tickets && tickets.length > 0) { %>
+                    <% tickets.forEach(ticket => { %>
+                        <li data-ticket-id="<%= ticket.ticketNumber %>" class="p-5 cursor-pointer rounded-r-lg">
+                            <p class="font-semibold text-gray-800 text-lg">Ticket #<%= ticket.ticketNumber %></p>
+                            <p class="text-gray-500 mt-1">Usuario: <%= ticket.userName %></p>
+                        </li>
+                    <% }) %>
+                <% } else { %>
+                    <li class="p-5 text-gray-500">No hay tickets abiertos.</li>
+                <% } %>
+            </ul>
+        </aside>
+
+        <section class="flex-1 flex flex-col bg-gray-50">
+            <div class="flex justify-between items-center ticket-header">
+                <div>
+                    <h3 id="ticket-title" class="text-gray-900">📩 Ticket #00124 - Luis Gómez</h3>
+                </div>
+            <button id="close-ticket-button" class="bg-red-600 text-white px-6 py-2.5 rounded-lg hover:bg-red-700 transition-all shadow-md hover:shadow-lg" disabled>
+                Cerrar Ticket
+            </button>
+            </div>
+
+            <div id="conversation" class="flex-1 overflow-y-auto conversation-area space-y-7">
+                <!-- Aquí se cargan los mensajes -->
+            </div>
+
+            <div class="flex gap-4 items-center reply-box">
+                <input
+                    type="text"
+                    placeholder="Escribe tu mensaje..."
+                    class="flex-1 message-input"
+                    id="message-input"
+                />
+                <button class="send-button" id="send-button">
+                    Enviar
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/assets/js/comun/centroSoporte.js"></script>
+
+</body>
+</html>

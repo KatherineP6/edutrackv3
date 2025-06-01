@@ -1,5 +1,3 @@
-// ... existing imports and setup ...
-
 const express = require('express');
 const app = express();
 const path = require('path');
@@ -7,7 +5,7 @@ const morgan = require('morgan');
 const session = require('express-session');
 const flash = require('connect-flash');
 const socket = require('socket.io');
-const sharedsession = require("express-socket.io-session"); // Add this
+const sharedsession = require("express-socket.io-session"); 
 const docenteRouters = require('./routers/administrador/docenteRouters');
 
 // Importar middlewares
@@ -40,7 +38,7 @@ const sessionMiddleware = session({
     saveUninitialized: false,
     cookie: { 
         secure: false,
-        maxAge: 24 * 60 * 60 * 1000 // 24 horas
+        maxAge: 24 * 60 * 60 * 1000 
     }
 });
 app.use(sessionMiddleware);
@@ -53,6 +51,8 @@ app.use((req, res, next) => {
     res.locals.success_msg = req.flash('success_msg');
     res.locals.error_msg = req.flash('error_msg');
     res.locals.error = req.flash('error');
+    // Prevent caching for authenticated pages
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     next();
 });
 
@@ -62,6 +62,31 @@ app.get('/', (req, res) => {
         title: 'EduTrack360',
         message: 'Bienvenido a EduTrack360',
         showMessage: true
+    });
+});
+
+const TicketService = require('./services/comun/ticketService');
+
+// Ruta para la vista Centrosoporte para rol soporte
+app.get('/soporte/dashboard', async (req, res) => {
+    if (!req.session || req.session.userRole !== 'Soporte') {
+        return res.redirect('/login');
+    }
+    // Obtener el nombre completo del usuario soporte desde la sesión
+    const userName = req.session.userName || '';
+
+    // Obtener tickets abiertos
+    let tickets = [];
+    try {
+        tickets = await TicketService.getOpenTickets();
+    } catch (error) {
+        console.error('Error obteniendo tickets abiertos:', error);
+    }
+
+    res.render('Centrosoporte', {
+        title: 'Centro de Soporte',
+        userName: userName,
+        tickets: tickets
     });
 });
 
@@ -87,7 +112,9 @@ app.use('/api/docentes', userLogin, require('./routers/administrador/docenteRout
 app.use('/api/salones', userLogin, require('./routers/administrador/salonRouters'));
 app.use('/api/cursos', userLogin, require('./routers/administrador/cursoRouters'));
 app.use('/api/carreras', userLogin, require('./routers/administrador/carreraRouters'));
-
+app.use('/api/bloques', userLogin, require('./routers/administrador/bloqueRouters'));
+app.use('/api/soportes', userLogin, require('./routers/administrador/soporteRouters'));
+app.use('/api/tickets', userLogin, require('./routers/comun/ticketRouters'));
 // Route for docente dashboard
 app.use('/docente', userLogin, docenteRouters);
 

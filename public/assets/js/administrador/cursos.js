@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
     editandoFila = null;
     editandoCursoId = null;
     document.getElementById('modalTitle').textContent = 'Nuevo Curso';
-    updateCarreraSelectVisibility();
   }
 
   function cerrarModal() {
@@ -54,33 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     formCurso.querySelectorAll('.input-error').forEach(i => i.classList.remove('input-error'));
   }
 
-  function validarCampo(input) {
-    limpiarError(input);
-    if (input.id === 'descripcion' && tipoSelect.value === 'taller') {
-      // descripcion not required if tipo is taller
-      return true;
-    }
-    if (input.id === 'carreraId' && tipoSelect.value === 'carrera') {
-      if (!input.value.trim()) {
-        mostrarError(input, 'Debe seleccionar una carrera');
-        return false;
-      }
-      return true;
-    }
-    if (!input.value.trim()) {
-      mostrarError(input, 'Este campo es obligatorio');
-      return false;
-    }
-    if (input.type === 'number' && (isNaN(input.value) || input.value < 0)) {
-      mostrarError(input, 'Número inválido');
-      return false;
-    }
-    if (input.tagName.toLowerCase() === 'select' && input.value === '') {
-      mostrarError(input, 'Seleccione una opción');
-      return false;
-    }
-    return true;
-  }
+
 
   function validarFormulario() {
     limpiarErrores();
@@ -122,17 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const carrera = carrerasList.find(c => String(c._id) === String(id));
     return carrera ? carrera.nombre : '';
   }
-
-  function updateCarreraSelectVisibility() {
-    if (tipoSelect.value === 'carrera') {
-      carreraGroup.style.display = 'block';
-    } else {
-      carreraGroup.style.display = 'none';
-      carreraSelect.value = '';
-    }
-  }
-
-  tipoSelect.addEventListener('change', updateCarreraSelectVisibility);
 
   async function crearCurso(data) {
     try {
@@ -215,18 +177,24 @@ document.addEventListener('DOMContentLoaded', () => {
       <td>${curso.precio.toFixed(2)}</td>
       <td>${curso.carreraId ? getCarreraNombreById(curso.carreraId) : ''}</td>
       <td>${curso.semestre || ''}</td>
-      <td>
-        <button class="btn btn-sm btn-primary btn-editar" title="Editar" style="margin-right: 5px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16">
-            <path d="M12.146.854a.5.5 0 0 1 .708 0l2.292 2.292a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 3L13 4.793 14.793 3 13 1.207 11.207 3zM12 5.207L10.793 4 3 11.793V13h1.207L12 5.207z"/>
-          </svg>
-        </button>
-        <button class="btn btn-sm btn-danger btn-borrar" title="Eliminar">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16">
-            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-          </svg>
-        </button>
-      </td>
+     <td>
+  <button class="btn btn-sm btn-primary btn-editar" title="Editar" style="margin-right: 5px;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16">
+      <path d="M12.146.854a.5.5 0 0 1 .708 0l2.292 2.292a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 3L13 4.793 14.793 3 13 1.207 11.207 3zM12 5.207L10.793 4 3 11.793V13h1.207L12 5.207z"/>
+    </svg>
+  </button>
+  <button class="btn btn-sm btn-danger btn-borrar" title="Eliminar" style="margin-right: 5px;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16">
+      <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+    </svg>
+  </button>
+  <button class="btn btn-sm btn-success btn-agregar-carrera" title="Agregar Carrera">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16">
+      <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+    </svg>
+  </button>
+</td>
+
     `;
     tablaCuerpo.appendChild(fila);
   }
@@ -302,7 +270,6 @@ document.addEventListener('DOMContentLoaded', () => {
       editandoCursoId = fila.dataset.id || null;
       document.getElementById('modalTitle').textContent = 'Editar Curso';
       modal.classList.remove('hidden');
-      updateCarreraSelectVisibility();
     }
   });
 
@@ -311,16 +278,6 @@ document.addEventListener('DOMContentLoaded', () => {
   btnCerrarModal.addEventListener('click', cerrarModal);
   btnCancelar.addEventListener('click', cerrarModal);
 
-  function updateCarreraSelectVisibility() {
-    if (tipoSelect.value === 'carrera') {
-      carreraGroup.style.display = 'block';
-    } else {
-      carreraGroup.style.display = 'none';
-      carreraSelect.value = '';
-    }
-  }
-
-  tipoSelect.addEventListener('change', updateCarreraSelectVisibility);
 
   init();
 });

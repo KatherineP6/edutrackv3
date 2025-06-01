@@ -1,0 +1,114 @@
+   /* Aplicar la fuente Poppins a todo el cuerpo */
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        /* Estilos personalizados para las burbujas de chat */
+        .chat-bubble {
+            border-radius: 1.5rem; /* Bordes aún más redondeados para un look suave */
+            padding: 1.2rem 1.6rem; /* Padding generoso */
+            font-size: 1.05rem; /* Texto legible */
+            line-height: 1.5; /* Espaciado entre líneas para mejor lectura */
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* Sombra más suave y extendida */
+            transition: all 0.2s ease-in-out; /* Transiciones más suaves */
+            position: relative; /* Para posibles futuras adiciones como punteros */
+        }
+        .chat-bubble:hover {
+            transform: translateY(-3px); /* Un poco más de elevación al pasar el ratón */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        .chat-bubble-student {
+            background-color: #ffffff; /* Blanco puro */
+            color: #333333; /* Gris muy oscuro para el texto */
+        }
+        .chat-bubble-support {
+            background-color: #e6e9fd; /* Un azul claro muy sutil y elegante */
+            color: #4338ca; /* Indigo oscuro para el texto de soporte */
+        }
+        /* Estilos para el campo de mensaje */
+        .message-input {
+            border-radius: 0.75rem; /* Bordes redondeados */
+            padding: 0.9rem 1.4rem; /* Ajuste de padding */
+            font-size: 1.0rem;
+            border: 1px solid #e0e0e0; /* Borde más claro */
+            transition: all 0.2s ease-in-out;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* Sombra interna sutil */
+        }
+        .message-input:focus {
+            border-color: #6366f1; /* Indigo fuerte en foco */
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2); /* Sombra de foco más suave */
+        }
+        /* Estilo para el botón de enviar */
+        .send-button {
+            border-radius: 0.75rem;
+            padding: 0.9rem 2rem; /* Más ancho */
+            font-size: 1.05rem;
+            font-weight: 600;
+            background-color: #6366f1; /* Indigo vibrante */
+            color: #ffffff;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3); /* Sombra para el botón */
+        }
+        .send-button:hover {
+            background-color: #4f46e5; /* Indigo un poco más oscuro al hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+        /* Ajuste de anchos para la conversación */
+        .conversation-area {
+            padding: 2.5rem 3rem; /* Más padding horizontal para más espacio */
+        }
+        .message-row {
+            max-width: 75%; /* Ocupa aún más espacio horizontal (antes 80%) */
+        }
+        /* Estilos para la cabecera */
+        header {
+            background-image: linear-gradient(to right, #4c3d88, #6366f1); /* Degradado sutil */
+            padding: 1.25rem 2rem; /* Ajuste de padding */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        header .text-2xl {
+            font-weight: 700; /* Más negrita para el logo */
+        }
+        /* Estilos de la cola de tickets */
+        aside {
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.05); /* Sombra más sutil a la derecha */
+        }
+        aside h2 {
+            background-color: #4c3d88; /* Color oscuro para el título de la sidebar */
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        aside ul li {
+            border-left: 5px solid transparent; /* Indicador para ticket seleccionado */
+            transition: all 0.2s ease-in-out;
+        }
+        aside ul li.bg-indigo-100 {
+            background-color: #eef2ff; /* Color más suave para el ticket activo */
+            border-left-color: #6366f1; /* Borde más pronunciado para el activo */
+            box-shadow: inset 2px 0 8px rgba(0,0,0,0.05); /* Sombra interna sutil */
+        }
+        aside ul li:hover:not(.bg-indigo-100) {
+            background-color: #f7f9ff; /* Ligero hover para los no activos */
+            border-left-color: #a78bfa; /* Morado claro en hover */
+        }
+        /* Cabecera del panel de conversación */
+        .ticket-header {
+            background-color: #ffffff;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 1.5rem 2.5rem; /* Más padding */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .ticket-header h3 {
+            font-size: 1.8rem; /* Título del ticket un poco más grande */
+            font-weight: 600;
+        }
+        /* Campo de respuesta inferior */
+        .reply-box {
+            background-color: #ffffff;
+            border-top: 1px solid #f0f0f0;
+            padding: 1.5rem 2.5rem; /* Más padding */
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03);
+        }
+        time {
+            opacity: 0.7; /* Hora un poco más sutil */
+            font-size: 0.75rem; /* Tamaño de fuente más pequeño para la hora */
+        }

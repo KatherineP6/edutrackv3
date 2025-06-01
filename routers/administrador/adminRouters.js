@@ -21,6 +21,8 @@ router.get('/docentes', userLogin, adminController.renderAdminDashboard);
 router.get('/reportes', userLogin, adminController.renderAdminDashboard);
 router.get('/cursos', userLogin, adminController.renderAdminDashboard);
 router.get('/carreras', userLogin, adminController.renderAdminDashboard);
+router.get('/bloques', userLogin, adminController.renderAdminDashboard);
+router.get('/soporte', userLogin, adminController.renderAdminDashboard);
 
 // Rutas para salones
 router.get('/api/salones', userLogin, salonController.getAllSalones);

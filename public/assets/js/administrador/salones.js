@@ -39,9 +39,10 @@ document.addEventListener('DOMContentLoaded', function() {
         data.forEach(classroom => {
           const row = document.createElement('tr');
           row.innerHTML = `
-            <td>${classroom.bloque}</td>
+            <td>${classroom.nombre}</td>
             <td>${classroom.ubicacion}</td>
             <td>${classroom.capacidad}</td>
+              <td>${classroom.descripcion}</td>
             <td>
               <button class="btn-edit" data-id="${classroom._id}">✏️</button>
               <button class="btn-delete" data-id="${classroom._id}">🗑️</button>
@@ -95,9 +96,10 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch(`/api/salones/${id}`)
       .then(response => response.json())
       .then(classroom => {
-        document.getElementById('bloque').value = classroom.bloque;
+        document.getElementById('nombre').value = classroom.nombre;
         document.getElementById('ubicacion').value = classroom.ubicacion;
         document.getElementById('capacidad').value = classroom.capacidad;
+        document.getElementById('descripcion').value = classroom.descripcion;
         form.dataset.id = classroom._id;
         
         modal.classList.remove('hidden');
