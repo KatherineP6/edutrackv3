@@ -5,12 +5,14 @@ const messageService = new MessageService();
 const pdfParse = require('pdf-parse');
 const fs = require('fs');
 const Carrera = require('./models/administrador/carreraModel');
+const Bloque = require('./models/administrador/bloqueModel');
+const Curso = require('./models/administrador/cursoModel');
 
 let pdfContent = '';
 
 async function cargarPdfDesdeArchivo() {
   try {
-    const buffer = fs.readFileSync('./docs/edu7.pdf');
+    const buffer = fs.readFileSync('./docs/edutrackinfo.pdf');
     const data = await pdfParse(buffer);
     pdfContent = data.text;
     console.log('✅ PDF cargado en memoria.');
@@ -109,6 +111,154 @@ module.exports = (io) => {
           return;
         }
 
+        // Detectar consulta sobre qué carreras hay o disponibles
+        if (!isSupport && (userMessage.includes("qué carreras hay") || userMessage.includes("carreras disponibles") || userMessage.includes("carreras que hay"))) {
+          const carreras = await Carrera.find({}, 'nombre').lean();
+          if (carreras.length === 0) {
+            socket.emit('chatbot-response', 'Actualmente no hay carreras disponibles.');
+          } else {
+            const nombres = carreras.map(c => c.nombre).join(', ');
+            socket.emit('chatbot-response', `Las carreras disponibles son: ${nombres}.`);
+          }
+          return;
+        }
+
+        // Detectar consulta sobre breve descripción de carreras
+        if (!isSupport && (userMessage.includes("breve descripción") || userMessage.includes("me podrías dar una breve descripción"))) {
+          const carreras = await Carrera.find({}, 'nombre descripcion').lean();
+          if (carreras.length === 0) {
+            socket.emit('chatbot-response', 'Actualmente no hay carreras disponibles para describir.');
+          } else {
+            const descripciones = carreras.map(c => `${c.nombre}: ${c.descripcion}`).join(' | ');
+            socket.emit('chatbot-response', `Descripción breve de las carreras: ${descripciones}.`);
+          }
+          return;
+        }
+
+        // Detectar consulta sobre bloques para inscribirse
+        if (!isSupport && (userMessage.includes("bloques para inscribirse") || userMessage.includes("hay bloques para inscribirse") || userMessage.includes("bloques disponibles"))) {
+          const bloquesCount = await Bloque.countDocuments();
+          if (bloquesCount === 0) {
+            socket.emit('chatbot-response', 'Actualmente no hay bloques disponibles para inscribirse.');
+          } else {
+            socket.emit('chatbot-response', `Hay ${bloquesCount} bloques disponibles para inscribirse.`);
+          }
+          return;
+        }
+
+        // Detectar consulta sobre costo de la carrera o semestre
+        if (!isSupport && (userMessage.includes("cuánto cuesta la carrera") || userMessage.includes("cuanto cuesta la carrera") || userMessage.includes("cuánto cuesta el semestre") || userMessage.includes("cuanto cuesta el semestre"))) {
+          const carreras = await Carrera.find({}, 'nombre precio duracionSem').lean();
+          if (carreras.length === 0) {
+            socket.emit('chatbot-response', 'No hay información disponible sobre el costo de las carreras.');
+          } else {
+            const costos = carreras.map(c => `${c.nombre}: $${c.precio} por semestre, duración: ${c.duracionSem} semestres`).join(' | ');
+            socket.emit('chatbot-response', `Información de costos de las carreras: ${costos}.`);
+          }
+          return;
+        }
+
+        // Detectar consulta sobre cursos de una carrera
+        if (!isSupport && (userMessage.includes("qué cursos tiene la carrera") || userMessage.includes("que cursos tiene la carrera") || userMessage.includes("cursos de la carrera"))) {
+          // Extraer nombre de la carrera de la consulta
+          const regex = /carrera (.+)$/i;
+          const match = userMessage.match(regex);
+          if (match && match[1]) {
+            const nombreCarrera = match[1].trim();
+            const carrera = await Carrera.findOne({ nombre: new RegExp(`^${nombreCarrera}$`, 'i') });
+            if (!carrera) {
+              socket.emit('chatbot-response', `No encontré la carrera llamada "${nombreCarrera}".`);
+              return;
+            }
+            const cursos = await Curso.find({ 'carreras.carrera': carrera._id }, 'nombre descripcion semestre').lean();
+            if (cursos.length === 0) {
+              socket.emit('chatbot-response', `La carrera "${nombreCarrera}" no tiene cursos asignados.`);
+            } else {
+              const listaCursos = cursos.map(c => `${c.nombre} (semestre ${c.semestre || 'N/A'})`).join(', ');
+              socket.emit('chatbot-response', `Los cursos de la carrera "${nombreCarrera}" son: ${listaCursos}.`);
+            }
+          } else {
+            socket.emit('chatbot-response', 'Por favor, especifica el nombre de la carrera para consultar sus cursos.');
+          }
+          return;
+        }
+
+        // Detectar consulta sobre qué carreras hay o disponibles
+        if (!isSupport && (userMessage.includes("qué carreras hay") || userMessage.includes("carreras disponibles") || userMessage.includes("carreras que hay"))) {
+          const carreras = await Carrera.find({}, 'nombre').lean();
+          if (carreras.length === 0) {
+            socket.emit('chatbot-response', 'Actualmente no hay carreras disponibles.');
+          } else {
+            const nombres = carreras.map(c => c.nombre).join(', ');
+            socket.emit('chatbot-response', `Las carreras disponibles son: ${nombres}.`);
+          }
+          return;
+        }
+
+        // Detectar consulta sobre breve descripción de carreras
+        if (!isSupport && (userMessage.includes("breve descripción") || userMessage.includes("me podrías dar una breve descripción"))) {
+          const carreras = await Carrera.find({}, 'nombre descripcion').lean();
+          if (carreras.length === 0) {
+            socket.emit('chatbot-response', 'Actualmente no hay carreras disponibles para describir.');
+          } else {
+            const descripciones = carreras.map(c => `${c.nombre}: ${c.descripcion}`).join(' | ');
+            socket.emit('chatbot-response', `Descripción breve de las carreras: ${descripciones}.`);
+          }
+          return;
+        }
+
+        // Detectar consulta sobre bloques para inscribirse
+        if (!isSupport && (userMessage.includes("bloques para inscribirse") ||
+         userMessage.includes("hay bloques para inscribirse") || userMessage.includes("bloques disponibles"))) {
+          const bloquesCount = await Bloque.countDocuments();
+          if (bloquesCount === 0) {
+            socket.emit('chatbot-response', 'Actualmente no hay bloques disponibles para inscribirse.');
+          } else {
+            socket.emit('chatbot-response', `Hay ${bloquesCount} bloques disponibles para inscribirse.`);
+          }
+          return;
+        }
+
+        // Detectar consulta sobre costo de la carrera o semestre
+        if (!isSupport && (userMessage.includes("cuánto cuesta la carrera") || 
+        userMessage.includes("cuanto cuesta la carrera") ||
+        userMessage.includes("cuánto cuesta el semestre") || 
+        userMessage.includes("cuanto cuesta el semestre"))) {
+          const carreras = await Carrera.find({}, 'nombre precio duracionSem').lean();
+          if (carreras.length === 0) {
+            socket.emit('chatbot-response', 'No hay información disponible sobre el costo de las carreras.');
+          } else {
+            const costos = carreras.map(c => `${c.nombre}: $${c.precio} por semestre, duración: ${c.duracionSem} semestres`).join(' | ');
+            socket.emit('chatbot-response', `Información de costos de las carreras: ${costos}.`);
+          }
+          return;
+        }
+
+        // Detectar consulta sobre cursos de una carrera
+        if (!isSupport && (userMessage.includes("qué cursos tiene la carrera") || userMessage.includes("que cursos tiene la carrera") || userMessage.includes("cursos de la carrera"))) {
+          // Extraer nombre de la carrera de la consulta
+          const regex = /carrera (.+)$/i;
+          const match = userMessage.match(regex);
+          if (match && match[1]) {
+            const nombreCarrera = match[1].trim();
+            const carrera = await Carrera.findOne({ nombre: new RegExp(`^${nombreCarrera}$`, 'i') });
+            if (!carrera) {
+              socket.emit('chatbot-response', `No encontré la carrera llamada "${nombreCarrera}".`);
+              return;
+            }
+            const cursos = await Curso.find({ 'carreras.carrera': carrera._id }, 'nombre descripcion semestre').lean();
+            if (cursos.length === 0) {
+              socket.emit('chatbot-response', `La carrera "${nombreCarrera}" no tiene cursos asignados.`);
+            } else {
+              const listaCursos = cursos.map(c => `${c.nombre} (semestre ${c.semestre || 'N/A'})`).join(', ');
+              socket.emit('chatbot-response', `Los cursos de la carrera "${nombreCarrera}" son: ${listaCursos}.`);
+            }
+          } else {
+            socket.emit('chatbot-response', 'Por favor, especifica el nombre de la carrera para consultar sus cursos.');
+          }
+          return;
+        }
+
         const savedMessage = await messageService.create(messageData);
 
         // Si es mensaje de soporte, enviar solo a la sala del ticket
@@ -162,6 +312,34 @@ module.exports = (io) => {
           return;
         }
 
+        // Detectar consulta sobre becas con palabras clave más específicas
+        if (!isSupport && (userMessage.includes("programa de becas") || userMessage.includes("becas edutrack") || userMessage.includes("requisitos beca") || userMessage.includes("tipos de beca") || userMessage.includes("cómo postular beca") || userMessage.includes("convocatoria beca"))) {
+          const botResponse = await getChatbotResponse(data.message);
+          const botMessage = {
+            username: "Chatbot",
+            message: botResponse,
+            ticket: data.ticket || "SIN TICKET - CHATBOT",
+            rol: "bot"
+          };
+          await messageService.create(botMessage);
+          socket.emit('chatbot-response', botMessage.message);
+          return;
+        }
+
+        // Respuesta rápida para saludos simples
+        if (!isSupport && (userMessage === "hola" || userMessage === "buenas" || userMessage === "buenos días" || userMessage === "buenas tardes" || userMessage === "buenas noches")) {
+          const saludo = "¡Hola! soy edubot ¿En qué puedo ayudarte hoy?";
+          const botMessage = {
+            username: "Chatbot",
+            message: saludo,
+            ticket: data.ticket || "SIN TICKET - CHATBOT",
+            rol: "bot"
+          };
+          await messageService.create(botMessage);
+          socket.emit('chatbot-response', botMessage.message);
+          return;
+        }
+
         // Respuesta del chatbot
         const botResponse = await getChatbotResponse(data.message);
         const botMessage = {
@@ -173,7 +351,7 @@ module.exports = (io) => {
         
         await messageService.create(botMessage);
         // Emitir respuesta chatbot solo al socket que envió el mensaje
-        socket.emit('chatbot-response', botMessage);
+        socket.emit('chatbot-response', botMessage.message);
 
       } catch (error) {
         console.error("Error en new-message:", error);

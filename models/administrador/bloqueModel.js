@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const bloqueSchema = new Schema({
+  nombre: {
+    type: String,
+    required: true
+  },
   fechaInicio: {
     type: Date,
     required: true

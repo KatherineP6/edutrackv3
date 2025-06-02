@@ -60,13 +60,14 @@ exports.getBloqueById = async (req, res) => {
 // Crear nuevo bloque
 exports.createBloque = async (req, res) => {
   try {
-    const { fechaInicio, fechaFin, diasSemana, horaInicio, horaFin,carrera, curso, docente, salon, estado } = req.body;
+    const { nombre, fechaInicio, fechaFin, diasSemana, horaInicio, horaFin,carrera, curso, docente, salon, estado } = req.body;
 
-    if (!fechaInicio || !fechaFin || !diasSemana || !horaInicio || !horaFin || !carrera ||!curso || !docente || !salon) {
+    if (!nombre || !fechaInicio || !fechaFin || !diasSemana || !horaInicio || !horaFin || !carrera ||!curso || !docente || !salon) {
       return res.status(400).json({ message: 'Faltan datos requeridos para crear el bloque.' });
     }
 
     const nuevoBloque = new Bloque({
+      nombre,
       fechaInicio,
       fechaFin,
       diasSemana,
@@ -92,13 +93,14 @@ exports.createBloque = async (req, res) => {
 exports.updateBloque = async (req, res) => {
   try {
     const { id } = req.params;
-    const { fechaInicio, fechaFin, diasSemana, horaInicio, horaFin, carrera, curso, docente, salon, estado } = req.body;
+    const { nombre, fechaInicio, fechaFin, diasSemana, horaInicio, horaFin, carrera, curso, docente, salon, estado } = req.body;
 
-    if (!fechaInicio || !fechaFin || !diasSemana || !horaInicio || !horaFin || !carrera || !curso || !docente || !salon) {
+    if (!nombre || !fechaInicio || !fechaFin || !diasSemana || !horaInicio || !horaFin || !carrera || !curso || !docente || !salon) {
       return res.status(400).json({ message: 'Faltan datos requeridos para actualizar el bloque.' });
     }
 
     const updateData = {
+      nombre,
       fechaInicio,
       fechaFin,
       diasSemana,

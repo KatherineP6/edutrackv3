@@ -185,6 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
         //const docenteNombre = bloque.docente && typeof bloque.docente === 'object' ? bloque.docente.nombre : '';
         //const salonNombre = bloque.salon && typeof bloque.salon === 'object' ? bloque.salon.nombre : '';
         row.innerHTML = `
+          <td>${bloque.nombre || ''}</td>
           <td>${fechaInicioStr}</td>
           <td>${fechaFinStr}</td>
           <td>${diasSemanaStr}</td>
