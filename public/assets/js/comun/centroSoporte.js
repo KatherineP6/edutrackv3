@@ -1,197 +1,261 @@
 const socket = io();
 
-// Tickets recibidos desde el servidor
+// Variables globales
 let tickets = window.tickets || [];
+let selectedTicketNumber = null;
+const userRole = window.userRole || 'user';
 
+// Elementos del DOM
 const ticketList = document.getElementById("ticket-list");
 const conversationDiv = document.getElementById("conversation");
 const ticketTitle = document.getElementById("ticket-title");
 const closeTicketButton = document.getElementById('close-ticket-button');
-let selectedTicketNumber = null;
+const messageInput = document.getElementById('message-input');
+const sendButton = document.getElementById('send-button');
 
-// Función para limpiar conversación
-function clearConversation() {
-    conversationDiv.innerHTML = "";
+// Función para renderizar mensajes
+function renderMessages(messages) {
+  conversationDiv.innerHTML = "";
+  
+  messages.forEach(msg => {
+    const msgDiv = document.createElement("div");
+    msgDiv.className = `message-row flex items-start ${
+      msg.rol === "support" ? "justify-end ml-auto" : ""
+    }`;
+
+    const bubble = document.createElement("div");
+    bubble.className = `chat-bubble ${
+      msg.rol === "user" ? "chat-bubble-student" :
+      msg.rol === "support" ? "chat-bubble-support text-right" :
+      "chat-bubble-bot"
+    }`;
+
+    const senderLabel = document.createElement("div");
+    senderLabel.className = "sender-label text-xs font-semibold mb-1";
+    senderLabel.textContent = msg.username || (msg.rol === "support" ? "Soporte" : "Usuario");
+
+    const time = new Date(msg.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    bubble.innerHTML = `${msg.message} <time class="block mt-2 ${
+      msg.rol === "user" ? "text-gray-400" : 
+      msg.rol === "support" ? "text-indigo-700" : 
+      "text-green-600"
+    }">${time}</time>`;
+
+    msgDiv.appendChild(senderLabel);
+    msgDiv.appendChild(bubble);
+    conversationDiv.appendChild(msgDiv);
+  });
+
+  conversationDiv.scrollTop = conversationDiv.scrollHeight;
 }
 
-// Función para actualizar título del ticket
-function updateTicketTitle(ticketId) {
-    const ticket = tickets.find(t => t.ticketNumber === ticketId);
-    if (!ticket) return;
-    ticketTitle.textContent = `📩 Ticket #${ticket.ticketNumber} - ${ticket.userName}`;
-}
+function selectTicket(ticketId) {
+  selectedTicketNumber = ticketId;
 
-// Función para renderizar mensajes reales
-function renderRealConversation(messages) {
-    clearConversation();
-    messages.forEach(msg => {
-        const msgDiv = document.createElement("div");
-        msgDiv.classList.add("message-row", "flex", "items-start");
-        if (msg.rol === "support") {
-            msgDiv.classList.add("justify-end", "ml-auto");
-        }
+  // Actualizar UI
+  document.querySelectorAll("#ticket-list li").forEach(li => {
+    li.classList.remove("bg-indigo-100");
+  });
+  const selectedLi = document.querySelector(`#ticket-list li[data-ticket-id="${ticketId}"]`);
+  if (selectedLi) selectedLi.classList.add("bg-indigo-100");
 
-        const bubble = document.createElement("div");
-        bubble.classList.add("chat-bubble");
-        if (msg.rol === "user") {
-            bubble.classList.add("chat-bubble-student");
-        } else if (msg.rol === "support") {
-            bubble.classList.add("chat-bubble-support", "text-right");
-        } else {
-            bubble.classList.add("chat-bubble-support", "text-right");
-        }
-        const time = new Date(msg.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        bubble.innerHTML = `${msg.message} <time class="block mt-2 ${msg.rol === "user" ? "text-gray-400" : "text-indigo-700"}">${time}</time>`;
+  // Emitir credenciales actualizadas al servidor
+  socket.emit('credentials', {
+    username: window.userName || "Usuario",
+    rol: userRole,
+    ticket: ticketId
+  });
 
-        msgDiv.appendChild(bubble);
-        conversationDiv.appendChild(msgDiv);
-    });
-    conversationDiv.scrollTop = conversationDiv.scrollHeight;
-}
+  // Cargar mensajes del ticket
+  socket.emit('load-messages-by-ticket', ticketId);
 
-// Función para manejar selección de ticket
-async function selectTicket(ticketElement) {
-    console.log("Ticket seleccionado:", ticketElement);
-    // Remover clase activa de todos los tickets
-    ticketList.querySelectorAll("li").forEach(li => {
-        li.classList.remove("bg-indigo-100", "shadow-inner");
-    });
-    // Agregar clase activa al ticket seleccionado
-    ticketElement.classList.add("bg-indigo-100", "shadow-inner");
+  // Actualizar controles según rol
+  if (userRole === 'user') {
+    // Mantener input habilitado para que el usuario pueda escribir al soporte
+    messageInput.disabled = false;
+    messageInput.placeholder = "Escribe tu mensaje para soporte...";
+    closeTicketButton.disabled = false; // Habilitar botón cerrar ticket para usuario
 
-    // Obtener id del ticket
-    const ticketId = ticketElement.getAttribute("data-ticket-id");
-    console.log("ID del ticket seleccionado:", ticketId);
-    selectedTicketNumber = ticketId;
-    updateTicketTitle(ticketId);
+    // Deshabilitar chatbot
+    if (window.disableChatbot) window.disableChatbot();
+  } else {
+    messageInput.disabled = false;
+    messageInput.placeholder = "Escribe tu respuesta...";
     closeTicketButton.disabled = false;
 
-    // Deshabilitar input del chatbot mientras el ticket está activo
-    const messageInput = document.getElementById('message-input');
-    const sendButton = document.getElementById('send-button');
-    if (messageInput && sendButton) {
-        messageInput.disabled = true;
-        sendButton.disabled = true;
-    }
-
-    // Cargar mensajes reales desde el servidor
-    socket.emit('load-messages-by-ticket', ticketId);
+    // Deshabilitar chatbot para soporte también
+    if (window.disableChatbot) window.disableChatbot();
+  }
 }
 
-// Función para agregar un ticket a la lista
+function deselectTicket() {
+  if (userRole === 'user') {
+    // Usuario no puede perder su ticket, no hacer nada
+    return;
+  }
+
+  selectedTicketNumber = null;
+
+  // Quitar selección visual
+  document.querySelectorAll("#ticket-list li").forEach(li => {
+    li.classList.remove("bg-indigo-100");
+  });
+
+  // Limpiar conversación
+  conversationDiv.innerHTML = "";
+  ticketTitle.textContent = "";
+
+  // Reactivar input y chatbot para soporte
+  messageInput.disabled = false;
+  messageInput.placeholder = "Escribe tu respuesta...";
+  closeTicketButton.disabled = true;
+
+  if (window.enableChatbot) window.enableChatbot();
+}
+
+// Función para agregar ticket a la lista
 function addTicketToList(ticket) {
-    // Check if ticket already exists in tickets array
-    if (tickets.find(t => t.ticketNumber === ticket.ticketNumber)) {
-        return; // Ticket already added, skip
-    }
-    tickets.push(ticket);
+  if (tickets.some(t => t.ticketNumber === ticket.ticketNumber)) return;
+  tickets.push(ticket);
 
-    // Check if ticket already exists in DOM
-    if (ticketList.querySelector(`li[data-ticket-id="${ticket.ticketNumber}"]`)) {
-        return; // Ticket element already exists, skip
-    }
-
-    const li = document.createElement("li");
-    li.setAttribute("data-ticket-id", ticket.ticketNumber);
-    li.classList.add("p-5", "cursor-pointer", "rounded-r-lg");
-    li.innerHTML = `
-        <p class="font-semibold text-gray-800 text-lg">Ticket #${ticket.ticketNumber}</p>
-        <p class="text-gray-500 mt-1">Usuario: ${ticket.userName}</p>
-    `;
-    li.addEventListener("click", () => {
-        selectTicket(li);
-    });
-    ticketList.appendChild(li);
+  const li = document.createElement("li");
+  li.dataset.ticketId = ticket.ticketNumber;
+  li.className = "p-4 cursor-pointer hover:bg-indigo-50 rounded-lg";
+  li.innerHTML = `
+    <p class="font-semibold">Ticket #${ticket.ticketNumber}</p>
+    <p class="text-sm text-gray-600">${ticket.userName}</p>
+    <p class="text-xs text-gray-400">${new Date(ticket.createdAt).toLocaleString()}</p>
+  `;
+  
+  li.addEventListener('click', () => selectTicket(ticket.ticketNumber));
+  ticketList.appendChild(li);
 }
 
-// Inicializar con el ticket que está activo en HTML (si hay alguno)
-window.addEventListener("DOMContentLoaded", () => {
-    const initialTicket = ticketList.querySelector("li.bg-indigo-100");
-    if (initialTicket) {
-        selectTicket(initialTicket);
-    }
-});
+// Función para enviar mensaje
+function sendMessage() {
+  const message = messageInput.value.trim();
+  if (!message) return;
 
-// Agregar evento click a cada ticket existente
-ticketList.querySelectorAll("li").forEach(li => {
-    li.addEventListener("click", () => {
-        selectTicket(li);
-    });
-});
+  const messageData = {
+    username: window.userName || "Usuario",
+    message: message,
+    ticket: selectedTicketNumber || "SIN TICKET - CHATBOT",
+    rol: userRole
+  };
 
-closeTicketButton.addEventListener('click', async () => {
-    console.log("Botón cerrar ticket clickeado");
-    if (!selectedTicketNumber) return;
+  // Mostrar mensaje inmediatamente
+  const tempMsg = {
+    message,
+    rol: userRole,
+    createdAt: new Date()
+  };
+  renderMessages([...conversationDiv.messages || [], tempMsg]);
 
-    try {
-    const response = await fetch(`/api/tickets/close/${selectedTicketNumber}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        credentials: 'include'  // Enviar cookies para autenticación de sesión
-    });
-
-if (response.ok) {
-    alert('Ticket cerrado exitosamente.');
-    // Remove closed ticket from the list
-    const ticketElement = document.querySelector(`li[data-ticket-id="${selectedTicketNumber}"]`);
-    if (ticketElement) {
-        ticketElement.remove();
-    }
-    // Clear conversation and disable close button
-    clearConversation();
-    ticketTitle.textContent = '';
-    closeTicketButton.disabled = true;
-    selectedTicketNumber = null;
-} else {
-    alert('Error cerrando el ticket.');
+  socket.emit('new-message', messageData);
+  messageInput.value = '';
 }
-    } catch (error) {
-        console.error('Error cerrando ticket:', error);
-        alert('Error cerrando el ticket.');
-    }
+
+socket.emit('credentials', {
+  username: window.userName || "Usuario",
+  rol: userRole,
+  ticket: selectedTicketNumber || null
 });
 
-// Escuchar evento de nuevo ticket desde el servidor
-socket.on('new-ticket', (ticket) => {
-    addTicketToList(ticket);
+// Event Listeners
+sendButton.addEventListener('click', sendMessage);
+messageInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') sendMessage();
 });
 
-// Escuchar mensajes por ticket desde el servidor
+closeTicketButton.addEventListener('click', () => {
+  if (selectedTicketNumber) {
+    socket.emit('close-ticket', selectedTicketNumber);
+  }
+});
+
+// Socket Events
 socket.on('messages-by-ticket', (messages) => {
-    console.log("Mensajes recibidos para el ticket:", messages);
-    renderRealConversation(messages);
-});
+  renderMessages(messages);
 
-// Enviar mensaje nuevo
-async function sendMessage() {
-    const messageInput = document.getElementById('message-input');
-    const message = messageInput.value.trim();
-    if (!message || !selectedTicketNumber) return;
-
-    const messageData = {
-        username: window.userName || "Soporte",
-        message: message,
-        ticket: selectedTicketNumber,
-        rol: "support"
-    };
-
-    console.log("Enviando mensaje:", messageData);
-
-    socket.emit('new-message', messageData);
-    messageInput.value = '';
-}
-
-// Evento click para enviar mensaje
-document.getElementById('send-button').addEventListener('click', sendMessage);
-
-// Enviar mensaje con Enter
-document.getElementById('message-input').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        sendMessage();
+  // Actualizar título del ticket
+  if (selectedTicketNumber) {
+    const ticket = tickets.find(t => t.ticketNumber === selectedTicketNumber);
+    if (ticket) {
+      ticketTitle.textContent = `Ticket #${ticket.ticketNumber} - ${ticket.userName}`;
+    } else {
+      ticketTitle.textContent = `Ticket #${selectedTicketNumber}`;
     }
+  } else {
+    ticketTitle.textContent = "";
+  }
 });
 
+socket.on('new-ticket', (ticket) => {
+  addTicketToList(ticket);
+  if (userRole === 'support' && !selectedTicketNumber) {
+    selectTicket(ticket.ticketNumber);
+  }
+});
 
+socket.on('ticket-created', (data) => {
+  alert(data.message);
+  if (data.ticketNumber) {
+    selectTicket(data.ticketNumber);
+    // Actualizar variable global para chatbot
+    window.activeTicket = data.ticketNumber;
+    // Emitir para unirse a la sala del ticket
+    socket.emit('join-ticket-room', data.ticketNumber);
+  }
+});
+
+socket.on('new-support-message', (message) => {
+  if (message.ticket === selectedTicketNumber) {
+    renderMessages([...conversationDiv.messages || [], message]);
+  }
+});
+
+socket.on('chatbot-response', (response) => {
+  if (!selectedTicketNumber || response.ticket === "SIN TICKET - CHATBOT") {
+    renderMessages([...conversationDiv.messages || [], {
+      message: response.message || response,
+      rol: "bot",
+      createdAt: new Date()
+    }]);
+  }
+});
+
+socket.on('ticket-closed', (ticketNumber) => {
+  if (ticketNumber === selectedTicketNumber) {
+    const ticketElement = document.querySelector(`li[data-ticket-id="${ticketNumber}"]`);
+    if (ticketElement) ticketElement.remove();
+    
+    conversationDiv.innerHTML = "";
+    ticketTitle.textContent = "";
+    selectedTicketNumber = null;
+    
+    if (userRole === 'user') {
+      messageInput.disabled = false;
+      messageInput.placeholder = "Escribe tu mensaje...";
+      if (window.enableChatbot) window.enableChatbot();
+    }
+  }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Cargar tickets iniciales
+  tickets.forEach(ticket => addTicketToList(ticket));
+  
+  // Agregar event listeners a los tickets ya renderizados
+  const ticketItems = document.querySelectorAll('#ticket-list li');
+  ticketItems.forEach(li => {
+    li.addEventListener('click', () => {
+      const ticketId = li.dataset.ticketId;
+      selectTicket(ticketId);
+    });
+  });
+
+  // Seleccionar primer ticket si es soporte
+  if (userRole === 'support' && tickets.length > 0) {
+    selectTicket(tickets[0].ticketNumber);
+  }
+});

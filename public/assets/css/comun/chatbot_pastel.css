@@ -156,3 +156,14 @@ body {
     right: 5%;
   }
 }
+.support-message {
+  background-color: #cce5ff;
+  color: #004085;
+  margin: 12px 0;
+  padding: 10px 15px;
+  border-radius: 8px;
+  max-width: 75%;
+  margin-right: auto;
+  font-weight: 600;
+  font-style: italic;
+}

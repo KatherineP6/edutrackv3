@@ -74,6 +74,8 @@
 
 <script>
     window.tickets = JSON.parse('<%- JSON.stringify(tickets || []) %>');
+    window.userRole = "<%= typeof userRole !== 'undefined' ? userRole : 'support' %>";
+    window.userName = "<%= typeof userName !== 'undefined' ? userName : 'Soporte' %>";
 </script>
 
 <script src="/socket.io/socket.io.js"></script>

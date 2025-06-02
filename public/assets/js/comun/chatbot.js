@@ -14,6 +14,14 @@ window.onload = () => {
     // const chatbotMinimized = document.getElementById('chatbotMinimized');
     const chatbotBubble = document.getElementById('chatbotBubble');
 
+    // Variables para ticket activo y rol
+    let activeTicket = window.activeTicket || null;
+    let userRole = window.userRole || 'user';
+
+    if (activeTicket) {
+        socket.emit('join-ticket-room', activeTicket);
+    }
+
     function displayMessage(sender, message) {
         const messageElement = document.createElement('div');
         messageElement.classList.add(`${sender}-message`);
@@ -22,6 +30,9 @@ window.onload = () => {
             const randomColor = colorClasses[Math.floor(Math.random() * colorClasses.length)];
             messageElement.classList.add(randomColor);
             messageElement.textContent = `Bot: ${message}`;
+        } else if (sender === 'support') {
+            messageElement.textContent = `Soporte: ${message}`;
+            messageElement.classList.add('support-message');
         } else {
             messageElement.textContent = `${username}: ${message}`;
         }
@@ -35,8 +46,19 @@ window.onload = () => {
         const message = chatbotInput.value.trim();
         if (!message) return alert('Por favor ingresa un mensaje');
         displayMessage('user', message);
-        socket.emit('new-message', { username, message });
+        socket.emit('new-message', { username, message, ticket: activeTicket, rol: userRole });
         chatbotInput.value = "";
+    });
+
+    // Escuchar evento para actualizar ticket activo y rol
+    socket.on('ticket-created', (data) => {
+        if (data.ticketNumber) {
+            activeTicket = data.ticketNumber;
+            window.activeTicket = data.ticketNumber;
+            socket.emit('join-ticket-room', data.ticketNumber);
+            userRole = 'user'; // Asumir rol usuario tras creación de ticket
+            window.userRole = 'user';
+        }
     });
 
     chatbotInput.addEventListener('keydown', e => {
@@ -47,6 +69,11 @@ window.onload = () => {
     displayMessage('bot', 'Bienvenido, ¿en qué podemos ayudarte?');
 
     socket.on('chatbot-response', response => displayMessage('bot', response));
+
+    // Mostrar mensajes de soporte en el chat del usuario
+    socket.on('new-support-message', message => {
+        displayMessage('support', message.message);
+    });
 
     chatbotInput.addEventListener('input', () => {
         if (username) socket.emit('writing', username);
@@ -73,7 +100,7 @@ window.onload = () => {
 
     closeChatButton.addEventListener('click', () => {
         chatbotElement.style.display = 'none';
-        chatbotMinimized.style.display = 'none';
+        // chatbotMinimized.style.display = 'none';
         chatbotBubble.style.display = 'none';
         clearConversation();
     });
@@ -95,4 +122,15 @@ window.onload = () => {
         // chatbotMinimized.style.display = 'none';
         chatbotBubble.style.display = 'none';
     });
+
+    // Nuevas funciones para habilitar y deshabilitar el chatbot
+    window.disableChatbot = function() {
+        chatbotElement.style.display = 'none';
+        clearConversation();
+    };
+
+    window.enableChatbot = function() {
+        chatbotElement.style.display = 'block';
+        displayMessage('bot', 'Bienvenido, ¿en qué podemos ayudarte?');
+    };
 };

@@ -47,14 +47,13 @@ exports.renderAdminDashboard = async (req, res) => {
         }
 
         // Obtener totales
-        const [totalSalones, totalEstudiantes, totalDocentes, totalCarreras] = await Promise.all([
+        const [totalSalones, totalEstudiantes, totalDocentes, totalCarreras, totalSalonesDuplicate, totalBloques] = await Promise.all([
             Salon.countDocuments(),
             Estudiante.countDocuments(),
             Docente.countDocuments(),
             Carrera.countDocuments(),
             Salon.countDocuments(),
             Bloque.countDocuments(),
-
         ]);
 
         // Obtener las carreras con más estudiantes (Top 5)
