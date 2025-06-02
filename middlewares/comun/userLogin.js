@@ -1,10 +1,13 @@
 const Admin = require('../../models/administrador/adminModel');
 const Estudiante = require('../../models/administrador/estudianteModel');
 const Docente = require('../../models/administrador/docenteModel');
+const Soporte = require('../../models/administrador/soporte');
 
 module.exports = async (req, res, next) => {
     // If request is for API route, respond with JSON error instead of redirect
     const isApiRequest = req.originalUrl.startsWith('/api/');
+    console.log('Middleware userLogin - URL:', req.originalUrl);
+    console.log('Middleware userLogin - Sesión:', req.session);
     if (!req.session.userId) {
         console.log('No hay sesión activa.');
         if (isApiRequest) {
@@ -26,6 +29,9 @@ module.exports = async (req, res, next) => {
             case 'Docente':
                 user = await Docente.findById(req.session.userId);
                 break;
+            case 'Soporte':
+            user = await Soporte.findById(req.session.userId);
+            break;
             default:
                 console.log('Rol de usuario inválido:', req.session.userRole);
                 if (isApiRequest) {

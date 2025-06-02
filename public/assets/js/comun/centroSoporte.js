@@ -51,6 +51,7 @@ function renderRealConversation(messages) {
 
 // Función para manejar selección de ticket
 async function selectTicket(ticketElement) {
+    console.log("Ticket seleccionado:", ticketElement);
     // Remover clase activa de todos los tickets
     ticketList.querySelectorAll("li").forEach(li => {
         li.classList.remove("bg-indigo-100", "shadow-inner");
@@ -60,9 +61,18 @@ async function selectTicket(ticketElement) {
 
     // Obtener id del ticket
     const ticketId = ticketElement.getAttribute("data-ticket-id");
+    console.log("ID del ticket seleccionado:", ticketId);
     selectedTicketNumber = ticketId;
     updateTicketTitle(ticketId);
     closeTicketButton.disabled = false;
+
+    // Deshabilitar input del chatbot mientras el ticket está activo
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+    if (messageInput && sendButton) {
+        messageInput.disabled = true;
+        sendButton.disabled = true;
+    }
 
     // Cargar mensajes reales desde el servidor
     socket.emit('load-messages-by-ticket', ticketId);
@@ -100,31 +110,33 @@ ticketList.querySelectorAll("li").forEach(li => {
 });
 
 closeTicketButton.addEventListener('click', async () => {
+    console.log("Botón cerrar ticket clickeado");
     if (!selectedTicketNumber) return;
 
     try {
-        const response = await fetch(`/api/tickets/close/${selectedTicketNumber}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+    const response = await fetch(`/api/tickets/close/${selectedTicketNumber}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include'  // Enviar cookies para autenticación de sesión
+    });
 
-        if (response.ok) {
-            alert('Ticket cerrado exitosamente.');
-            // Remove closed ticket from the list
-            const ticketElement = document.querySelector(`li[data-ticket-id="${selectedTicketNumber}"]`);
-            if (ticketElement) {
-                ticketElement.remove();
-            }
-            // Clear conversation and disable close button
-            clearConversation();
-            ticketTitle.textContent = '';
-            closeTicketButton.disabled = true;
-            selectedTicketNumber = null;
-        } else {
-            alert('Error cerrando el ticket.');
-        }
+if (response.ok) {
+    alert('Ticket cerrado exitosamente.');
+    // Remove closed ticket from the list
+    const ticketElement = document.querySelector(`li[data-ticket-id="${selectedTicketNumber}"]`);
+    if (ticketElement) {
+        ticketElement.remove();
+    }
+    // Clear conversation and disable close button
+    clearConversation();
+    ticketTitle.textContent = '';
+    closeTicketButton.disabled = true;
+    selectedTicketNumber = null;
+} else {
+    alert('Error cerrando el ticket.');
+}
     } catch (error) {
         console.error('Error cerrando ticket:', error);
         alert('Error cerrando el ticket.');
@@ -138,6 +150,7 @@ socket.on('new-ticket', (ticket) => {
 
 // Escuchar mensajes por ticket desde el servidor
 socket.on('messages-by-ticket', (messages) => {
+    console.log("Mensajes recibidos para el ticket:", messages);
     renderRealConversation(messages);
 });
 
@@ -153,6 +166,8 @@ async function sendMessage() {
         ticket: selectedTicketNumber,
         rol: "support"
     };
+
+    console.log("Enviando mensaje:", messageData);
 
     socket.emit('new-message', messageData);
     messageInput.value = '';
@@ -171,6 +186,7 @@ document.getElementById('message-input').addEventListener('keydown', (e) => {
 
 // Escuchar nuevos mensajes para actualizar conversación si es el ticket seleccionado
 socket.on('new-message', (message) => {
+    console.log("Nuevo mensaje recibido:", message);
     if (message.ticket === selectedTicketNumber) {
         renderRealConversation([...conversationDiv.children].map(child => {
             return {
@@ -181,6 +197,7 @@ socket.on('new-message', (message) => {
         }).concat(message));
     }
 });
+
 // Inicializar lista de tickets si no hay ninguno
 if (tickets.length > 0) {
     tickets.forEach(ticket => {

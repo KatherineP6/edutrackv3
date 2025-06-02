@@ -35,7 +35,9 @@ module.exports = (io) => {
 
     socket.on('load-messages-by-ticket', async (ticketId) => {
       try {
+        console.log("Cargando mensajes para ticket:", ticketId);
         const messages = await messageService.getMessagesByTicket(ticketId);
+        console.log("Mensajes obtenidos:", messages);
         socket.emit('messages-by-ticket', messages);
       } catch (error) {
         console.error("Error al obtener mensajes por ticket:", error.message);
