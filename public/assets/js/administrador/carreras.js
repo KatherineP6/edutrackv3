@@ -143,11 +143,11 @@ document.addEventListener('DOMContentLoaded', () => {
       <td class="col-precio">${carrera.precio.toFixed(2)}</td>
       <td class="col-acciones">
         <div class="d-flex gap-2">
-          <button class="btn btn-sm btn-warning btn-edit" title="Editar">
-            <i class="bi bi-pencil-square"></i>
+          <button id="btnEditar" class="btn btn-sm btn-warning btn-edit" title="Editar">
+            <i class="fa fa-pencil"></i>
           </button>
-          <button class="btn btn-sm btn-danger btn-delete" title="Eliminar">
-            <i class="bi bi-trash3-fill"></i>
+          <button id="btnEliminar" class="btn btn-sm btn-danger btn-delete" title="Eliminar">
+            <i class="fa fa-trash"></i>
           </button>
         </div>
       </td>

@@ -199,21 +199,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const fila = document.createElement('tr');
     fila.dataset.id = curso._id;
     fila.innerHTML = `
-      <td class="col-nombre">${curso.nombre}</td>
-      <td class="col-descripcion">${curso.descripcion || ''}</td>
-      <td class="col-tipo">${curso.tipo}</td>
-      <td class="col-precio">${curso.precio.toFixed(2)}</td>
-      <td class="col-carrera">${curso.carrera ? getCarreraNombreById(curso.carrera) : ''}</td>
-      <td class="col-semestre">${curso.semestre || ''}</td>
-      <td class="col-acciones">
-        <div class="d-flex gap-2">
-          <button class="btn btn-sm btn-warning btn-edit" title="Editar">
-            <i class="bi bi-pencil-square"></i>
-          </button>
-          <button class="btn btn-sm btn-danger btn-delete" title="Eliminar">
-            <i class="bi bi-trash3-fill"></i>
-          </button>
-        </div>
+      <td class="">${curso.nombre}</td>
+      <td class="">${curso.descripcion || ''}</td>
+      <td class="">${curso.tipo}</td>
+      <td class="">${curso.precio.toFixed(2)}</td>
+      <td class="">${curso.carrera ? getCarreraNombreById(curso.carrera) : ''}</td>
+      <td class="">${curso.semestre || ''}</td>
+      <td class="">
+               <button id="btnEditar" class="btn btn-sm btn-primary btn-editar" title="Editar" style="margin-right: 5px;">
+          <i class="fa fa-pencil"></i>
+        </button>
+        <button id="btnEliminar" class="btn btn-sm btn-danger btn-borrar" title="Eliminar">
+          <i class="fa fa-trash"></i>
+        </button>
       </td>
     `;
 

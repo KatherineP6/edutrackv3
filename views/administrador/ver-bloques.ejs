@@ -4,7 +4,7 @@
       <div class="section-header d-flex justify-content-between align-items-center mb-3">
         <h2>Gestión de Bloques</h2>
       </div>
-      <div>
+      <div style="text-align: end;">
         <button id="createBloqueBtn" class="btn-primary">➕ Nuevo Bloque</button>
       </div>
       <div class="button-table-container">
@@ -13,18 +13,18 @@
             <table id="bloquesTable" class="data-table" style="min-width: 900px;">
               <thead>
                 <tr>
-              <th>Nombre</th>
-              <th>Fecha Inicio</th>
-              <th>Fecha Fin</th>
-              <th>Días de la Semana</th>
-              <th>Hora Inicio</th>
-              <th>Hora Fin</th>
-              <th>Carrera</th>
-              <th>Curso</th>
-              <th>Docente</th>
-              <th>Salón</th>
-              <th>Estado</th>
-              <th>Acciones</th>
+                  <th style="width: 9%;">Nombre</th>
+                  <th style="width: 6%;">Fecha Inicio</th>
+                  <th style="width: 4%;">Fecha Fin</th>
+                  <th style="width: 10%;">Días de la Semana</th>
+                  <th style="width: 5%;">Hora Inicio</th>
+                  <th style="width: 5%;">Hora Fin</th>
+                  <th style="width: 6%;">Carrera</th>
+                  <th style="width: 7%;">Curso</th>
+                  <th style="width: 6%;">Docente</th>
+                  <th style="width: 5%;">Salón</th>
+                  <th style="width: 8%;">Estado</th>
+                  <th style="width: 10%;">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -165,3 +165,20 @@
 </section>
 
 <script src="/assets/js/administrador/bloque.js"></script>
+<style>
+    
+      #btnEditar{
+    background: #ffe900;
+    color: black;
+    font-size: 18px;
+    width: 47px;
+    height: 37px;
+  }
+   #btnEliminar{
+    background: red;
+    color: white;
+    font-size: 18px;
+    width: 47px;
+    height: 37px;
+  }
+</style>

@@ -324,16 +324,16 @@ button {
 
 /* Data table */
 /* Estilos existentes */
-
+/*
 .data-table {
   width: 100vw !important;
   max-width: 100vw !important;
-  max-height: 1000px; /* Altura máxima para la tabla */
+  max-height: 1000px;  Altura máxima para la tabla 
   overflow-x: auto !important;
-  overflow-y: auto; /* Scroll vertical si el contenido excede la altura */
+  overflow-y: auto;  Scroll vertical si el contenido excede la altura 
   display: block !important;
   border-collapse: collapse;
-}
+}*/
 
 /* Opcional: para que el encabezado quede fijo al hacer scroll */
 .data-table thead tr {
@@ -431,11 +431,11 @@ button {
   width: 120px;
   flex-shrink: 0;
 }
-
+/*
 #classroomsSectionTable {
   width: 100%;
   min-width: 900px;
-}
+}*/
 
 .btn-editar, .btn-borrar {
   display: inline-flex;

@@ -197,8 +197,8 @@ document.addEventListener('DOMContentLoaded', function() {
           <td>${nombresalon}</td>
           <td>${bloque.estado === 1 ? 'Activo' : 'Inactivo'}</td>
           <td>
-            <button class="btn-edit" data-id="${bloque._id}">✏️ Editar</button>
-            <button class="btn-delete" data-id="${bloque._id}">🗑️ Eliminar</button>
+            <button id="btnEditar" class="btn-edit" data-id="${bloque._id}">✏️ </button>
+            <button id="btnEliminar" class="btn-delete" data-id="${bloque._id}">🗑️ </button>
           </td>
         `;
         tableBody.appendChild(row);

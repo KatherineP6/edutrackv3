@@ -11,9 +11,11 @@
 <section id="salones" class="tab-section active">
   <div class="dashboard-home">
     <div class="charts-stats">
-      <div class="section-header d-flex justify-content-between align-items-center mb-3">
+      <div class="section-header mb-3">
         <h2>Gestión de Salones</h2>
-        <button id="createClassroomBtn" class="btn-primary">➕ Nuevo Salón</button>
+        <div style="text-align: end;">
+          <button id="createClassroomBtn" class="btn-primary">➕ Nuevo Salón</button>
+        </div>
       </div>
       <div class="button-table-container">
         <div class="card">
@@ -21,11 +23,11 @@
             <table id="classroomsSectionTable" class="data-table">
               <thead>
                 <tr>
-                  <th>Nombre</th>
-                  <th>Ubicación</th>
-                  <th>Capacidad</th>    
-                  <th>Descripcion</th>              
-                  <th>Acciones</th>
+                  <th style="width: 7%;">Nombre</th>
+                  <th style="width: 8%;">Ubicación</th>
+                  <th style="width: 7%;">Capacidad</th>    
+                  <th style="width: 7%;">Descripcion</th>              
+                  <th style="width: 10%;">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -214,6 +216,20 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+      #btnEditar{
+    background: #ffe900;
+    color: black;
+    font-size: 18px;
+    width: 47px;
+    height: 37px;
+  }
+   #btnEliminar{
+    background: red;
+    color: white;
+    font-size: 18px;
+    width: 47px;
+    height: 37px;
+  }
   </style>
 </body>
 </html>

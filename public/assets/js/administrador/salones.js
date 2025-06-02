@@ -39,16 +39,16 @@ document.addEventListener('DOMContentLoaded', function() {
         data.forEach(classroom => {
           const row = document.createElement('tr');
           row.innerHTML = `
-            <td class="col-nombre">${classroom.nombre}</td>
-            <td class="col-ubicacion">${classroom.ubicacion}</td>
-            <td class="col-capacidad">${classroom.capacidad}</td>
-            <td class="col-descripcion">${classroom.descripcion}</td>
+            <td class="">${classroom.nombre}</td>
+            <td class="">${classroom.ubicacion}</td>
+            <td class="">${classroom.capacidad}</td>
+            <td class="">${classroom.descripcion}</td>
             <td>
               <div class="d-flex gap-2"  class="col-acciones">
-                <button class="btn btn-sm btn-warning btn-edit" data-id="${classroom._id}" title="Editar">
+                <button id="btnEditar" class="btn btn-sm btn-warning btn-edit" data-id="${classroom._id}" title="Editar">
                   <i class="bi bi-pencil-square"></i>
                 </button>
-                <button class="btn btn-sm btn-danger btn-delete" data-id="${classroom._id}" title="Eliminar">
+                <button id="btnEliminar" class="btn btn-sm btn-danger btn-delete" data-id="${classroom._id}" title="Eliminar">
                   <i class="bi bi-trash3-fill"></i>
                 </button>
               </div>
