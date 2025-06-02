@@ -87,7 +87,6 @@ exports.renderAdminDashboard = async (req, res) => {
             totalEstudiantes,
             totalDocentes,
             totalCarreras,
-            totalBloques,
             topCarreras,
             user: {
                 role: req.session.userRole,
