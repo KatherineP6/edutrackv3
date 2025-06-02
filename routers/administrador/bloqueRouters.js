@@ -9,6 +9,7 @@ const bloqueController = require('../../controllers/administrador/bloqueControll
 router.get('/', userLogin, bloqueController.getAllBloques);
 router.get('/:id', userLogin, bloqueController.getBloqueById);
 router.post('/', userLogin, bloqueController.createBloque);
+router.post('/:id', userLogin, bloqueController.updateBloque);
 router.put('/:id', userLogin, bloqueController.updateBloque);
 router.delete('/:id', userLogin, bloqueController.deleteBloque);
 

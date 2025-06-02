@@ -13,30 +13,55 @@ document.addEventListener('DOMContentLoaded', function() {
   const deleteConfirmBtn = document.getElementById('deleteConfirmBtn');
 
   let bloqueIdToDelete = null;
-
+  var carrerasLista = [];
+  var cursosLista = [];
+  var docentesLista = [];
+  var salonesLista = [];
   // Load options for curso, docente, salon selects
   async function loadSelectOptions() {
+    carrerasLista = [];
+    cursosLista = [];
+    docentesLista = [];
+    salonesLista = [];
     try {
-      const [cursosRes, docentesRes, salonesRes] = await Promise.all([
+      const [cursosRes, docentesRes, salonesRes, carrerasRes] = await Promise.all([
         fetch('/api/cursos'),
         fetch('/api/docentes'),
-        fetch('/api/salones')
+        fetch('/api/salones'),
+        fetch('/api/carreras'),
       ]);
-      const cursos = await cursosRes.json();
-      const docentes = await docentesRes.json();
-      const salones = await salonesRes.json();
+      var cursos = await cursosRes.json();
+      var docentes = await docentesRes.json();
+      var salones = await salonesRes.json();
+      var carreras = await carrerasRes.json();
 
+      carrerasLista = carreras;
+      cursosLista = cursos;
+      docentesLista = docentes;
+      salonesLista = salones;
+
+      const carreraSelect = document.getElementById('carrera');
       const cursoSelect = document.getElementById('curso');
       const docenteSelect = document.getElementById('docente');
       const salonSelect = document.getElementById('salon');
 
+      carreraSelect.innerHTML = '<option value="" disabled selected>Seleccione una carrera</option>';
+      carreras.forEach(carrera => {
+        const option = document.createElement('option');
+        option.value = carrera._id;
+        option.textContent = carrera.nombre;
+        carreraSelect.appendChild(option);
+      });
+
+
       cursoSelect.innerHTML = '<option value="" disabled selected>Selecciona un curso</option>';
-      cursos.forEach(curso => {
+      cursoSelect.disabled = true;
+      /*cursos.forEach(curso => {
         const option = document.createElement('option');
         option.value = curso._id;
         option.textContent = curso.nombre;
         cursoSelect.appendChild(option);
-      });
+      });*/
 
       // Initially disable docente select until curso is selected
       docenteSelect.innerHTML = '<option value="" disabled selected>Selecciona un docente</option>';
@@ -49,6 +74,34 @@ document.addEventListener('DOMContentLoaded', function() {
         option.textContent = salon.nombre;
         salonSelect.appendChild(option);
       });
+
+      // Add event listener to curso select to load docentes filtered by Carrera
+       carreraSelect.addEventListener('change', async () => {
+        const selectedCarreraId = carreraSelect.value;
+        if (!selectedCarreraId) {
+          cursoSelect.innerHTML = '<option value="" disabled selected>Seleccione un curso</option>';
+          cursoSelect.disabled = true;
+          return;
+        }
+        try {
+          const response = await fetch(`/api/cursos?carrera=${selectedCarreraId}`);
+          if (!response.ok) throw new Error('Error fetching curso');
+          const filteredCurso = await response.json();
+          cursoSelect.innerHTML = '<option value="" disabled selected>Seleccione un curso</option>';
+          filteredCurso.forEach(curso => {
+            const option = document.createElement('option');
+            option.value = curso._id;
+            option.textContent = curso.nombre;
+            cursoSelect.appendChild(option);
+          });
+          cursoSelect.disabled = false;
+        } catch (error) {
+          console.error('Error loading docentes filtered by curso:', error);
+          cursoSelect.innerHTML = '<option value="" disabled selected>Selecciona un curso</option>';
+          cursoSelect.disabled = true;
+        }
+      });
+
 
       // Add event listener to curso select to load docentes filtered by curso
       cursoSelect.addEventListener('change', async () => {
@@ -113,18 +166,34 @@ document.addEventListener('DOMContentLoaded', function() {
         const fechaInicioStr = bloque.fechaInicio ? new Date(bloque.fechaInicio).toLocaleDateString() : '';
         const fechaFinStr = bloque.fechaFin ? new Date(bloque.fechaFin).toLocaleDateString() : '';
         const diasSemanaStr = bloque.diasSemana ? bloque.diasSemana.join(', ') : '';
+        
+        var nombrecarrera = "";
+        carrerasLista.forEach(carrera => {
+          if(carrera._id == bloque.carrera){nombrecarrera = carrera.nombre ;}
+        });
+
         const cursoNombre = bloque.curso && typeof bloque.curso === 'object' ? bloque.curso.nombre : '';
-        const docenteNombre = bloque.docente && typeof bloque.docente === 'object' ? bloque.docente.nombre : '';
-        const salonNombre = bloque.salon && typeof bloque.salon === 'object' ? bloque.salon.nombre : '';
+        var nombredocente = "";
+        docentesLista.forEach(docente => {
+          if(docente._id == bloque.docente){nombredocente = docente.Nombre + " "+ docente.Apellido;}
+        });
+
+        var nombresalon = "";
+        salonesLista.forEach(salon => {
+          if(salon._id == bloque.salon){nombresalon = salon.nombre ;}
+        });
+        //const docenteNombre = bloque.docente && typeof bloque.docente === 'object' ? bloque.docente.nombre : '';
+        //const salonNombre = bloque.salon && typeof bloque.salon === 'object' ? bloque.salon.nombre : '';
         row.innerHTML = `
           <td>${fechaInicioStr}</td>
           <td>${fechaFinStr}</td>
           <td>${diasSemanaStr}</td>
           <td>${bloque.horaInicio}</td>
           <td>${bloque.horaFin}</td>
+          <td>${nombrecarrera}</td>
           <td>${cursoNombre}</td>
-          <td>${docenteNombre}</td>
-          <td>${salonNombre}</td>
+          <td>${nombredocente}</td>
+          <td>${nombresalon}</td>
           <td>${bloque.estado === 1 ? 'Activo' : 'Inactivo'}</td>
           <td>
             <button class="btn-edit" data-id="${bloque._id}">✏️ Editar</button>
@@ -189,6 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
       form.fechaFin.value = bloque.fechaFin ? bloque.fechaFin.split('T')[0] : '';
       form.horaInicio.value = bloque.horaInicio || '';
       form.horaFin.value = bloque.horaFin || '';
+      form.carrera.value = bloque.carrera ? bloque.carrera._id : '';
       form.curso.value = bloque.curso ? bloque.curso._id : '';
       form.docente.value = bloque.docente ? bloque.docente._id : '';
       form.salon.value = bloque.salon ? bloque.salon._id : '';

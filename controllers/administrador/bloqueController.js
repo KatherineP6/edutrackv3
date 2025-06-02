@@ -41,9 +41,9 @@ exports.getAllBloques = async (req, res) => {
 exports.getBloqueById = async (req, res) => {
   try {
     const bloque = await Bloque.findById(req.params.id)
-      .populate('curso', '_id nombre')
-      .populate('docente', '_id nombre')
-      .populate('salon', '_id nombre')
+    //  .populate('curso', '_id nombre')
+    //  .populate('docente', '_id nombre')
+    //  .populate('salon', '_id nombre')
       .lean();
 
     if (!bloque) {
@@ -60,9 +60,9 @@ exports.getBloqueById = async (req, res) => {
 // Crear nuevo bloque
 exports.createBloque = async (req, res) => {
   try {
-    const { fechaInicio, fechaFin, diasSemana, horaInicio, horaFin, curso, docente, salon, estado } = req.body;
+    const { fechaInicio, fechaFin, diasSemana, horaInicio, horaFin,carrera, curso, docente, salon, estado } = req.body;
 
-    if (!fechaInicio || !fechaFin || !diasSemana || !horaInicio || !horaFin || !curso || !docente || !salon) {
+    if (!fechaInicio || !fechaFin || !diasSemana || !horaInicio || !horaFin || !carrera ||!curso || !docente || !salon) {
       return res.status(400).json({ message: 'Faltan datos requeridos para crear el bloque.' });
     }
 
@@ -72,6 +72,7 @@ exports.createBloque = async (req, res) => {
       diasSemana,
       horaInicio,
       horaFin,
+      carrera,
       curso,
       docente,
       salon,
@@ -91,9 +92,9 @@ exports.createBloque = async (req, res) => {
 exports.updateBloque = async (req, res) => {
   try {
     const { id } = req.params;
-    const { fechaInicio, fechaFin, diasSemana, horaInicio, horaFin, curso, docente, salon, estado } = req.body;
+    const { fechaInicio, fechaFin, diasSemana, horaInicio, horaFin, carrera, curso, docente, salon, estado } = req.body;
 
-    if (!fechaInicio || !fechaFin || !diasSemana || !horaInicio || !horaFin || !curso || !docente || !salon) {
+    if (!fechaInicio || !fechaFin || !diasSemana || !horaInicio || !horaFin || !carrera || !curso || !docente || !salon) {
       return res.status(400).json({ message: 'Faltan datos requeridos para actualizar el bloque.' });
     }
 
@@ -103,6 +104,7 @@ exports.updateBloque = async (req, res) => {
       diasSemana,
       horaInicio,
       horaFin,
+      carrera,
       curso,
       docente,
       salon,

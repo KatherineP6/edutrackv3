@@ -18,6 +18,7 @@
                   <th>Días de la Semana</th>
                   <th>Hora Inicio</th>
                   <th>Hora Fin</th>
+                  <th>Carrera</th>
                   <th>Curso</th>
                   <th>Docente</th>
                   <th>Salón</th>
@@ -37,81 +38,95 @@
 
   <!-- Modal -->
   <div id="modalContainer" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width: 625px !important;">
       <header class="modal-header">
         <h3 id="modalTitle">Nuevo Bloque</h3>
         <button id="modalCloseBtn" aria-label="Cerrar diálogo">&times;</button>
       </header>
       <form id="formBloque" class="modal-body" novalidate>
-        <div class="row">
-          <div class="form-group mb-3 col-md-12">
-            <label for="diasSemana">Días de la Semana</label>
-            <select id="diasSemana" name="diasSemana" class="form-control" multiple required>
-              <option value="Lunes">Lunes</option>
-              <option value="Martes">Martes</option>
-              <option value="Miércoles">Miércoles</option>
-              <option value="Jueves">Jueves</option>
-              <option value="Viernes">Viernes</option>
-              <option value="Sábado">Sábado</option>
-              <option value="Domingo">Domingo</option>
-            </select>
+        <div class="col-md-12 col-lg-12 col-sm-12" style="display: flex;">
+          <div class="col-md-6 col-lg-6 col-sm-6">
+            <div class="row">
+              <div class="form-group mb-3 col-md-12">
+                <label for="diasSemana">Días de la Semana</label>
+                <select id="diasSemana" name="diasSemana" class="form-control" multiple required>
+                  <option value="Lunes">Lunes</option>
+                  <option value="Martes">Martes</option>
+                  <option value="Miércoles">Miércoles</option>
+                  <option value="Jueves">Jueves</option>
+                  <option value="Viernes">Viernes</option>
+                  <option value="Sábado">Sábado</option>
+                  <option value="Domingo">Domingo</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group mb-1 col-md-3">
+                <label for="fechaInicio">Fecha Inicio</label>
+                <input type="date" id="fechaInicio" name="fechaInicio" class="form-control" required />
+              </div>
+
+              <div class="form-group mb-1 col-md-3">
+                <label for="fechaFin">Fecha Fin</label>
+                <input type="date" id="fechaFin" name="fechaFin" class="form-control" required />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="form-group mb-3 col-md-6">
+                <label for="horaInicio">Hora Inicio</label>
+                <input type="time" id="horaInicio" name="horaInicio" class="form-control" required />
+              </div>
+
+              <div class="form-group mb-3 col-md-6">
+                <label for="horaFin">Hora Fin</label>
+                <input type="time" id="horaFin" name="horaFin" class="form-control" required />
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-6 col-sm-6" style="margin-left: 25px;">
+            <div class="form-group mb-3">
+              <label for="carrera">Carrera</label>
+              <select id="carrera" name="carrera" class="form-control" required>
+                <option value="" disabled selected>Selecciona una Carrera</option>
+                <!-- Opciones de cursos cargadas dinámicamente -->
+              </select>
+            </div>
+
+            <div class="form-group mb-3">
+              <label for="curso">Curso</label>
+              <select id="curso" name="curso" class="form-control" required>
+                <option value="" disabled selected>Selecciona un curso</option>
+                <!-- Opciones de cursos cargadas dinámicamente -->
+              </select>
+            </div>
+
+            <div class="form-group mb-3">
+              <label for="docente">Docente</label>
+              <select id="docente" name="docente" class="form-control" required>
+                <option value="" disabled selected>Selecciona un docente</option>
+                <!-- Opciones de docentes cargadas dinámicamente -->
+              </select>
+            </div>
+
+            <div class="form-group mb-3">
+              <label for="salon">Salón</label>
+              <select id="salon" name="salon" class="form-control" required>
+                <option value="" disabled selected>Selecciona un salón</option>
+                <!-- Opciones de salones cargadas dinámicamente -->
+              </select>
+            </div>
+
+            <div class="form-group mb-3">
+              <label for="estado">
+                <input type="checkbox" id="estado" name="estado" checked />
+                Activo
+              </label>
+            </div>
           </div>
         </div>
 
-        <div class="row">
-          <div class="form-group mb-1 col-md-3">
-            <label for="fechaInicio">Fecha Inicio</label>
-            <input type="date" id="fechaInicio" name="fechaInicio" class="form-control" required />
-          </div>
-
-          <div class="form-group mb-1 col-md-3">
-            <label for="fechaFin">Fecha Fin</label>
-            <input type="date" id="fechaFin" name="fechaFin" class="form-control" required />
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="form-group mb-3 col-md-6">
-            <label for="horaInicio">Hora Inicio</label>
-            <input type="time" id="horaInicio" name="horaInicio" class="form-control" required />
-          </div>
-
-          <div class="form-group mb-3 col-md-6">
-            <label for="horaFin">Hora Fin</label>
-            <input type="time" id="horaFin" name="horaFin" class="form-control" required />
-          </div>
-        </div>
-
-        <div class="form-group mb-3">
-          <label for="curso">Curso</label>
-          <select id="curso" name="curso" class="form-control" required>
-            <option value="" disabled selected>Selecciona un curso</option>
-            <!-- Opciones de cursos cargadas dinámicamente -->
-          </select>
-        </div>
-
-        <div class="form-group mb-3">
-          <label for="docente">Docente</label>
-          <select id="docente" name="docente" class="form-control" required>
-            <option value="" disabled selected>Selecciona un docente</option>
-            <!-- Opciones de docentes cargadas dinámicamente -->
-          </select>
-        </div>
-
-        <div class="form-group mb-3">
-          <label for="salon">Salón</label>
-          <select id="salon" name="salon" class="form-control" required>
-            <option value="" disabled selected>Selecciona un salón</option>
-            <!-- Opciones de salones cargadas dinámicamente -->
-          </select>
-        </div>
-
-        <div class="form-group mb-3">
-          <label for="estado">
-            <input type="checkbox" id="estado" name="estado" checked />
-            Activo
-          </label>
-        </div>
 
         <div class="form-group mb-3">
           <button type="button" id="cancelBtn" class="btn-secondary">Cancelar</button>

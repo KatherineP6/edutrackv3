@@ -23,6 +23,11 @@ const bloqueSchema = new Schema({
     type: String,
     required: true
   },
+  carrera: {
+    type: Schema.Types.ObjectId,
+    ref: 'carreras',
+    required: true
+  },
   curso: {
     type: Schema.Types.ObjectId,
     ref: 'cursos',
