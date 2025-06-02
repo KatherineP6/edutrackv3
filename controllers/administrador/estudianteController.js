@@ -60,7 +60,7 @@ exports.getEstudianteByIdData = async (id) => {
 
 exports.createEstudiante = async (req, res) => {
     try {
-        const { nombre, apellidos, correo, edad, password, direccion, carreraId, cursosInscritos } = req.body;
+        const { nombre, apellidos, correo, edad, password, direccion, carreraId, bloqueId } = req.body;
 
         if (!nombre || !apellidos || !correo || !password) {
             return res.status(400).json({ message: 'Nombre, apellidos, correo y password son requeridos.' });
@@ -76,7 +76,7 @@ exports.createEstudiante = async (req, res) => {
             direccion: direccion || '',
             correo,
             carreraId: carreraId || null,
-            cursosInscritos: Array.isArray(cursosInscritos) ? cursosInscritos : []
+            bloqueId: bloqueId || null,
         });
 
         const savedEstudiante = await estudiante.save();
@@ -90,7 +90,7 @@ exports.createEstudiante = async (req, res) => {
 exports.updateEstudiante = async (req, res) => {
     try {
         const { id } = req.params;
-        const { nombre, apellidos, correo, edad, password, direccion, carreraId, cursosInscritos } = req.body;
+        const { nombre, apellidos, correo, edad, password, direccion, carreraId, bloqueId } = req.body;
 
         if (!nombre || !apellidos || !correo) {
             return res.status(400).json({ message: 'Nombre, apellidos y correo son requeridos.' });
@@ -103,7 +103,7 @@ exports.updateEstudiante = async (req, res) => {
             direccion: direccion || '',
             correo,
             carreraId: carreraId || null,
-            cursosInscritos: Array.isArray(cursosInscritos) ? cursosInscritos : []
+            bloqueId: bloqueId || null,
         };
 
         if (password) {

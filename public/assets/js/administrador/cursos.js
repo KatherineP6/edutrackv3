@@ -7,11 +7,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const tablaCuerpo = document.querySelector('#cursosSectionTable tbody');
   const tipoSelect = document.getElementById('tipo');
   const carreraGroup = document.getElementById('carreraGroup');
-  const carreraSelect = document.getElementById('carreraId');
+  const carreraSelect = document.getElementById('carrera');
+
+    const deleteModal = document.getElementById('deleteConfirmModal');
+  const btnCerrarDeleteModal = document.getElementById('deleteModalCloseBtn');
+  const btnCancelarDelete = document.getElementById('deleteCancelBtn');
+  const btnConfirmarDelete = document.getElementById('deleteConfirmBtn');
+
+  const deleteConfirmModal = document.getElementById('deleteConfirmModal');
 
   let editandoFila = null;
   let editandoCursoId = null;
   let carrerasList = [];
+  
+  let cursoEditandoId = null;
+  let cursoEliminandoId = null;
 
   function abrirModal() {
     modal.classList.remove('hidden');
@@ -21,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     editandoCursoId = null;
     document.getElementById('modalTitle').textContent = 'Nuevo Curso';
   }
+  
 
   function cerrarModal() {
     modal.classList.add('hidden');
@@ -28,6 +39,16 @@ document.addEventListener('DOMContentLoaded', () => {
     limpiarErrores();
     editandoFila = null;
     editandoCursoId = null;
+  }
+
+  
+  function abrirDeleteModal() {
+    deleteModal.classList.remove('hidden');
+  }
+
+  function cerrarDeleteModal() {
+    deleteModal.classList.add('hidden');
+    cursoEliminandoId = null;
   }
 
   function mostrarError(input, mensaje) {
@@ -60,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let valido = true;
     formCurso.querySelectorAll('input, select, textarea').forEach(input => {
       // descripcion not required if tipo is taller
-      if (input.id === 'descripcion' && tipoSelect.value === 'taller') {
+      if (input.id === 'descripcion' && tipoSelect.value === 'tipo') {
         limpiarError(input);
         return true;
       }
@@ -156,6 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = await fetch('/api/cursos');
       if (!response.ok) throw new Error('Error al cargar cursos');
       const data = await response.json();
+      tablaCuerpo.innerHTML = '';
       data.forEach(curso => agregarFila(curso));
     } catch (error) {
       alert(error.message);
@@ -167,6 +189,12 @@ document.addEventListener('DOMContentLoaded', () => {
     await cargarCursos();
   }
 
+  function handleDelete(e) {
+    bloqueIdToDelete = e.target.dataset.id;
+    deleteConfirmModal.classList.remove('hidden');
+  }
+ 
+
   function agregarFila(curso) {
     const fila = document.createElement('tr');
     fila.dataset.id = curso._id;
@@ -175,47 +203,46 @@ document.addEventListener('DOMContentLoaded', () => {
       <td>${curso.descripcion || ''}</td>
       <td>${curso.tipo}</td>
       <td>${curso.precio.toFixed(2)}</td>
-      <td>${curso.carreraId ? getCarreraNombreById(curso.carreraId) : ''}</td>
+      <td>${curso.carrera ? getCarreraNombreById(curso.carrera) : ''}</td>
       <td>${curso.semestre || ''}</td>
-     <td>
-  <button class="btn btn-sm btn-primary btn-editar" title="Editar" style="margin-right: 5px;">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16">
-      <path d="M12.146.854a.5.5 0 0 1 .708 0l2.292 2.292a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 3L13 4.793 14.793 3 13 1.207 11.207 3zM12 5.207L10.793 4 3 11.793V13h1.207L12 5.207z"/>
-    </svg>
-  </button>
-  <button class="btn btn-sm btn-danger btn-borrar" title="Eliminar" style="margin-right: 5px;">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16">
-      <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-    </svg>
-  </button>
-  <button class="btn btn-sm btn-success btn-agregar-carrera" title="Agregar Carrera">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16">
-      <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-    </svg>
-  </button>
-</td>
-
+      <td>
+        
+        <button class="btn btn-sm btn-primary btn-editar" title="Editar" style="margin-right: 5px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16">
+            <path d="M12.146.854a.5.5 0 0 1 .708 0l2.292 2.292a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 3L13 4.793 14.793 3 13 1.207 11.207 3zM12 5.207L10.793 4 3 11.793V13h1.207L12 5.207z"/>
+          </svg>
+        </button>
+        <button class="btn btn-sm btn-danger btn-borrar" title="Eliminar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16">
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+          </svg>
+        </button>
+      </td>
     `;
+
+    fila.querySelector('.btn-editar').addEventListener('click', () => abrirModalEditar(curso));
+    fila.querySelector('.btn-borrar').addEventListener('click', () => abrirModalEliminar(curso._id));
     tablaCuerpo.appendChild(fila);
   }
 
+
   formCurso.addEventListener('submit', async e => {
     e.preventDefault();
-    if (!validarFormulario()) return;
+    //if (!validarFormulario()) return;
 
     const nombre = formCurso.nombre.value;
     const descripcion = formCurso.descripcion.value;
     const tipo = formCurso.tipo.value;
     const precio = parseFloat(formCurso.precio.value);
     const semestre = formCurso.semestre.value ? parseInt(formCurso.semestre.value, 10) : null;
-    const carreraId = tipo === 'carrera' ? formCurso.carreraId.value : null;
+    const carrera = formCurso.carrera.value ;
 
     const cursoData = {
       nombre,
       descripcion,
       tipo,
       precio,
-      carreraId,
+      carrera,
       semestre,
     };
 
@@ -227,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
           editandoFila.cells[1].textContent = descripcion;
           editandoFila.cells[2].textContent = tipo;
           editandoFila.cells[3].textContent = precio.toFixed(2);
-          editandoFila.cells[4].textContent = getCarreraNombreById(carreraId);
+          editandoFila.cells[4].textContent = getCarreraNombreById(carrera);
           editandoFila.cells[5].textContent = semestre || '';
         }
       } else {
@@ -240,6 +267,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+    document.querySelectorAll('.btn-plus').forEach(btn => {
+    btn.addEventListener('click', handleAdd);
+  });
+
+  document.querySelectorAll('.btn-edit').forEach(btn => {
+    btn.addEventListener('click', handleEdit);
+  });
+
+  document.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', handleDelete);
+  });
+  
   // Manejar eventos de edición y eliminación
   tablaCuerpo.addEventListener('click', async e => {
     if (e.target.classList.contains('btn-borrar')) {
@@ -264,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // To get carreraId from name, find in carrerasList
       const carreraNombre = fila.cells[4].textContent;
       const carreraObj = carrerasList.find(c => c.nombre === carreraNombre);
-      formCurso.carreraId.value = carreraObj ? carreraObj._id : '';
+      formCurso.carrera.value = carreraObj ? carreraObj._id : '';
       formCurso.semestre.value = fila.cells[5].textContent;
       editandoFila = fila;
       editandoCursoId = fila.dataset.id || null;
@@ -278,6 +317,61 @@ document.addEventListener('DOMContentLoaded', () => {
   btnCerrarModal.addEventListener('click', cerrarModal);
   btnCancelar.addEventListener('click', cerrarModal);
 
+ function abrirModalEditar(curso) {
+    editandoCursoId = curso._id;
+    modalTitle.textContent = 'Editar Curso';
+    formCurso.nombre.value = curso.nombre || '';
+    formCurso.descripcion.value = curso.descripcion || '';
+    formCurso.tipo.value = curso.tipo || '';
+    formCurso.precio.value = curso.precio || '';
+    formCurso.carrera.value = curso.carrera || '';
+    formCurso.semestre.value = curso.semestre || '';
+    /*
+    // Limpiar selección previa
+    for (let i = 0; i < selectCursos.options.length; i++) {
+      selectCursos.options[i].selected = false;
+    }
+    // Seleccionar cursos asignados
+    if (Array.isArray(docente.cursosAsignados)) {
+     // docente.cursosAsignados.forEach(cursoId => {
+      for (let j = 0; j < docente.cursosAsignados.length; j++) {
+        for (let i = 0; i < selectCursos.options.length; i++) {
+          // Convert both to string for safe comparison
+          if (selectCursos.options[i].value.toString() === docente.cursosAsignados[j]._id.toString()) {
+            selectCursos.options[i].selected = true;
+            break;
+          }
+        }
+      }//});
+    }
+*/
+
+    modal.classList.remove('hidden');
+  
+  }
+
+  function abrirModalEliminar(id) {
+    cursoEliminandoId = id;
+    abrirDeleteModal();
+  }
+
+  btnCerrarDeleteModal.addEventListener('click', cerrarDeleteModal);
+  btnCancelarDelete.addEventListener('click', cerrarDeleteModal);
+
+  btnConfirmarDelete.addEventListener('click', async () => {
+    try {
+      const response = await fetch(`/api/cursos/${cursoEliminandoId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Error al eliminar cursos');
+      alert('Docente eliminado exitosamente');
+      cerrarDeleteModal();
+      cargarCursos();
+    } catch (error) {
+      alert(error.message);
+    }
+  });
 
   init();
 });

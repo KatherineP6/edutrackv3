@@ -27,9 +27,9 @@ exports.getCursoById = async (req, res) => {
 
 exports.createCurso = async (req, res) => {
   try {
-    const { nombre, descripcion, tipo, precio, carreras } = req.body;
+    const { nombre, descripcion, tipo, precio, carrera, semestre } = req.body;
     // carreras debe ser un array de objetos { carrera, semestre }
-    const savedCurso = await cursoService.createCurso({ nombre, descripcion, tipo, precio, carreras });
+    const savedCurso = await cursoService.createCurso({ nombre, descripcion, tipo, precio, carrera, semestre });
     res.status(201).json(savedCurso);
   } catch (error) {
     console.error('Error creating curso:', error);
@@ -40,8 +40,8 @@ exports.createCurso = async (req, res) => {
 exports.updateCurso = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nombre, descripcion, tipo, precio, carreras } = req.body;
-    const updatedCurso = await cursoService.updateCurso(id, { nombre, descripcion, tipo, precio, carreras });
+    const { nombre, descripcion, tipo, precio, carrera, semestre } = req.body;
+    const updatedCurso = await cursoService.updateCurso(id, { nombre, descripcion, tipo, precio, carrera, semestre });
     if (!updatedCurso) {
       return res.status(404).json({ message: 'Curso no encontrado' });
     }

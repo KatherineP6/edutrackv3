@@ -10,7 +10,7 @@ const CursoService = {
   },
 
   createCurso: async (data) => {
-    let { nombre, descripcion, tipo, precio, carreraId, semestre } = data;
+    let { nombre, descripcion, tipo, precio, carrera, semestre } = data;
 
     descripcion = descripcion ? descripcion.trim() : descripcion;
 
@@ -18,7 +18,7 @@ const CursoService = {
       throw new Error('Campos requeridos faltantes.');
     }
 
-    if (tipo === 'carrera' && (!carreraId || carreraId.trim() === '')) {
+    /*if (tipo === 'carrera' && (!carrera || carrera.trim() === '')) {
       throw new Error('Debe seleccionar una carrera para cursos tipo carrera.');
     }
 
@@ -28,15 +28,15 @@ const CursoService = {
 
     if (tipo !== 'taller' && (!descripcion || descripcion.trim() === '')) {
       throw new Error('La descripción es obligatoria para cursos tipo carrera.');
-    }
+    }*/
 
     const CursoData = {
       nombre,
       descripcion,
       tipo,
       precio,
-      carreraId: tipo === 'carrera' ? carreraId : null,
-      semestre: tipo === 'carrera' ? semestre : null,
+      carrera,
+      semestre,
     };
 
     const curso = new Curso(CursoData);
@@ -44,7 +44,7 @@ const CursoService = {
   },
 
   updateCurso: async (id, data) => {
-    let { nombre, descripcion, tipo, precio, carreraId, semestre } = data;
+    let { nombre, descripcion, tipo, precio, carrera, semestre } = data;
 
     descripcion = descripcion ? descripcion.trim() : descripcion;
 
@@ -52,7 +52,7 @@ const CursoService = {
       throw new Error('Campos requeridos faltantes.');
     }
 
-    if (tipo === 'carrera' && (!carreraId || carreraId.trim() === '')) {
+  /*  if (tipo === 'carrera' && (!carreraId || carreraId.trim() === '')) {
       throw new Error('Debe seleccionar una carrera para cursos tipo carrera.');
     }
 
@@ -62,15 +62,15 @@ const CursoService = {
 
     if (tipo !== 'taller' && (!descripcion || descripcion.trim() === '')) {
       throw new Error('La descripción es obligatoria para cursos tipo carrera.');
-    }
+    }*/
 
     const updateData = {
       nombre,
       descripcion,
       tipo,
       precio,
-      carreraId: tipo === 'carrera' ? carreraId : null,
-      semestre: tipo === 'carrera' ? semestre : null
+      carrera,
+      semestre,
     };
 
     const curso = await Curso.findByIdAndUpdate(id, updateData, { new: true });

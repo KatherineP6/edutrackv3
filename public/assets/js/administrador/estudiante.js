@@ -18,9 +18,85 @@ document.addEventListener('DOMContentLoaded', () => {
   const selectCursos = formEstudiante.querySelector('#cursosEst');
   const passwordField = formEstudiante.querySelector('#passwordEst');
 
-  let cursosList = [];
+  var cursosList = [];
   const carreraSelect = formEstudiante.querySelector('#carreraEst');
-  let carrerasList = [];
+  var carrerasList = [];
+ 
+
+  var bloquesListas = [];
+  var salonesListas = [];
+  // Load options for curso, docente, salon selects
+  async function loadSelectOptions() {
+    carrerasLista = [];
+    cursosLista = [];
+    salonesListas = [];
+    bloquesListas = [];
+    try {
+      const [cursosRes, bloqueRes,  carrerasRes, salonesRes] = await Promise.all([
+        fetch('/api/cursos'),
+        fetch('/api/bloques'),
+        fetch('/api/carreras'),
+        fetch('/api/salones'),
+      ]);
+      var cursos = await cursosRes.json();
+      var bloque = await bloqueRes.json();
+      var carreras = await carrerasRes.json();
+      var salones = await salonesRes.json();
+
+      carrerasLista = carreras;
+      cursosLista = cursos;
+      bloquesListas = bloque;
+      salonesLista = salones;
+
+      const carreraSelect = document.getElementById('carreraEst');
+      
+      const bloqueSelect = document.getElementById('bloqueEst');
+      
+
+      carreraSelect.innerHTML = '<option value="" disabled selected>Seleccione una carrera</option>';
+      carreras.forEach(carrera => {
+        const option = document.createElement('option');
+        option.value = carrera._id;
+        option.textContent = carrera.nombre;
+        carreraSelect.appendChild(option);
+      });
+
+
+      bloqueSelect.innerHTML = '<option value="" disabled selected>Selecciona un curso</option>';
+      bloqueSelect.disabled = true;
+  
+          // Add event listener to curso select to load docentes filtered by Carrera
+       carreraSelect.addEventListener('change', async () => {
+        const selectedCarreraId = carreraSelect.value;
+        if (!selectedCarreraId) {
+          bloqueSelect.innerHTML = '<option value="" disabled selected>Seleccione un bloque</option>';
+          bloqueSelect.disabled = true;
+          return;
+        }
+        try {
+          const response = await fetch(`/api/bloques?carrera=${selectedCarreraId}`);
+          if (!response.ok) throw new Error('Error fetching curso');
+          const filteredbloque = await response.json();
+          bloqueSelect.innerHTML = '<option value="" disabled selected>Seleccione un bloque</option>';
+          filteredbloque.forEach(bloque => {
+            const option = document.createElement('option');   
+            option.value = bloque._id;
+            option.textContent = bloque.nombre;
+            bloqueSelect.appendChild(option);
+          });
+          bloqueSelect.disabled = false;
+        } catch (error) {
+          console.error('Error loading docentes filtered by bloque:', error);
+          bloqueSelect.innerHTML = '<option value="" disabled selected>Seleccione un bloque</option>';
+          bloqueSelect.disabled = true;
+        }
+      });
+
+      
+    } catch (error) {
+      console.error('Error loading select options:', error);
+    }
+  }
 
   async function cargarCarreras() {
     try {
@@ -69,10 +145,10 @@ document.addEventListener('DOMContentLoaded', () => {
       selectCursos.appendChild(option);
     });
   }
-
+/*
   carreraSelect.addEventListener('change', () => {
     filtrarYCargarCursos(carreraSelect.value);
-  });
+  });*/
 
   function abrirModal() {
     modalEstudiante.classList.remove('hidden');
@@ -96,10 +172,23 @@ document.addEventListener('DOMContentLoaded', () => {
   function agregarFila(estudiante) {
     const fila = document.createElement('tr');
     fila.dataset.id = estudiante._id;
-
+/*
     const cursosTexto = Array.isArray(estudiante.cursosEst)
       ? estudiante.cursosEst.map(curso => curso.nombre).join(', ')
-      : '';
+      : '';*/
+
+    var nombrecarrera = "";
+    carrerasLista.forEach(carrera => {
+      if(carrera._id == estudiante.carreraId){nombrecarrera = carrera.nombre ;}
+    });
+
+    var nombrebloque = "";
+    bloquesListas.forEach(bloque => {
+      if(bloque._id == estudiante.bloqueId){
+        nombrebloque = bloque.nombre
+      
+      }
+    });
 
     fila.innerHTML = `
       <td>${estudiante.nombre}</td>
@@ -107,8 +196,8 @@ document.addEventListener('DOMContentLoaded', () => {
       <td>${estudiante.correo}</td>
       <td>${estudiante.edad || ''}</td>
       <td>${estudiante.direccion || ''}</td>
-      <td>${estudiante.nombreCarrera || ''}</td>
-      <td>${cursosTexto}</td>
+      <td>${nombrecarrera || ''}</td>
+      <td>${nombrebloque}</td>
       <td>
         <button class="btn btn-sm btn-primary btn-editar" title="Editar" style="margin-right: 5px;">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16">
@@ -209,7 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
       direccion: data.direccionEst,
       password: data.passwordEst && data.passwordEst.trim() !== '' ? data.passwordEst : undefined,
       carreraId: data.carreraEst,
-      cursosInscritos: Array.from(selectCursos.selectedOptions).map(opt => ({ _id: opt.value }))
+      bloqueId: data.bloqueEst,
     };
 
     try {
@@ -249,13 +338,15 @@ document.addEventListener('DOMContentLoaded', () => {
     formEstudiante.direccionEst.value = estudiante.direccion || '';
     // Set career select value or default to empty string for placeholder
     formEstudiante.carreraEst.value = estudiante.carreraId ? estudiante.carreraId.toString() : '';
+    formEstudiante.bloqueEst.value = estudiante.bloqueId ? estudiante.bloqueId.toString() : '';
+
 
     // Clear previous course selections
-    for (let i = 0; i < selectCursos.options.length; i++) {
+    /*for (let i = 0; i < selectCursos.options.length; i++) {
       selectCursos.options[i].selected = false;
-    }
+    }*/
     // Select assigned courses properly
-    if (Array.isArray(estudiante.cursosEst)) {
+    /*if (Array.isArray(estudiante.cursosEst)) {
       const cursosIds = estudiante.cursosEst.map(curso => {
         if (typeof curso === 'object' && curso !== null && '_id' in curso) {
           return curso._id.toString();
@@ -267,7 +358,7 @@ document.addEventListener('DOMContentLoaded', () => {
           selectCursos.options[i].selected = true;
         }
       }
-    }
+    }*/
 
     passwordField.required = false;
     passwordField.parentElement.style.display = 'none';
@@ -298,7 +389,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  cargarCarreras();
+  loadSelectOptions().then(cargarEstudiantes);
+  /*cargarCarreras();
   cargarCursos();
-  cargarEstudiantes();
+  cargarEstudiantes();*/
 });

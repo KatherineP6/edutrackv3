@@ -38,10 +38,11 @@ const estudianteSchema = new Schema({
     type: Number,
     required: false
   },
-  cursosInscritos: [{
-    type: String,
-    required: false
-  }],
+  bloqueId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Bloques',
+    required: false,
+  },
 }, {
   timestamps: true 
 });

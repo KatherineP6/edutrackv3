@@ -21,17 +21,17 @@ const cursoSchema = new Schema({
     required: true,
     default: 0
   },
-  carreras: [{
-    carrera: {
-      type: Schema.Types.ObjectId,
-      ref: 'carreras',
-      required: true
-    },
-    semestre: {
-      type: Number,
-      required: true
-    }
-  }]
+  
+  carrera: {
+    type: Schema.Types.ObjectId,
+    ref: 'carreras',
+    required: false
+  },
+  semestre: {
+    type: Number,
+    required: false
+  }
+  
 }, {
   timestamps: true
 });
