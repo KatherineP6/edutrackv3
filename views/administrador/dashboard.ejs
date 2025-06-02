@@ -1,22 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Administrador</title>
+  <link rel="stylesheet" href="/assets/css/administrador/dashboard.css" />
+</head>
+<body>
 <section id="dashboard" class="tab-section active">
-  <div class="dashboard-home">
-    <div class="charts-stats">
-      <div class="card">
+  <div class="dashboard-home dashboard-content">
+
+    <!-- Primera fila con dos tarjetas lado a lado -->
+    <div class="top-row">
+      <div id="card-total-capacidad" class="card chart-container">
         <div class="card-header">
-         
-          <h3> Total de Capacidad de Salones 📈</h3>
+          <h3>Total de Capacidad de Salones 📈</h3>
         </div>
         <div class="card-body">
           <canvas id="performanceChart2" height="200"></canvas>
         </div>
       </div>
 
-      <div class="card stats-cards">
+      <div id="card-estadisticas-generales" class="card stats-cards">
         <div class="card-header">
-        
-          <h3> Estadísticas Generales 📊</h3>
+          <h3>Estadísticas Generales 📊</h3>
         </div>
-
         <div class="card-body stats-grid">
           <div class="stat-card blue">
             <h4>Total Salones</h4>
@@ -38,17 +46,21 @@
       </div>
     </div>
 
-    <div class="card full-width">
-      <div class="card-header">
-         
-          <h3> Cantidad de Estudiantes por Carrera 📈</h3>
+    <!-- Segunda fila con una tarjeta completa -->
+    <div class="bottom-row">
+      <div id="card-estudiantes-carrera" class="card chart-container">
+        <div class="card-header">
+          <h3>Cantidad de Estudiantes por Carrera 📈</h3>
         </div>
         <div class="card-body">
           <canvas id="performanceChart" height="100"></canvas>
         </div>
+      </div>
     </div>
 
-    
   </div>
 </section>
+
 <script src="/assets/js/administrador/dashboard.js"></script>
+</body>
+</html>

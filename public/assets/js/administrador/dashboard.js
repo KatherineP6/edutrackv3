@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         for(var i = 0; i<data.length ; i++){
           
-          listaSalones.push(data[i].bloque);
+          listaSalones.push(data[i].nombre);
           listaCantidad.push(data[i].capacidad);
         }
 

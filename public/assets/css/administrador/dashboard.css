@@ -1,0 +1,84 @@
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Contenedor para la primera fila: dos tarjetas lado a lado */
+.top-row {
+  display: flex;
+  gap: 2rem;
+  width: 100%;
+}
+
+/* Tarjetas dentro de la primera fila */
+#card-total-capacidad,
+#card-estadisticas-generales {
+  flex: 1; /* que cada una ocupe el mismo espacio */
+  min-width: 300px; /* para que no sean muy pequeñas */
+}
+
+/* Segunda fila, tarjeta completa */
+.bottom-row {
+  width: 100%;
+}
+
+
+/* Canvas dentro de tarjetas chart-container */
+.card.chart-container canvas {
+  max-height: 180px !important; /* máximo alto */
+  width: 100% !important;       /* que ocupe todo el ancho del contenedor */
+  height: auto !important;
+  display: block;
+}
+
+/* Encabezados */
+.card-header h3 {
+  margin: 0 0 1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* Grid de estadísticas dentro de la tarjeta */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+/* Tarjetas de estadísticas */
+.stat-card {
+  padding: 1rem;
+  border-radius: 10px;
+  color: #fff;
+  text-align: center;
+  font-weight: 600;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+}
+
+.stat-card h4 {
+  margin-bottom: 0.5rem;
+}
+
+.stat-card p {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+/* Colores de las tarjetas */
+.blue { background-color: #3498db; }
+.indigo { background-color: #5c6bc0; }
+.teal { background-color: #1abc9c; }
+.amber { background-color: #f39c12; }
+
+#card-estudiantes-carrera {
+  width: 100%;
+  min-width: 800px; /* increase min-width to make it wider */
+}
+
+#card-estudiantes-carrera canvas {
+  height: 200px !important; /* increase height */
+  max-height: 400px !important;
+  width: 100% !important;
+  display: block;
+}

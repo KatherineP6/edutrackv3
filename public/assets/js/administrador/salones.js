@@ -39,13 +39,19 @@ document.addEventListener('DOMContentLoaded', function() {
         data.forEach(classroom => {
           const row = document.createElement('tr');
           row.innerHTML = `
-            <td>${classroom.nombre}</td>
-            <td>${classroom.ubicacion}</td>
-            <td>${classroom.capacidad}</td>
-              <td>${classroom.descripcion}</td>
+            <td class="col-nombre">${classroom.nombre}</td>
+            <td class="col-ubicacion">${classroom.ubicacion}</td>
+            <td class="col-capacidad">${classroom.capacidad}</td>
+            <td class="col-descripcion">${classroom.descripcion}</td>
             <td>
-              <button class="btn-edit" data-id="${classroom._id}">✏️</button>
-              <button class="btn-delete" data-id="${classroom._id}">🗑️</button>
+              <div class="d-flex gap-2"  class="col-acciones">
+                <button class="btn btn-sm btn-warning btn-edit" data-id="${classroom._id}" title="Editar">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+                <button class="btn btn-sm btn-danger btn-delete" data-id="${classroom._id}" title="Eliminar">
+                  <i class="bi bi-trash3-fill"></i>
+                </button>
+              </div>
             </td>
           `;
           tableBody.appendChild(row);
