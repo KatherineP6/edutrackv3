@@ -68,7 +68,6 @@ module.exports = (io) => {
           userMessage.includes("quiero hablar con un administrador")
         ) {
 
-          // Aquí puedes redirigir a la lógica para contactar al administrador
           console.log('Redirigiendo su solicitud ...');
 
           // Crear ticket para el usuario

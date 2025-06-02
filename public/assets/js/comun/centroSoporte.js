@@ -80,7 +80,17 @@ async function selectTicket(ticketElement) {
 
 // Función para agregar un ticket a la lista
 function addTicketToList(ticket) {
+    // Check if ticket already exists in tickets array
+    if (tickets.find(t => t.ticketNumber === ticket.ticketNumber)) {
+        return; // Ticket already added, skip
+    }
     tickets.push(ticket);
+
+    // Check if ticket already exists in DOM
+    if (ticketList.querySelector(`li[data-ticket-id="${ticket.ticketNumber}"]`)) {
+        return; // Ticket element already exists, skip
+    }
+
     const li = document.createElement("li");
     li.setAttribute("data-ticket-id", ticket.ticketNumber);
     li.classList.add("p-5", "cursor-pointer", "rounded-r-lg");
@@ -184,23 +194,4 @@ document.getElementById('message-input').addEventListener('keydown', (e) => {
     }
 });
 
-// Escuchar nuevos mensajes para actualizar conversación si es el ticket seleccionado
-socket.on('new-message', (message) => {
-    console.log("Nuevo mensaje recibido:", message);
-    if (message.ticket === selectedTicketNumber) {
-        renderRealConversation([...conversationDiv.children].map(child => {
-            return {
-                message: child.textContent,
-                rol: child.classList.contains('chat-bubble-student') ? 'user' : 'support',
-                createdAt: new Date()
-            };
-        }).concat(message));
-    }
-});
 
-// Inicializar lista de tickets si no hay ninguno
-if (tickets.length > 0) {
-    tickets.forEach(ticket => {
-        addTicketToList(ticket);
-    });
-}
